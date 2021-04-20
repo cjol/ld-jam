@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   build:
@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install Dependencies
+      - name: Installing 🚚
         run: npm install
 
-      - name: Build Packages
+      - name: Building 🏗
         run: npm run build
