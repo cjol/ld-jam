@@ -14,8 +14,8 @@ const config = {
     },
     scene: [PreloadScene, MainScene],
     physics: {
-        default: 'arcade',
-        arcade: {
+        default: 'matter',
+        matter: {
             debug: false,
             gravity: { y: 0 }
         }

@@ -1,49 +1,45 @@
+import GameManager from '../objects/GameManager'
 import Submarine from '../objects/Submarine'
 import FpsText from '../objects/fpsText'
-import MechanicalHook from '../objects/MechanicalHook'
-import Fish from '../objects/Fish';
+import { MechanicalHook } from '../objects/MechanicalHook'
+import { FishGroup } from '../objects/Fishes';
 import Background from '../objects/Background';
 
 export default class MainScene extends Phaser.Scene {
-    fpsText: FpsText;
-    cursor: Phaser.Types.Input.Keyboard.CursorKeys;
-    submarine: Submarine;
-    hook: MechanicalHook;
-    fish: Fish;
-    background: Background;
+    private fpsText: FpsText;
+    private cursor: Phaser.Types.Input.Keyboard.CursorKeys;
+    private gameManager: GameManager;
+    private submarine: Submarine;
+    private hook: MechanicalHook;
+    private fishGroup: FishGroup;
+    private background: Background;
+    private width: number;
+    private height: number;
 
     constructor() {
         super({ key: 'MainScene' });
     }
 
     create() {
-        this.background = new Background(this);
-        this.submarine = new Submarine(this, this.cameras.main.width / 2, 0);
-        this.hook = new MechanicalHook(this, this.cameras.main.width / 2 + 100, 0);
+        this.width = this.cameras.main.width;
+        this.height = this.cameras.main.height;
+
+        const maxDepth: number = 10000;
+        this.matter.world.setBounds(0, 0, this.width, maxDepth);
+        this.cameras.main.setBounds(0, 0, this.width, maxDepth);
+        this.background = new Background(this, maxDepth);
+        this.gameManager = new GameManager(this);
+        this.submarine = new Submarine(this, this.width / 2, (this.height / 2) + 100);
         this.fpsText = new FpsText(this);
+        this.fishGroup = new FishGroup(this, 5);
 
-        this.cursor = this.input.keyboard.createCursorKeys();
-
-        // this.input.on('pointermove', this.pointerMove.bind(this));
-
-        var fishGroup = this.add.group({key:'fish',frame:[1,2,3,4],setXY:
-                                                                            {
-                                                                                x: 100,
-                                                                                y: 100,
-                                                                                stepX: 64,
-                                                                                stepY: 64
-                                                                            }
-        })
+        this.cameras.main.startFollow(this.submarine);
     }
 
-    update() {
+    update(time: number, delta: number) {
         this.background.draw();
-        this.submarine.update(this.cursor);
+        this.submarine.update();
         this.fpsText.update();
-
-            this.hook.update(this.input.activePointer)
+        this.fishGroup.update(delta);
     }
-
-    // pointerMove(pointer: {x: number, y: number}) {
-    // }
 }
