@@ -7,7 +7,6 @@ interface Upgrade {
     upgradesBrought: number;
 }
 
-
 // Class to manage the game by keeping track of upgrades and money earned
 export default class GameManager {
 
@@ -68,7 +67,7 @@ export default class GameManager {
             },
             // O2 tank (units are seconds underwater)
             tank: {
-                totalUpgrades: [1000000000, 90, 135, 180, 225, 270, 305],
+                totalUpgrades: [45, 90, 135, 180, 225, 270, 305],
                 upgradesBrought: 0
             },
             // Ship speed

@@ -7,6 +7,8 @@ export default class Background extends Phaser.GameObjects.GameObject {
     private readonly graphics: Phaser.GameObjects.Graphics;
     private readonly tilemap: Phaser.Tilemaps.Tilemap;
 
+    public readonly SafeSpawnHeight: number = 0;
+
     private width: number;
     private height: number;
 
@@ -25,34 +27,43 @@ export default class Background extends Phaser.GameObjects.GameObject {
 
         const row: number[] = [1];
         const topRow: number[] = [3];
+        const penultimateRow: number[] = [5];
         for (let i = 0; i < numberOfColumns - 2; i++) {
             row.push(0);
             topRow.push(0);
+            penultimateRow.push(6);
         }
         row.push(1);
         topRow.push(3);
+        penultimateRow.push(5);
 
         const air: number[] = [];
+        const phantoms: number[] = [];
         const seaSurface: number[] = [];
         for (let i = 0; i < numberOfColumns; i++) {
             air.push(0);
+            phantoms.push(4);
             seaSurface.push(2);
         }
 
-        const level: number[][] = [air, air, seaSurface, air, topRow];
-        const numberOfRows = Math.FloorTo(this.height / size) + 1;
+        const level: number[][] = [air, air, seaSurface, phantoms, topRow];
+        const flipOffset: number = level.length - 1;
+        const numberOfRows = Math.FloorTo(this.height / size) + 1 - level.length - 2;
         for (let i = 0; i < numberOfRows; i++)
             level.push(row.slice());
+        level.push(penultimateRow);
+        level.push(phantoms);
 
         this.tilemap = scene.make.tilemap({ data: level, tileWidth: size, tileHeight: size, insertNull: false });
         this.tilemap.addTilesetImage('background-tiles', undefined, 256, 256);
         const layer = this.tilemap.createLayer(0, 'background-tiles', -overshootX, 0);
-        layer.setCollisionByExclusion([0, 2]);
+        layer.setCollision([1, 3, 4, 5, 6]);
 
         scene.matter.world.convertTilemapLayer(layer);
 
-        for (let i = 0; i < numberOfRows; i++)
-            this.tilemap.getTileAt(0, i).setFlip(true, false);
+        const flipRows = numberOfRows + 2;
+        for (let i = 0; i < flipRows; i++)
+            this.tilemap.getTileAt(0, i + flipOffset).setFlip(true, false);
 
         const tiles = layer.getTilesWithin(0, 0, numberOfColumns, numberOfRows);
         for (const tile of tiles) {
@@ -60,8 +71,8 @@ export default class Background extends Phaser.GameObjects.GameObject {
                 continue;
 
             const matterBody: Phaser.Physics.Matter.TileBody = (<any>tile.physics).matterBody;
-            if (tile.index === 0) {
-                matterBody.setCollisionCategory(CollisionCategories.WALLS);
+            if (tile.index === 4) {
+                matterBody.setCollisionCategory(CollisionCategories.PHANTOM_WALLS);
                 matterBody.setCollidesWith(CollisionCategories.FISH);
             } else {
                 matterBody.setCollisionCategory(CollisionCategories.WALLS);
@@ -70,6 +81,8 @@ export default class Background extends Phaser.GameObjects.GameObject {
         }
 
         raycaster.registerBodies(layer, numberOfColumns, numberOfRows);
+
+        this.SafeSpawnHeight = level.length * size;
     }
 
     public draw(): void {

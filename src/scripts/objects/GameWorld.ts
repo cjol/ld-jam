@@ -1,18 +1,9 @@
-
 import { Fish } from "./Fishes";
 import { MechanicalHook } from "./MechanicalHook";
 import Submarine from "./Submarine";
 import {gameManager} from "./GameManager";
 
-interface Upgrade {
-    current: number;
-    totalUpgrades: number[];
-    upgradesBrought: number;
-}
-
-
 export default class GameWorld {
-
     scene: Phaser.Scene;
     submarine: Submarine;
     // Initialise the game
@@ -42,13 +33,11 @@ export default class GameWorld {
 }
 type MatchedPair = { hook: MechanicalHook, item: Phaser.GameObjects.GameObject };
 
-function detectObjs(pair: Phaser.Types.Physics.Matter.MatterCollisionData): null | MatchedPair  {
-    let hook: MechanicalHook | undefined;
-    if (pair.bodyA.gameObject instanceof MechanicalHook) {
+function detectObjs(pair: Phaser.Types.Physics.Matter.MatterCollisionData): null | MatchedPair {
+    if (pair.bodyA.gameObject instanceof MechanicalHook)
         return { hook: pair.bodyA.gameObject, item: pair.bodyB.gameObject };
-    } else if (pair.bodyB.gameObject instanceof MechanicalHook) {
+    else if (pair.bodyB.gameObject instanceof MechanicalHook)
         return { hook: pair.bodyB.gameObject, item: pair.bodyA.gameObject };
-    }
-    return null
 
+    return null;
 } 

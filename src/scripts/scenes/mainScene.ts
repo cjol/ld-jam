@@ -1,6 +1,6 @@
 import Background from "../objects/Background";
 import { FishGroup } from "../objects/Fishes";
-import GameWorld from "../objects/GameWorld2";
+import GameWorld from "../objects/GameWorld";
 import { MechanicalHook } from "../objects/MechanicalHook";
 import { Raycaster } from "../objects/Raycaster";
 import Submarine from "../objects/Submarine";
@@ -30,7 +30,7 @@ export default class MainScene extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, this.width, maxDepth);
         this.background = new Background(this, maxDepth, raycaster);
         this.submarine = new Submarine(this, this.width / 2, 200);
-        this.fishGroup = new FishGroup(this, 10, raycaster);
+        this.fishGroup = new FishGroup(this, raycaster, 10, this.background.SafeSpawnHeight);
         this.gameWorld = new GameWorld(this,this.submarine);
 
         this.cameras.main.startFollow(this.submarine);
@@ -40,6 +40,5 @@ export default class MainScene extends Phaser.Scene {
         this.background.draw();
         this.submarine.update();
         this.fishGroup.update(delta);
-
     }
 }

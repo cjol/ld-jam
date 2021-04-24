@@ -16,21 +16,19 @@ interface IFishParameters {
 export class Fish extends Phaser.Physics.Matter.Image {
     private static readonly directions: Phaser.Math.Vector2[] = [
         new Phaser.Math.Vector2(1, 0).rotate(60 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-60 * PMath.DEG_TO_RAD),
         new Phaser.Math.Vector2(1, 0).rotate(45 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(30 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(15 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-15 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-30 * PMath.DEG_TO_RAD),
         new Phaser.Math.Vector2(1, 0).rotate(-45 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-60 * PMath.DEG_TO_RAD)
+        new Phaser.Math.Vector2(1, 0).rotate(30 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-30 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(15 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-15 * PMath.DEG_TO_RAD)
     ]
     public static readonly minSpeed: number = 0;
     public static readonly maxSpeed: number = 100;
     public static readonly lookAheadDistance: number = 100;
 
     private readonly raycaster: Raycaster;
-    private readonly debugLines: Phaser.GameObjects.Line[];
-    private readonly text: Phaser.GameObjects.Text;
 
     worth: number;
     weight: number;
@@ -62,18 +60,7 @@ export class Fish extends Phaser.Physics.Matter.Image {
         scene.add.existing(this);
 
         this.setCollisionCategory(CollisionCategories.FISH);
-        this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK);
-
-        // this.debugLines = [];
-        // this.debugLines.push(scene.add.line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0xff0000));
-        // this.debugLines[0].setOrigin(0, 0);
-        // for (let i = 0; i < Fish.directions.length; i++) {
-        //     this.debugLines.push(scene.add
-        //         .line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0x00ff00)
-        //         .setOrigin(0, 0));
-        // }
-
-        // this.text = scene.add.text(10, 100, 'Fish 1', { font: '16px Courier', color: 'red' });
+        this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK | CollisionCategories.FISH);
     }
 
     public update(delta: number) {
@@ -82,11 +69,11 @@ export class Fish extends Phaser.Physics.Matter.Image {
 
         if (this.isGoingToCollide()) {
             const avoidDirection: PMath.Vector2  = this.obstacleRays();
-            const collisionAvoidForce = this.steerTowards(avoidDirection); // * settings.avoidCollisionWeight;
+            const collisionAvoidForce = this.steerTowards(avoidDirection);
             acceleration.add(collisionAvoidForce);
         }
 
-        this.velocity.add(acceleration);
+        this.velocity.add(acceleration.scale(scaledDelta));
         let speed: number = this.velocity.length();
         let direction = this.velocity.scale(1 / speed);
         speed = PMath.Clamp(speed, Fish.minSpeed, Fish.maxSpeed);
@@ -101,28 +88,6 @@ export class Fish extends Phaser.Physics.Matter.Image {
         this.y += timeVelocity.y;
         this.setRotationAngle(direction.angle());
         this.forward = direction;
-
-        // for (const debugLine of this.debugLines) {
-        //     debugLine.x = this.x;
-        //     debugLine.y = this.y;
-        // }
-        // this.debugLines[0].setTo(0, 0, this.forward.x * Fish.lookAheadDistance, this.forward.y * Fish.lookAheadDistance);
-
-        // for (let i = 0; i < Fish.directions.length; i++) {
-        //     const point: PMath.Vector2 = Fish.directions[i]
-        //         .clone()
-        //         .rotate(this.rotation);
-        //     this.debugLines[i + 1].setTo(0, 0, point.x * Fish.lookAheadDistance, point.y * Fish.lookAheadDistance);
-        // }
-
-        // this.text.setText([
-        //     'Fish 1',
-        //     `x: ${this.x}`,
-        //     `y: ${this.y}`,
-        //     `velocity: ${this.velocity.x}, ${this.velocity.y}`,
-        //     `forward: ${this.forward.x}, ${this.forward.y}`,
-        //     `acceleration: ${acceleration.x}, ${acceleration.y}`
-        // ]);
     }
 
     private setRotationAngle(angle: number): void {
@@ -181,13 +146,12 @@ export class FishGroup {
     fishes: Fish[];
 
     // Constructor for a fish
-    constructor(scene: Phaser.Scene, num: number, raycaster: Raycaster) {
+    constructor(scene: Phaser.Scene, raycaster: Raycaster, numberOfFish: number, minSafeHeight: number) {
         // Create fish group
         this.fishes = [];
-        for (let i = 0; i<num; i++) {
-
+        for (let i = 0; i < numberOfFish; i++) {
             // Create the fish
-            const parameters: IFishParameters = this.spawnRandomFish(scene);
+            const parameters: IFishParameters = this.spawnRandomFish(scene, minSafeHeight);
             this.fishes[i] = new Fish(scene, parameters, raycaster);
         }
     }
@@ -198,12 +162,12 @@ export class FishGroup {
     }
 
     // Method to create a fish moving in a random direction
-    spawnRandomFish(scene: Phaser.Scene): IFishParameters {
+    spawnRandomFish(scene: Phaser.Scene, minSafeHeight: number): IFishParameters {
         const generator: PMath.RandomDataGenerator = new PMath.RandomDataGenerator();
 
         // Choose a random fish to create
         const x: number = generator.integerInRange(64, scene.cameras.main.width - 64);
-        const y: number = generator.integerInRange(64, scene.cameras.main.height - 64);
+        const y: number = generator.integerInRange(minSafeHeight + 64, scene.cameras.main.height - 64);
         const speed: number = generator.integerInRange(Fish.maxSpeed / 2, Fish.maxSpeed);
         const worth: number = generator.integerInRange(0, 10000);
         const type: number = generator.integerInRange(1, 3);
