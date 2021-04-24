@@ -1,6 +1,6 @@
 export default class Submarine extends Phaser.Physics.Arcade.Sprite {
     // Constructor for submarine
-    constructor(scene, x, y) {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
         // Create submarine
         super(scene, x, y, 'submarine');
         scene.add.existing(this);
@@ -14,7 +14,7 @@ export default class Submarine extends Phaser.Physics.Arcade.Sprite {
         this.setCollideWorldBounds(false);
     }
 
-    // Update loop - game physics tbc
+    // Update loop - game physics based on acceleration
     update(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         // X direction - assume no key pressed
         let somethingDownX = false;
