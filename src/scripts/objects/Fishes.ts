@@ -1,4 +1,5 @@
 import { Math as PMath } from "phaser";
+import { CollisionCategories } from "./CollisionCategories";
 import { Raycaster } from "./Raycaster";
 
 interface IFishParameters {
@@ -14,19 +15,27 @@ interface IFishParameters {
 
 export class Fish extends Phaser.Physics.Matter.Image {
     private static readonly directions: Phaser.Math.Vector2[] = [
-        new Phaser.Math.Vector2(Math.sqrt(3) / 2, 0.5),
-        new Phaser.Math.Vector2(Math.sqrt(3) / 2, -0.5),
+        new Phaser.Math.Vector2(1, 0).rotate(60 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(45 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(30 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(15 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-15 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-30 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-45 * PMath.DEG_TO_RAD),
+        new Phaser.Math.Vector2(1, 0).rotate(-60 * PMath.DEG_TO_RAD)
     ]
-    public static readonly minSpeed: number = 10;
+    public static readonly minSpeed: number = 0;
     public static readonly maxSpeed: number = 100;
+    public static readonly lookAheadDistance: number = 100;
+
+    private readonly raycaster: Raycaster;
+    private readonly debugLines: Phaser.GameObjects.Line[];
+    private readonly text: Phaser.GameObjects.Text;
 
     worth: number;
     weight: number;
     velocity: PMath.Vector2;
     forward: PMath.Vector2;
-    debugLines: Phaser.GameObjects.Line[];
-    text: Phaser.GameObjects.Text;
-    raycaster: Raycaster;
 
     // Constructor for a fish
     constructor(scene: Phaser.Scene, parameters: IFishParameters, raycaster: Raycaster) {
@@ -35,51 +44,52 @@ export class Fish extends Phaser.Physics.Matter.Image {
             frictionAir: 0,
             mass: 0.001
         });
+
+        this.raycaster = raycaster;
+
         this.x = parameters.position.x;
         this.y = parameters.position.y;
         this.displayWidth = this.width * parameters.scale;
         this.displayHeight = this.height * parameters.scale;
-        this.velocity = parameters.direction.scale(parameters.speed);
+        this.velocity = parameters.direction
+            .clone()
+            .scale(parameters.speed);
         this.forward = parameters.direction;
+        this.setRotationAngle(parameters.directionAngle);
 
         this.worth = parameters.worth;
         this.weight = parameters.weight;
         scene.add.existing(this);
 
-        this.debugLines = [];
-        this.debugLines.push(scene.add.line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0xff0000));
-        this.debugLines[0].setOrigin(0, 0);
-        this.debugLines.push(scene.add.line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0x00ff00));
-        this.debugLines[1].setOrigin(0, 0);
-        this.debugLines.push(scene.add.line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0x00ff00));
-        this.debugLines[2].setOrigin(0, 0);
+        this.setCollisionCategory(CollisionCategories.FISH);
+        this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK);
 
-        this.text = scene.add.text(10, 10, 'Fish 1', { font: '16px Courier', color: 'red' });
-        this.setRotationAngle(parameters.directionAngle);
+        // this.debugLines = [];
+        // this.debugLines.push(scene.add.line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0xff0000));
+        // this.debugLines[0].setOrigin(0, 0);
+        // for (let i = 0; i < Fish.directions.length; i++) {
+        //     this.debugLines.push(scene.add
+        //         .line(this.x, this.y, 0, 0, this.velocity.x, this.velocity.y, 0x00ff00)
+        //         .setOrigin(0, 0));
+        // }
 
-        this.raycaster = raycaster;
+        // this.text = scene.add.text(10, 100, 'Fish 1', { font: '16px Courier', color: 'red' });
     }
 
     public update(delta: number) {
         const scaledDelta = delta / 1000;
         let acceleration: PMath.Vector2 = new PMath.Vector2(0, 0);
-        let collided: boolean = false;
 
         if (this.isGoingToCollide()) {
-            const avoidDirection: PMath.Vector2 = this.obstacleRays();
+            const avoidDirection: PMath.Vector2  = this.obstacleRays();
             const collisionAvoidForce = this.steerTowards(avoidDirection); // * settings.avoidCollisionWeight;
             acceleration.add(collisionAvoidForce);
-            collided = true;
         }
 
-        // if (acceleration.x > 0)
-        //     console.log('before', this.velocity);
         this.velocity.add(acceleration);
-        // if (acceleration.x > 0)
-        //     console.log(this.velocity);
         let speed: number = this.velocity.length();
         let direction = this.velocity.scale(1 / speed);
-        speed = PMath.Clamp(speed, 100, 1000);
+        speed = PMath.Clamp(speed, Fish.minSpeed, Fish.maxSpeed);
         this.velocity = direction
             .clone()
             .scale(speed);
@@ -92,56 +102,57 @@ export class Fish extends Phaser.Physics.Matter.Image {
         this.setRotationAngle(direction.angle());
         this.forward = direction;
 
-        for (const debugLine of this.debugLines) {
-            debugLine.x = this.x;
-            debugLine.y = this.y;
-        }
-        this.debugLines[0].setTo(0, 0, this.forward.x * 100, this.forward.y * 100);
+        // for (const debugLine of this.debugLines) {
+        //     debugLine.x = this.x;
+        //     debugLine.y = this.y;
+        // }
+        // this.debugLines[0].setTo(0, 0, this.forward.x * Fish.lookAheadDistance, this.forward.y * Fish.lookAheadDistance);
 
-        const point0: PMath.Vector2 = new PMath.Vector2(Fish.directions[0].x, Fish.directions[0].y);
-        point0.rotate(this.rotation);
-        this.debugLines[1].setTo(0, 0, point0.x * 100, point0.y * 100);
+        // for (let i = 0; i < Fish.directions.length; i++) {
+        //     const point: PMath.Vector2 = Fish.directions[i]
+        //         .clone()
+        //         .rotate(this.rotation);
+        //     this.debugLines[i + 1].setTo(0, 0, point.x * Fish.lookAheadDistance, point.y * Fish.lookAheadDistance);
+        // }
 
-        const point1: PMath.Vector2 = new PMath.Vector2(Fish.directions[1].x, Fish.directions[1].y);
-        point1.rotate(this.rotation);
-        this.debugLines[2].setTo(0, 0, point1.x * 100, point1.y * 100);
-
-        this.text.setText([
-            'Fish 1',
-            `x: ${this.x}`,
-            `y: ${this.y}`,
-            `velocity: ${this.velocity.x}, ${this.velocity.y}`,
-            `forward: ${this.forward.x}, ${this.forward.y}`,
-            `acceleration: ${acceleration.x}, ${acceleration.y}`,
-            `collided: ${collided}`
-        ])
+        // this.text.setText([
+        //     'Fish 1',
+        //     `x: ${this.x}`,
+        //     `y: ${this.y}`,
+        //     `velocity: ${this.velocity.x}, ${this.velocity.y}`,
+        //     `forward: ${this.forward.x}, ${this.forward.y}`,
+        //     `acceleration: ${acceleration.x}, ${acceleration.y}`
+        // ]);
     }
 
     private setRotationAngle(angle: number): void {
-        if (angle > 0)
+        if (angle >= 0)
             this.setFlipX(true);
         this.rotation = angle;
     }
 
     private isGoingToCollide(): boolean {
         const ray = this.raycaster.createRay();
-        const forwardPositionX = this.x + (this.forward.x * 100);
-        const forwardPositionY = this.y + (this.forward.y * 100);
-        ray.setPosition(this.x, this.y, forwardPositionX, forwardPositionY);
-        if (ray.cast())
-            return true;
-        return false;
+        const forwardRay = this.forward
+            .clone()
+            .scale(Fish.lookAheadDistance)
+        ray.setPositionAndDirection(this.x, this.y, forwardRay.x, forwardRay.y);
+        return ray.cast();
     }
 
     private obstacleRays(): PMath.Vector2 {
         for (const direction of Fish.directions) {
-            const point: PMath.Vector2 = new PMath.Vector2(direction.x * 100, direction.y * 100);
-            point.rotate(this.rotation);
+            const rotatedDirection: PMath.Vector2 = direction
+                .clone()
+                .rotate(this.rotation);
+            const scaledDirection: PMath.Vector2 = rotatedDirection
+                .clone()
+                .scale(Fish.lookAheadDistance);
             const ray = this.raycaster.createRay();
-            ray.setPositionAndDirection(this.x, this.y, point.x, point.y);
+            ray.setPositionAndDirection(this.x, this.y, scaledDirection.x, scaledDirection.y);
 
             if (!ray.cast())
-                return direction;
+                return rotatedDirection;
         }
 
         return this.forward;
@@ -153,7 +164,7 @@ export class Fish extends Phaser.Physics.Matter.Image {
             .normalize()
             .scale(Fish.maxSpeed)
             .subtract(this.velocity);
-        return this.clampMagnitude(v, 100);
+        return this.clampMagnitude(v, 1000);
     }
 
     private clampMagnitude(vector: PMath.Vector2, max: number): PMath.Vector2 {
@@ -193,14 +204,14 @@ export class FishGroup {
         // Choose a random fish to create
         const x: number = generator.integerInRange(64, scene.cameras.main.width - 64);
         const y: number = generator.integerInRange(64, scene.cameras.main.height - 64);
-        const speed: number = generator.integerInRange(Fish.minSpeed, Fish.maxSpeed);
-        const weight: number = generator.integerInRange(1, 100);
+        const speed: number = generator.integerInRange(Fish.maxSpeed / 2, Fish.maxSpeed);
         const worth: number = generator.integerInRange(0, 10000);
         const type: number = generator.integerInRange(1, 3);
-        const directionAngle: number = generator.rotation();//(generator.integerInRange(0, 1) ? -1 : 1) * PMath.PI2 / 2;
+        const directionAngle: number = generator.rotation();
         const directionX = Math.cos(directionAngle);
         const directionY = Math.sin(directionAngle);
         const scale = generator.realInRange(0.25, 1);
+        const weight: number = 20 * scale;
 
         return {
             type: type,

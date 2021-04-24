@@ -6,12 +6,17 @@ interface BarConfig {
     width: number;
     height: number
 }
-const defaultConfig: BarConfig = {
+const healthConfig: BarConfig = {
     width: 80, height: 16,
     lowColor: 0xff0000,
     color: 0x0088ff,
     lowThreshold: 0.3
-
+}
+const cargoConfig: BarConfig = {
+    width: 80, height: 16,
+    lowColor: 0x555555,
+    color: 0x555555,
+    lowThreshold: 0.3
 }
 const BAR_WIDTH = 80, BAR_HEIGHT = 16;
 export class Bar extends Phaser.GameObjects.Graphics{
@@ -21,7 +26,7 @@ export class Bar extends Phaser.GameObjects.Graphics{
     maxValue: number;
     config: BarConfig;
 
-    constructor (scene: Phaser.Scene, x: number, y: number, maxValue: number, value = maxValue, config: BarConfig = defaultConfig)
+    constructor (scene: Phaser.Scene, x: number, y: number, maxValue: number, value = maxValue, barName: string)
     {
         super(scene);
         this.x = x;
@@ -29,7 +34,8 @@ export class Bar extends Phaser.GameObjects.Graphics{
         this.maxValue = maxValue;
         this.value = value;
         scene.add.existing(this);
-        this.config = config;
+        if (barName == 'health') {this.config = healthConfig};
+        if (barName == 'cargo') {this.config = cargoConfig};
     }
 
     update (x: number, y:number, value: number, maxValue?: number) {
