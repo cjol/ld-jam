@@ -18,7 +18,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
         const subGroup = scene.matter.world.nextGroup(true);
         this.setCollisionGroup(subGroup);
         this.hook = new MechanicalArm(scene, this, subGroup);
-        this.setScale(0.25);
+        this.setScale(0.025);
     }
 
     setupKeys() {

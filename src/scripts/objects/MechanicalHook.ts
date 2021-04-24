@@ -53,8 +53,8 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
     scene.add.existing(this)
     if (prev) {
       scene.matter.add.constraint(prev as any, this as any, CONSTRAINT_LENGTH, SEGMENT_STIFFNESS, {
-        pointA: { x: SEGMENT_LENGTH / 2 - 5, y: 0 },
-        pointB: { x: -SEGMENT_LENGTH / 2 + 5, y: 0 },
+        pointA: { x: SEGMENT_LENGTH / 2 - 10, y: 0 },
+        pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 },
       });
     }
   }
@@ -75,12 +75,14 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
       mass: 0.1,
       collisionFilter: {
         group
-      }
+             }       ,
+             
     });
     this.prev = parent;
     this.scene = scene;
     scene.add.existing(this)
-    this.setScale(0.25);
+    this.displayHeight = SEGMENT_LENGTH/2;
+    this.displayWidth = SEGMENT_LENGTH/2;
     scene.matter.add.constraint(parent as any, this as any, CONSTRAINT_LENGTH, SEGMENT_STIFFNESS,
       {
         pointA: { x: SEGMENT_LENGTH / 2, y: 0 },
@@ -100,8 +102,8 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
   }
 
   update() {
-    this.angle = this.prev.angle - 180;
-    if (this.keys.left.isDown) {
+    this.angle = this.prev.angle - 90;
+        if (this.keys.left.isDown) {
       this.setVelocityX(-5)
     } else if (this.keys.right.isDown) {
       this.setVelocityX(5);

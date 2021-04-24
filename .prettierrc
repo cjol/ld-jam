@@ -1,8 +1,9 @@
-bracketSpacing: true
-endOfLine: "auto"
-semi: true
-trailingComma: "es5"
-tabWidth: 4
-useTabs: true
-semi: false
-singleQuote: false
+{
+	"bracketSpacing": true,
+	"endOfLine": "auto",
+	"trailingComma": "es5",
+	"tabWidth": 4,
+	"useTabs": true,
+	"semi": true,
+	"singleQuote": false
+}
