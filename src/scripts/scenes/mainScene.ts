@@ -1,15 +1,17 @@
-import PhaserLogo from '../objects/phaserLogo'
+import Submarine from '../objects/Submarine'
 import FpsText from '../objects/fpsText'
 
 export default class MainScene extends Phaser.Scene {
-  fpsText
+  fpsText: FpsText
+  cursor: Phaser.Types.Input.Keyboard.CursorKeys
+  submarine: Submarine
 
   constructor() {
     super({ key: 'MainScene' })
   }
 
   create() {
-    new PhaserLogo(this, this.cameras.main.width / 2, 0)
+    this.submarine = new Submarine(this, this.cameras.main.width / 2, 0)
     this.fpsText = new FpsText(this)
 
     // display the Phaser.VERSION
@@ -19,9 +21,11 @@ export default class MainScene extends Phaser.Scene {
         fontSize: '24px'
       })
       .setOrigin(1, 0)
+    this.cursor = this.input.keyboard.createCursorKeys()
   }
 
   update() {
+    this.submarine.update(this.cursor)
     this.fpsText.update()
   }
 }
