@@ -1,4 +1,5 @@
 import { MouseConstraint } from "matter";
+import { Fish } from "./Fishes";
 import Submarine from "./Submarine";
 
 
@@ -20,14 +21,14 @@ export class MechanicalArm {
     }
 
     scene.matter.add.constraint(sub as any, this.segments[0] as any, CONSTRAINT_LENGTH, SEGMENT_STIFFNESS, {
-      pointA: { x: 0, y: 0 },
-      pointB: { x: -SEGMENT_LENGTH / 2, y: 0 },
+      pointA: { x: 0, y: 20 },
+      pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 },
     });
 
 
     // TODO: sub and hook should collide; chains should not
     const hookGroup = group;
-    this.hook = new MechanicalHook(scene, this.segments[links - 1], hookGroup);
+    this.hook = new MechanicalHook(scene, this.segments[links - 1], hookGroup, sub);
     sub.setCollidesWith(hookGroup);
   }
   update() {
@@ -40,7 +41,7 @@ export class MechanicalArm {
 export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
   constructor(scene: Phaser.Scene, x: number, y: number, group: number, prev?: Phaser.Physics.Matter.Image) {
     // Create claw
-    super(scene.matter.world, x + SEGMENT_LENGTH, y, 'fish1', undefined, {
+    super(scene.matter.world, x + SEGMENT_LENGTH, y, 'chain', undefined, {
       frictionAir: 0.05,
       mass: 0.001,
       collisionFilter: {
@@ -68,19 +69,20 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
   prev: Phaser.Physics.Matter.Image
 
   // Constructor for the claw
-  constructor(scene: Phaser.Scene, parent: Phaser.Physics.Matter.Image, group: number) {
+  constructor(scene: Phaser.Scene, parent: Phaser.Physics.Matter.Image, group: number, sub: Submarine) {
     // Create claw
     super(scene.matter.world, parent.x + SEGMENT_LENGTH / 2, parent.y, 'mechanical-hook', undefined, {
       frictionAir: 0.05,
       mass: 0.1,
       collisionFilter: {
         group
-             }       ,
-             
+      }
     });
+
     this.prev = parent;
     this.scene = scene;
     scene.add.existing(this)
+    this.sub = sub;
     this.displayHeight = SEGMENT_LENGTH/2;
     this.displayWidth = SEGMENT_LENGTH/2;
     scene.matter.add.constraint(parent as any, this as any, CONSTRAINT_LENGTH, SEGMENT_STIFFNESS,
@@ -103,7 +105,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 
   update() {
     this.angle = this.prev.angle - 90;
-        if (this.keys.left.isDown) {
+    if (this.keys.left.isDown) {
       this.setVelocityX(-5)
     } else if (this.keys.right.isDown) {
       this.setVelocityX(5);
@@ -115,4 +117,31 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
       this.setVelocityY(5);
     }
   }
+
+    // Called when the submarine catches a fish. It needs to get the fish that was caught, and add its weight to the sub's cargo
+    catchFish(fish: Fish) {
+
+        // Add the fish's weight to the hold
+        this.sub.cargo.fishWeight += fish.weight;
+        // Add its value to the hold
+        this.sub.cargo.fishValue += fish.worth;
+
+        // Destroy the fish
+
+    }
+
+    // Called when the submarine picks up some ore. Get the weight and value and add it to the hold
+    collectOre() {
+
+        // Will need to write this once we have created the Ore class (as for fish)
+
+    }
+
+    // Called when the submarine picks up some research. Get the weight and value and add it to the hold
+    collectResearch() {
+
+        // Will need to write this once we have created the Research class (as for fish)
+
+    }
+
 }

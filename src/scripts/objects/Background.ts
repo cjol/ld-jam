@@ -1,4 +1,5 @@
 import { Math } from "phaser";
+import { Raycaster } from "./Raycaster";
 
 export default class Background extends Phaser.GameObjects.GameObject {
     private readonly BACKGROUND_COLOUR: number = 0x244b7e;
@@ -8,7 +9,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
     private width: number;
     private height: number;
 
-    constructor(scene: Phaser.Scene, maxDepth: number) {
+    constructor(scene: Phaser.Scene, maxDepth: number, raycaster: Raycaster) {
         super(scene, 'background');
 
         scene.add.existing(this);
@@ -20,22 +21,34 @@ export default class Background extends Phaser.GameObjects.GameObject {
         const size: number = 64;
         const numberOfColumns = Math.CeilTo(this.width / size);
         const overshootX = Math.CeilTo(((numberOfColumns * size) - this.width) / 2);
-        const row: number[] = [0];
+        const row: number[] = [1];
         for (let i = 0; i < numberOfColumns - 2; i++)
-            row.push(-1);
-        row.push(0);
+            row.push(0);
+        row.push(1);
 
-        const level: number[][] = [];
+        const air: number[] = [];
+        for (let i = 0; i < numberOfColumns ; i++)
+            air.push(0);
+
+        const toprow: number[] = [];
+        for (let i = 0; i < numberOfColumns ; i++)
+            toprow.push(2);
+
+        const level: number[][] = [air, air, toprow];
         const numberOfRows = Math.FloorTo(this.height / size) + 1;
         for (let i = 0; i < numberOfRows; i++)
             level.push(row.slice());
 
-        this.tilemap = scene.make.tilemap({ data: level, tileWidth: size, tileHeight: size });
+        this.tilemap = scene.make.tilemap({ data: level, tileWidth: size, tileHeight: size, insertNull: false });
         this.tilemap.addTilesetImage('background-tiles', undefined, 256, 256);
-        this.tilemap.createLayer(0, 'background-tiles', -overshootX, 0);
+        const layer = this.tilemap.createLayer(0, 'background-tiles', -overshootX, 0);
+        layer.setCollisionByExclusion([0, 2]);
+        scene.matter.world.convertTilemapLayer(layer);
 
         for (let i = 0; i < numberOfRows; i++)
             this.tilemap.getTileAt(0, i).setFlip(true, false);
+
+        raycaster.registerBodies(layer, numberOfColumns, numberOfRows);
     }
 
     public draw(): void {

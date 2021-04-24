@@ -56,6 +56,7 @@
     "workbox-webpack-plugin": "^6.0.2"
   },
   "dependencies": {
-    "phaser": "^3.53.1"
+    "phaser": "^3.53.1",
+    "phaser-raycaster": "^0.9.3"
   }
 }

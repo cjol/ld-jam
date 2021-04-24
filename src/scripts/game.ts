@@ -1,6 +1,8 @@
 import 'phaser';
+import PhaserRaycaster from 'phaser-raycaster';
 import MainScene from './scenes/mainScene';
 import PreloadScene from './scenes/preloadScene';
+import UIScene from './scenes/uiScene';
 
 const config = {
     type: Phaser.AUTO,
@@ -12,13 +14,22 @@ const config = {
         width: window.innerWidth,
         height: window.innerHeight
     },
-    scene: [PreloadScene, MainScene],
+    scene: [PreloadScene, MainScene, UIScene],
     physics: {
         default: 'matter',
         matter: {
             debug: false,
             gravity: { y: 0 }
         }
+    },
+    plugins: {
+        scene: [
+            {
+                key: 'PhaserRaycaster',
+                plugin: PhaserRaycaster,
+                mapping: 'raycasterPlugin'
+            }
+        ]
     }
 }
 
