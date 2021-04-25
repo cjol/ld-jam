@@ -76,6 +76,7 @@ export default class UIGameObject {
 				gameManager.sellOre();
 			}
 		);
+		this.sellOreButton.hide();
 		this.sellResearchButton = new UIButton(
 			this.scene,
 			"big-button",
@@ -87,6 +88,7 @@ export default class UIGameObject {
 				gameManager.sellResearch();
 			}
 		);
+		this.sellResearchButton.hide();
 
 		// Create the 'fix sub' button
 		this.fixSubButton = new UIButton(
@@ -234,41 +236,21 @@ export default class UIGameObject {
 		// If at the surface, show the selling buttons (if anything to sell)
 		const { isAtSurface } = this.gameManager.submarine;
 		const subHasFish = this.gameManager.submarine.cargo.fishWeight > 0;
-		const subHasOre = this.gameManager.submarine.cargo.oreWeight > 0;
-		const subHasResearch =
-			this.gameManager.submarine.cargo.researchWeight > 0;
 		const hasMoney = this.gameManager.currentWealth > 0;
 		const isDamaged =
 			this.gameManager.submarine.hull <
 			this.gameManager.getUpgradeValue("depthLimit");
 
 		if (isAtSurface) {
-			this.upgradeMenuButton.visible = hasMoney;
-			this.upgradeMenuButton.buttonText.visible = hasMoney;
-			if (hasMoney) {
-				this.fixSubButton.visible = isDamaged;
-				this.fixSubButton.buttonText.visible = isDamaged;
-			} else {
-				this.fixSubButton.visible = false;
-				this.fixSubButton.buttonText.visible = false;
-			}
-			this.sellFishButton.visible = subHasFish;
-			this.sellFishButton.buttonText.visible = subHasFish;
-			this.sellOreButton.visible = subHasOre;
-			this.sellOreButton.buttonText.visible = subHasOre;
-			this.sellResearchButton.visible = subHasResearch;
-			this.sellResearchButton.buttonText.visible = subHasResearch;
+			this.upgradeMenuButton.show();
+			this.fixSubButton.show();
+			this.fixSubButton.setDisabled(!hasMoney || !isDamaged);
+			this.sellFishButton.show();
+			this.sellFishButton.setDisabled(!subHasFish);
 		} else {
-			this.upgradeMenuButton.visible = false;
-			this.upgradeMenuButton.buttonText.visible = false;
-			this.fixSubButton.visible = false;
-			this.fixSubButton.buttonText.visible = false;
-			this.sellFishButton.visible = false;
-			this.sellFishButton.buttonText.visible = false;
-			this.sellOreButton.visible = false;
-			this.sellOreButton.buttonText.visible = false;
-			this.sellResearchButton.visible = false;
-			this.sellResearchButton.buttonText.visible = false;
+			this.upgradeMenuButton.hide();
+			this.fixSubButton.hide();
+			this.sellFishButton.hide();
 		}
 
 		// Assume no warnings necessary

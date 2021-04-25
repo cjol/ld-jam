@@ -1,6 +1,7 @@
 export default class UIButton extends Phaser.GameObjects.Image {
+	private readonly buttonText: Phaser.GameObjects.Text;
+
 	private disabled: boolean = false;
-	buttonText: Phaser.GameObjects.Text;
 
 	constructor(
 		scene: Phaser.Scene,
@@ -62,6 +63,13 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		this.buttonText.visible = true;
 	}
 
+	public setHideShow(show: boolean) {
+		if (show)
+			this.show();
+		else
+			this.hide();
+	}
+
 	public disable(): void {
 		this.setTint(0x333333);
 		this.buttonText.setColor("white");
@@ -72,5 +80,12 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		this.setTint(0xffffff);
 		this.buttonText.setColor("black");
 		this.disabled = false;
+	}
+
+	public setDisabled(disabled: boolean) {
+		if (disabled)
+			this.disable();
+		else
+			this.enable();
 	}
 }
