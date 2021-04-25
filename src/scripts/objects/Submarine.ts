@@ -165,10 +165,12 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 		gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
 		// clamp to 0-maxHull range
-		gameManager.submarine.hull = Math.max(
+		gameManager.submarine.hull = Phaser.Math.Clamp(
+			gameManager.submarine.hull,
 			0,
-			Math.min(gameManager.submarine.hull, maxHull)
+			maxHull
 		);
+
 		this.hullBar.update(
 			this.x,
 			this.y + HULL_BAR_OFFSET_Y,

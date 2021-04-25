@@ -64,7 +64,7 @@ export default class GameManager {
 			},
 			// Pressure hull
 			depthLimit: {
-				totalUpgrades: [100, 300, 1000, 2000, 3000, 10000],
+				totalUpgrades: [150, 300, 1000, 2000, 3000, 10000],
 				upgradesBought: 0,
 				price: [0, 10, 20, 30, 40, 50]
 			},

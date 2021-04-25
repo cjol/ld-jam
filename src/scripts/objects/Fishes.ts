@@ -98,6 +98,8 @@ export class Fish extends Phaser.Physics.Matter.Image {
 interface IBandParameters {
 	minDepth: number;
 	maxDepth: number;
+	minScale: number;
+	maxScale: number;
 	maxNumberOfFish: number;
 	availableFishTypes: number[];
 	fishRespawnRate: number;
@@ -207,7 +209,10 @@ export class FishBand {
 		const directionX = Math.cos(PMath.DEG_TO_RAD * directionAngle);
 		const directionY = Math.sin(PMath.DEG_TO_RAD * directionAngle);
 
-		const scale = this.generator.realInRange(0.25, 1);
+		const scale = this.generator.realInRange(
+			this.parameters.minScale,
+			this.parameters.maxScale
+		);
 		const weight: number = Math.floor(20 * scale);
 		const worth: number = weight;
 
@@ -243,11 +248,22 @@ export class FishBand {
 export class FishGroup {
 	private readonly bandParameters: IBandParameters[] = [
 		{
-			minDepth: 0,
-			maxDepth: 1000,
+			minDepth: 500,
+			maxDepth: 1500,
 			maxNumberOfFish: 20,
 			availableFishTypes: [1, 2],
-			fishRespawnRate: 10 * 1000 // 10 seconds in milliseconds
+			fishRespawnRate: 10 * 1000, // 10 seconds in milliseconds
+			minScale: 0.25,
+			maxScale: 1
+		},
+		{
+			minDepth: 1500,
+			maxDepth: 3000,
+			maxNumberOfFish: 15,
+			availableFishTypes: [2, 3],
+			fishRespawnRate: 30 * 1000, // 30 seconds in milliseconds
+			minScale: 0.25,
+			maxScale: 1
 		}
 	];
 	private readonly fishBands: FishBand[] = [];
