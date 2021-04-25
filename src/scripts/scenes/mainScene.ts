@@ -55,6 +55,6 @@ export default class MainScene extends Phaser.Scene {
 	update(time: number, delta: number) {
 		this.background.draw();
 		this.submarine.update();
-		this.fishGroup.update();
+		this.fishGroup.update(delta);
 	}
 }

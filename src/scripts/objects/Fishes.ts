@@ -19,8 +19,9 @@ export class Fish extends Phaser.Physics.Matter.Image {
 	private started: boolean = false;
 	private offscreen: boolean = false;
 
-	worth: number;
-	weight: number;
+	public worth: number = 0;
+	public weight: number = 0;
+	public dead: boolean = true;
 
 	// Constructor for a fish
 	constructor(scene: Phaser.Scene, band: FishBand) {
@@ -60,9 +61,13 @@ export class Fish extends Phaser.Physics.Matter.Image {
 		this.weight = parameters.weight;
 		this.started = true;
 		this.offscreen = true;
+		this.dead = false;
 	}
 
 	public update() {
+		if (this.dead)
+			return;
+
 		const width = this.scene.cameras.main.width;
 		const bounds = this.getBounds();
 		if (this.started && this.offscreen) {
@@ -75,12 +80,12 @@ export class Fish extends Phaser.Physics.Matter.Image {
 			(bounds.right < 0 || bounds.left > width)
 		) {
 			this.offscreen = true;
-			this.band.recycleFish(this);
+			this.band.respawnFish(this);
 		}
 	}
 
 	public catch() {
-		this.band.recycleFish(this);
+		this.band.fishCaught(this);
 	}
 
 	private setRotationDeg(angle: number): void {
@@ -95,6 +100,7 @@ interface IBandParameters {
 	maxDepth: number;
 	maxNumberOfFish: number;
 	availableFishTypes: number[];
+	fishRespawnRate: number;
 }
 
 export class FishBand {
@@ -107,6 +113,9 @@ export class FishBand {
 	private readonly parameters: IBandParameters;
 	private readonly scene: Scene;
 	private readonly fishes: Fish[] = [];
+
+	private activeNumberOfFish: number = 0;
+	private respawnTimer: number = 0;
 
 	// Constructor for a fish
 	constructor(scene: Phaser.Scene, parameters: IBandParameters) {
@@ -121,23 +130,47 @@ export class FishBand {
 			const fish: Fish = new Fish(scene, this);
 			fish.setParameters(parameters);
 			this.fishes.push(fish);
+			this.activeNumberOfFish++;
 		}
 	}
 
-	public recycleFish(fish: Fish): void {
+	public respawnFish(fish: Fish): void {
 		const newParameters = this.spawnRandomFish(
 			this.generator.pick([true, false])
 		);
 		fish.setParameters(newParameters);
 	}
 
+	public fishCaught(fish: Fish): void {
+		fish.dead = true;
+		fish.x = -400;
+		fish.y = -400;
+		this.activeNumberOfFish--;
+	}
+
 	// Update loop - game physics based on acceleration
-	update() {
+	public update(delta: number) {
 		this.fishes.forEach((fish) => fish.update());
+
+		this.generateNewFish(delta);
+	}
+
+	private generateNewFish(delta: number) {
+		if (this.activeNumberOfFish >= this.parameters.maxNumberOfFish)
+			return;
+
+		this.respawnTimer += delta;
+		if (this.respawnTimer < this.parameters.fishRespawnRate)
+			return;
+
+		this.respawnTimer -= this.parameters.fishRespawnRate;
+		const firstDeadFish = this.fishes.filter((x) => x.dead)[0];
+		this.respawnFish(firstDeadFish);
+		this.activeNumberOfFish++;
 	}
 
 	// Method to create a fish moving in a random direction
-	spawnRandomFish(leftSide: boolean): IFishParameters {
+	private spawnRandomFish(leftSide: boolean): IFishParameters {
 		const width: number = this.scene.cameras.main.width;
 		const x: number = leftSide
 			? -FishBand.safetyGap
@@ -211,9 +244,10 @@ export class FishGroup {
 	private readonly bandParameters: IBandParameters[] = [
 		{
 			minDepth: 0,
-			maxDepth: 500,
-			maxNumberOfFish: 10,
-			availableFishTypes: [1, 2]
+			maxDepth: 1000,
+			maxNumberOfFish: 20,
+			availableFishTypes: [1, 2],
+			fishRespawnRate: 10 * 1000 // 10 seconds in milliseconds
 		}
 	];
 	private readonly fishBands: FishBand[] = [];
@@ -229,7 +263,7 @@ export class FishGroup {
 	}
 
 	// Update loop - game physics based on acceleration
-	update() {
-		this.fishBands.forEach((band) => band.update());
+	update(delta: number) {
+		this.fishBands.forEach((band) => band.update(delta));
 	}
 }
