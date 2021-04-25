@@ -1,6 +1,8 @@
 import UIButton from "./UIButton";
 import GameManager from "./GameManager";
 
+const LITTLE_BUTTON_SCALE = 0.4;
+
 export default class UpgradeMenu {
 	buttons: UIButton[];
 	gameManager: GameManager;
@@ -45,10 +47,12 @@ export default class UpgradeMenu {
 				new UIButton(
 					scene,
 					b.key,
+					"little-button",
 					b.label,
 					b.upgrade,
 					x,
 					y + i * 50,
+					LITTLE_BUTTON_SCALE,
 					gameManager
 				)
 		);

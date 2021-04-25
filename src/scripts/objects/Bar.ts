@@ -28,7 +28,7 @@ const cargoConfig: BarConfig = {
 	lowColor: 0x555555,
 	color: 0x555555,
 	lowThreshold: 0.3,
-	label: "Hold Space"
+	label: "Cargo Hold Space"
 };
 
 export class Bar extends Phaser.GameObjects.Graphics {

@@ -7,6 +7,8 @@ const OXYGEN_CONSUMPTION_RATE = 0.05;
 const HULL_DAMAGE_RATE = 1;
 const OXYGEN_REFUEL_RATE = 1;
 
+const BIG_BUTTON_SCALE = 0.4;
+
 // The UI game object contains lots of UI elements to be shown / hidden. Pressing UI buttons should call functions in the GameManager (usually)
 export default class UIGameObject {
 	scene: Phaser.Scene;
@@ -24,6 +26,8 @@ export default class UIGameObject {
 	cargoBar: Bar;
 	oxygenBar: Bar;
 	hullBar: Bar;
+	leftBarsBG: Phaser.GameObjects.Image;
+	rightBarsBG: Phaser.GameObjects.Image;
 
 	// Add all the required buttons
 	constructor(scene: Phaser.Scene, gameManager: GameManager) {
@@ -34,28 +38,34 @@ export default class UIGameObject {
 		this.sellFishButton = new UIButton(
 			this.scene,
 			"sell-fish-button",
+			"big-button",
 			"Sell Fish",
 			"none",
 			300,
 			200,
+			BIG_BUTTON_SCALE,
 			this.gameManager
 		);
 		this.sellOreButton = new UIButton(
 			this.scene,
 			"sell-ore-button",
+			"big-button",
 			"Sell Ore",
 			"none",
 			300,
-			230,
+			250,
+			BIG_BUTTON_SCALE,
 			this.gameManager
 		);
 		this.sellResearchButton = new UIButton(
 			this.scene,
 			"sell-research-button",
+			"big-button",
 			"Sell Research",
 			"none",
 			300,
-			260,
+			300,
+			BIG_BUTTON_SCALE,
 			this.gameManager
 		);
 
@@ -63,10 +73,12 @@ export default class UIGameObject {
 		this.fixSubButton = new UIButton(
 			this.scene,
 			"fix-sub-button",
+			"big-button",
 			"Fix Sub",
 			"none",
 			550,
 			50,
+			BIG_BUTTON_SCALE,
 			this.gameManager
 		);
 
@@ -74,16 +86,18 @@ export default class UIGameObject {
 		this.upgradeMenuButton = new UIButton(
 			this.scene,
 			"upgrade-menu-button",
-			"Upgrade",
+			"big-button",
+			"Shop",
 			"none",
 			550,
 			100,
+			BIG_BUTTON_SCALE,
 			this.gameManager
 		);
 		this.upgradeMenu = new UpgradeMenu(
 			this.scene,
-			580,
-			150,
+			720,
+			100,
 			this.gameManager
 		);
 
@@ -132,11 +146,28 @@ export default class UIGameObject {
 		// Get the bar positions from the screen size
 		const screenWidth = this.scene.cameras.main.width;
 		const screenHeight = this.scene.cameras.main.height;
-		const edgeOffset = 50;
+		const edgeOffset = 100;
 		const yPosLower = screenHeight - 100;
 		const yPosUpper = screenHeight - 200;
 		const xPosLeft = 200 + edgeOffset;
 		const xPosRight = screenWidth - (200 + edgeOffset);
+		// Draw a background for the left and right sides
+		this.leftBarsBG = new Phaser.GameObjects.Image(
+			scene,
+			xPosLeft,
+			(yPosLower + yPosUpper) / 2 + 10,
+			"ui-backdrop"
+		);
+		scene.add.existing(this.leftBarsBG);
+		this.leftBarsBG.setScale(0.4, 0.45);
+		this.rightBarsBG = new Phaser.GameObjects.Image(
+			scene,
+			xPosRight,
+			(yPosLower + yPosUpper) / 2 + 10,
+			"ui-backdrop"
+		);
+		scene.add.existing(this.rightBarsBG);
+		this.rightBarsBG.setScale(0.4, 0.45);
 		// Draw the bars
 		this.cargoBar = new Bar(scene, xPosLeft, yPosLower, 100, 100, "cargo");
 		this.hullBar = new Bar(scene, xPosRight, yPosLower, 100, 100, "hull");

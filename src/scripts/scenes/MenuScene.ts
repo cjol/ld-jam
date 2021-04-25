@@ -3,7 +3,7 @@ import UIButton from "../objects/UIButton";
 
 export default class MenuScene extends Phaser.Scene {
 	background: Phaser.GameObjects.Image;
-	playButton: UIButton;
+	playButton: Phaser.GameObjects.Image;
 
 	constructor() {
 		super({ key: "MenuScene" });
@@ -11,33 +11,38 @@ export default class MenuScene extends Phaser.Scene {
 
 	preload() {
 		this.load.image(
-			"button-background",
-			"assets/img/ui/button_background_2.png"
+			"button-background-blue",
+			"assets/img/ui/Button_Blue.png"
 		);
-		this.load.image("menu-background", "assets/img/ui/menu_background.png");
+		this.load.image("menu-background", "assets/img/ui/Main_Menu.png");
 	}
 
 	create() {
 		console.log("Creating menu background");
 
+		const menuXPos = this.cameras.main.width / 2;
+		const menuYPos = this.cameras.main.height / 2;
+
 		// Menu Background
 		this.background = new Phaser.GameObjects.Image(
 			this,
-			400,
-			400,
+			menuXPos,
+			menuYPos,
 			"menu-background"
 		);
 		this.add.existing(this.background);
-		this.background.setScale(0.2);
+		this.background.setScale(1);
 
 		// Add a play button
 		this.playButton = new UIButton(
 			this,
 			"play-button",
+			"button-background-blue",
 			"Play!",
 			"none",
-			400,
-			400,
+			menuXPos,
+			menuYPos,
+			1,
 			gameManager
 		);
 

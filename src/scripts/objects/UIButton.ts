@@ -9,14 +9,16 @@ export default class UIButton extends Phaser.GameObjects.Image {
 	constructor(
 		scene: Phaser.Scene,
 		buttonKey: string,
+		buttonBackground: string,
 		buttonText: string,
 		upgradeName: string,
 		x: number,
 		y: number,
+		scale: number,
 		gameManager: GameManager
 	) {
 		// Add the image
-		super(scene, x, y, "button-background");
+		super(scene, x, y, buttonBackground);
 		scene.add.existing(this);
 
 		// Add text to the button
@@ -32,7 +34,7 @@ export default class UIButton extends Phaser.GameObjects.Image {
 
 		// Make the button interactive, set the scale and set it as transparent at first
 		this.setInteractive({ useHandCursor: true });
-		this.setScale(0.2, 0.1);
+		this.setScale(scale, scale * 0.7);
 		this.setAlpha(0.25);
 
 		// Set the on click method

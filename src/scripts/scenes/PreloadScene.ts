@@ -12,6 +12,9 @@ export default class PreloadScene extends Phaser.Scene {
 		this.load.image("fish3", "assets/img/fish_type3.png");
 		this.load.image("background-tiles", "assets/img/tiles/wall.png");
 		this.load.image("surface-vessel", "assets/img/Fishing_vessel_1.png");
+		this.load.image("big-button", "assets/img/ui/Big_Button.png");
+		this.load.image("little-button", "assets/img/ui/Little_Button.png");
+		this.load.image("ui-backdrop", "assets/img/ui/Menu_Panel.png");
 	}
 
 	create() {
