@@ -247,7 +247,7 @@ export default class GameManager {
 
 	hitHazard(hazard: Hazard) {
 		// Add the fish's weight to the hold
-		this.submarine.hull -= hazard.weight;
+		this.submarine.hull -= hazard.damage;
 		// Destroy the fish
 		hazard.hit();
 	}
