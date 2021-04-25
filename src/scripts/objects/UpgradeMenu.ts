@@ -4,8 +4,6 @@ import GameManager from "./GameManager";
 export default class UpgradeMenu {
 
     buttons: UIButton[];
-    upgradeO2: UIButton;
-    upgradeCapacity: UIButton;
 
     // Constructor for the upgrade menu
     constructor(scene: Phaser.Scene, x: number, y: number, gameManager: GameManager) {
@@ -13,6 +11,9 @@ export default class UpgradeMenu {
         // List of buttons to add
         this.buttons.push(new UIButton(scene,'upgrade-oxygen-button','O2 Tank',x,y,gameManager));
         this.buttons.push(new UIButton(scene,'upgrade-cargo-capacity','Hold Size',x,y+100,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-sub-speed','Ship Speed',x,y+200,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-claw-speed','Claw Speed',x,y+300,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-depth-limit','Pressure Limit',x,y+400,gameManager));
 
     }
 

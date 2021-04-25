@@ -65,15 +65,21 @@ export default class UIGameObject {
 
         // If the hold is full, show the warning
         const {holdFull} = this.gameManager.submarine;
-        this.warningMessage.setText('Hold Full!').visible = holdFull;
+        if (holdFull) {this.warningMessage.setText('Hold Full!').visible = holdFull};
 
-        // If oxygen is low, show the warning (overwriting anything else)
+        // If oxygen is low, show the warning (overwrites hold full if necessary)
         const {oxygenLow} = this.gameManager.submarine;
         if (oxygenLow) {this.warningMessage.setText('Oxygen Level Low!').visible = true};
+
+        // Show the pressure warning (overwrites low o2 if necessary)
+        const {pressureWarning} = this.gameManager.submarine;
+        if (pressureWarning == 1) {this.warningMessage.setText('Hull Pressure Critical!').visible = true};    
+        if (pressureWarning == 2) {this.warningMessage.setText('Hull Failure').visible = true};        
 
         // Show or don't show the upgrade menu
         if (!isAtSurface) {this.gameManager.upgradeMenuOpen = false};
         this.upgradeMenu.showMenu(this.gameManager.upgradeMenuOpen);
+
 
         // Update the tracker texts
         this.currentWealthText.setText("Gold: " + this.gameManager.currentWealth)

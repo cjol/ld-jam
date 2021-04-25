@@ -30,6 +30,7 @@ export default class GameManager {
         isDead: boolean;
         holdFull: boolean;
         oxygenLow: boolean;
+        pressureWarning: number;
     }
     totalWealth: number;
     currentWealth: number;
@@ -42,7 +43,7 @@ export default class GameManager {
 
         // Initialise the trackers
         this.totalWealth = 0;
-        this.currentWealth = 0;
+        this.currentWealth = 1000;
         this.maxDepthReached = 0;
         this.currentDepth = 0;
         this.upgradeMenuOpen = false;
@@ -57,7 +58,7 @@ export default class GameManager {
             },
             // Pressure hull
             depthLimit: {
-                totalUpgrades: [250, 500, 1000, 2000, 3000, 10000],
+                totalUpgrades: [100, 300, 1000, 2000, 3000, 10000],
                 upgradesBought: 0,
                 price: [0, 10, 20, 30, 40, 50]
             },
@@ -122,7 +123,8 @@ export default class GameManager {
             isAtSurface: true,
             isDead: false,
             holdFull: false,
-            oxygenLow: false
+            oxygenLow: false,
+            pressureWarning: 0
         }
     }
 
@@ -134,6 +136,7 @@ export default class GameManager {
 
     // Called on clicking on an upgrade
     purchaseUpgrade(upgradeType: keyof GameManager["upgrades"]) {
+        
         var upgradeData = this.upgrades[upgradeType]
         // First check whether there's an upgrade to be bought
         if (upgradeData.upgradesBought < upgradeData.totalUpgrades.length - 1) {
@@ -141,8 +144,11 @@ export default class GameManager {
             var upgradeCost = upgradeData.price[upgradeData.upgradesBought + 1];
             // If we can afford it, increment the upgrade, and take the money
             if (upgradeCost <= this.currentWealth) {
+                console.log("Upgrading: " + upgradeType)
                 upgradeData.upgradesBought += 1;
                 this.currentWealth -= upgradeCost;
+            } else {
+                console.log("Insufficient funds")
             }
 
         }

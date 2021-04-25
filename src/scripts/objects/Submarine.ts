@@ -60,12 +60,28 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.updateArm();
 		this.updateOxygen();
 		this.updateCargo();
+		this.updateDepth();
+	}
+
+	updateDepth() {
+
         // Update the max depth if it needs it
         var depth = (this.y - WATER_LEVEL) / 10;
         gameManager.currentDepth = depth
         if (depth > gameManager.maxDepthReached) {
             gameManager.maxDepthReached = depth
         }
+		// Check how close we are to the sub's pressure limit
+		var subDepthLimit = gameManager.getUpgradeValue('depthLimit');
+		gameManager.submarine.pressureWarning = 0;
+		if ((depth / subDepthLimit) >= 0.8) {
+			gameManager.submarine.pressureWarning = 1;
+		} 
+		if (depth >= subDepthLimit) {
+			gameManager.submarine.pressureWarning = 2;
+			this.killSubmarine();
+		} 
+
 	}
 
 	updateArm() {
@@ -149,10 +165,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		// End the game
 		if (gameManager.submarine.oxygen <= 0) {
-			gameManager.submarine.isDead = true;
-            this.setFrictionAir(0.5)
-			this.setAngularVelocity(0.1);
-            this.setIgnoreGravity(false);
+			this.killSubmarine();
 		}
 	}
 
@@ -169,4 +182,15 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.getUpgradeValue("capacity")
 		);
 	}
+
+	// Function to run if you kill the submarine
+	killSubmarine() {
+
+		gameManager.submarine.isDead = true;
+		this.setFrictionAir(0.5);
+		this.setAngularVelocity(0.1);
+		this.setIgnoreGravity(false);
+
+	}
+
 }

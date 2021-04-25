@@ -60,6 +60,15 @@ export default class UIButton extends Phaser.GameObjects.Image{
             case 'upgrade-cargo-capacity':
                 this.gameManager.purchaseUpgrade('capacity');
                 break;
+            case 'upgrade-sub-speed':
+                this.gameManager.purchaseUpgrade('shipSpeed');
+                break;
+            case 'upgrade-claw-speed':
+                this.gameManager.purchaseUpgrade('clawSpeed');
+                break;
+            case 'upgrade-depth-limit':
+                this.gameManager.purchaseUpgrade('depthLimit');
+                break;
         }
     }
     buttonMouseover() {
