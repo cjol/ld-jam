@@ -1,22 +1,28 @@
 
 import GameManager from "./GameManager";
 
-export default class UIButton extends Phaser.GameObjects.Sprite{
+export default class UIButton extends Phaser.GameObjects.Image{
 
     gameManager: GameManager;
     buttonKey: string;
+    buttonText: Phaser.GameObjects.Text;
 
-    constructor(scene: Phaser.Scene, buttonKey: string, x: number, y: number, gameManager:GameManager) {
+    constructor(scene: Phaser.Scene, buttonKey: string, buttonText: string, x: number, y: number, gameManager:GameManager) {
 
         // Add the image
-        super(scene,x,y,buttonKey);
+        super(scene,x,y,'button-background');
         scene.add.existing(this);
+
+        // Add text to the button
+        this.buttonText = new Phaser.GameObjects.Text(scene, x, y, buttonText, { color: 'green', fontSize: '28px' });
+        scene.add.existing(this.buttonText);
+
         this.buttonKey = buttonKey;
         this.gameManager = gameManager;
 
         // Make the button interactive, set the scale and set it as transparent at first
-        this.setInteractive();
-        this.setScale(0.25);
+        this.setInteractive({useHandCursor:true});
+        // this.setScale(0.25);
         this.setAlpha(0.25);
 
         let self = this;
@@ -31,6 +37,7 @@ export default class UIButton extends Phaser.GameObjects.Sprite{
     // Run when the button is clicked
     buttonWasClicked() {
         switch(this.buttonKey) {
+            // Selling buttons
             case 'sell-fish-button':
                 this.gameManager.sellFish();
                 break;
@@ -39,6 +46,19 @@ export default class UIButton extends Phaser.GameObjects.Sprite{
                 break;
             case 'sell-research-button':
                 this.gameManager.sellResearch();
+                break;
+
+            // Open the upgrade menu
+            case 'upgrade-menu-button':
+                this.gameManager.upgradeMenuOpen = !this.gameManager.upgradeMenuOpen;
+                break;
+
+            // Upgrade buttons
+            case 'upgrade-oxygen-button':
+                this.gameManager.purchaseUpgrade('tank');
+                break;
+            case 'upgrade-cargo-capacity':
+                this.gameManager.purchaseUpgrade('capacity');
                 break;
         }
     }

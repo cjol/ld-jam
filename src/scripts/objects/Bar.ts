@@ -25,6 +25,7 @@ export class Bar extends Phaser.GameObjects.Graphics{
     value: number;
     maxValue: number;
     config: BarConfig;
+    barName: string;
 
     constructor (scene: Phaser.Scene, x: number, y: number, maxValue: number, value = maxValue, barName: string)
     {
@@ -36,9 +37,11 @@ export class Bar extends Phaser.GameObjects.Graphics{
         scene.add.existing(this);
         if (barName == 'health') {this.config = healthConfig};
         if (barName == 'cargo') {this.config = cargoConfig};
+        this.barName = barName;
     }
 
     update (x: number, y:number, value: number, maxValue?: number) {
+
         if (maxValue) this.maxValue = maxValue;
         this.value = value;
         this.x = x;

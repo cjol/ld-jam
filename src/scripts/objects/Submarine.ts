@@ -57,6 +57,14 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
         // if (!somethingDownY)
         //     this.setAccelerationY(0);
 
+        // Update the max depth if it needs it
+        var depth = (this.y - WATER_LEVEL) / 10;
+        gameManager.currentDepth = depth
+        if (depth > gameManager.maxDepthReached) {
+            gameManager.maxDepthReached = depth
+        }
+
+
     }
 
     updateKeys() {

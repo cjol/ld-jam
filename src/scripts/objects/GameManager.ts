@@ -4,7 +4,8 @@ import Submarine from "./Submarine";
 
 interface Upgrade {
     totalUpgrades: number[];
-    upgradesBrought: number;
+    upgradesBought: number;
+    price: number[];
 }
 
 // Class to manage the game by keeping track of upgrades and money earned
@@ -33,6 +34,7 @@ export default class GameManager {
     currentWealth: number;
     maxDepthReached: number;
     currentDepth: number;
+    upgradeMenuOpen: boolean;
 
     // Initialise the game
     constructor() {
@@ -42,58 +44,69 @@ export default class GameManager {
         this.currentWealth = 0;
         this.maxDepthReached = 0;
         this.currentDepth = 0;
+        this.upgradeMenuOpen = false;
 
         // At the start of the game, set all upgrades to 0
         this.upgrades = {
             // Capacity (units are pseudo-kg)
             capacity: {
                 totalUpgrades: [50, 150, 300, 500, 750, 1000],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20, 30, 40, 50]
             },
             // Pressure hull
             depthLimit: {
                 totalUpgrades: [250, 500, 1000, 2000, 3000, 10000],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20, 30, 40, 50]
             },
             // Armour (units are collisions allowed)
             armour: {
                 totalUpgrades: [2, 3, 4, 5, 6],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20, 30, 40]
             },
             // Chain length
             chain: {
                 totalUpgrades: [2, 3, 4],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20]
             },
             // O2 tank (units are seconds underwater)
             tank: {
                 totalUpgrades: [45, 90, 135, 180, 225, 270, 305],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20, 30, 40, 50, 60]
             },
             // Ship speed
             shipSpeed: {
                 totalUpgrades: [5, 6, 7],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20]
             },
             // Claw speed
             clawSpeed: {
                 totalUpgrades: [5, 6, 7],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20]
             },
             // Claw size (units are 'scale')
             clawSize: {
                 totalUpgrades: [0.25, 0.3, 0.35, 0.4],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20, 30]
             },
             // Location
             location: {
                 totalUpgrades: [0, 1, 2],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20]
             },
             // Collectables - can collect fish (level 10, ore (level 21, research (level 32
             collectable: {
                 totalUpgrades: [0, 1, 2],
-                upgradesBrought: 0
+                upgradesBought: 0,
+                price: [0, 10, 20]
             }
         }
 
@@ -103,7 +116,7 @@ export default class GameManager {
 
     initSub() {
         this.submarine = {
-            oxygen: this.upgrades.tank.totalUpgrades[this.upgrades.tank.upgradesBrought],
+            oxygen: this.upgrades.tank.totalUpgrades[this.upgrades.tank.upgradesBought],
             cargo: { fishWeight: 0, fishValue: 0, oreWeight: 0, oreValue: 0, researchWeight: 0, researchValue: 0 },
             isAtSurface: false,
             holdFull: false,
@@ -114,22 +127,28 @@ export default class GameManager {
 
     getUpgradeValue(upgradeType: keyof GameManager["upgrades"]) {
         var upgradeData = this.upgrades[upgradeType];
-        return upgradeData.totalUpgrades[upgradeData.upgradesBrought];
+        return upgradeData.totalUpgrades[upgradeData.upgradesBought];
     }
 
     // Called on clicking on an upgrade
     purchaseUpgrade(upgradeType: keyof GameManager["upgrades"]) {
         var upgradeData = this.upgrades[upgradeType]
+        // First check whether there's an upgrade to be bought
+        if (upgradeData.upgradesBought < upgradeData.totalUpgrades.length - 1) {
+            // If there is an upgrade, check how much it costs
+            var upgradeCost = upgradeData.price[upgradeData.upgradesBought + 1];
+            // If we can afford it, increment the upgrade, and take the money
+            if (upgradeCost <= this.currentWealth) {
+                upgradeData.upgradesBought += 1;
+                this.currentWealth -= upgradeCost;
+            }
 
-        if (upgradeData.upgradesBrought < upgradeData.totalUpgrades.length) {
-            upgradeData.upgradesBrought += 1;
         }
     }
 
     // Called when the submarine tries to sell all its fish
     sellFish() {
         console.log("I'm selling all my fish!");
-        console.log("My new current worth is... " + this.currentWealth);
         // Get the current fish value in the sub and add it to the wealth scores
         var cargoFishValue = this.submarine.cargo.fishValue;
         this.totalWealth += cargoFishValue;
