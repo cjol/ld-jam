@@ -12,73 +12,45 @@ export default class UpgradeMenu {
 		y: number,
 		gameManager: GameManager
 	) {
-		this.buttons = [];
-		// List of buttons to add
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-oxygen-button",
-				"O2 Tank",
-				"tank",
-				x,
-				y,
-				gameManager
-			)
-		);
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-cargo-capacity",
-				"Hold Size",
-				"capacity",
-				x,
-				y + 50,
-				gameManager
-			)
-		);
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-sub-speed",
-				"Ship Speed",
-				"shipSpeed",
-				x,
-				y + 100,
-				gameManager
-			)
-		);
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-claw-speed",
-				"Claw Speed",
-				"clawSpeed",
-				x,
-				y + 150,
-				gameManager
-			)
-		);
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-depth-limit",
-				"Pressure Limit",
-				"depthLimit",
-				x,
-				y + 200,
-				gameManager
-			)
-		);
-		this.buttons.push(
-			new UIButton(
-				scene,
-				"upgrade-chain-length",
-				"Arm Segments",
-				"chain",
-				x,
-				y + 250,
-				gameManager
-			)
+		const buttons = [
+			{ key: "upgrade-oxygen-button", label: "O2 Tank", upgrade: "tank" },
+			{
+				key: "upgrade-cargo-capacity",
+				label: "Hold Size",
+				upgrade: "capacity",
+			},
+			{
+				key: "upgrade-sub-speed",
+				label: "Ship Speed",
+				upgrade: "shipSpeed",
+			},
+			{
+				key: "upgrade-claw-speed",
+				label: "Claw Speed",
+				upgrade: "clawSpeed",
+			},
+			{
+				key: "upgrade-depth-limit",
+				label: "Hull",
+				upgrade: "depthLimit",
+			},
+			{
+				key: "upgrade-chain-length",
+				label: "Claw Length",
+				upgrade: "chain",
+			},
+		];
+		this.buttons = buttons.map(
+			(b, i) =>
+				new UIButton(
+					scene,
+					b.key,
+					b.label,
+					b.upgrade,
+					x,
+					y + i * 50,
+					gameManager
+				)
 		);
 
 		this.gameManager = gameManager;
