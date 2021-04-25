@@ -120,17 +120,6 @@ export default class UIGameObject {
 			this.gameManager
 		);
 
-		// Create a warning message (can be used for multiple things)
-		this.warningMessage = new Phaser.GameObjects.Text(
-			scene,
-			scene.cameras.main.width / 2,
-			scene.cameras.main.height - 100,
-			"I'm a warning",
-			{ color: "red", fontSize: "56px" }
-		).setOrigin(0.5);
-		this.warningMessage.visible = false;
-		scene.add.existing(this.warningMessage);
-
 		// Draw a background for the control panel
 		this.infoPanel = new Phaser.GameObjects.Image(
 			scene,
@@ -228,6 +217,17 @@ export default class UIGameObject {
 			barHeight,
 			"oxygen"
 		);
+
+		// Create a warning message (can be used for multiple things)
+		this.warningMessage = new Phaser.GameObjects.Text(
+			scene,
+			xPosLeft,
+			yPosUpper,
+			"I'm a warning",
+			{ color: "red", fontSize: "16px" }
+		).setOrigin(0.5);
+		this.warningMessage.visible = false;
+		scene.add.existing(this.warningMessage);
 	}
 
 	update() {
