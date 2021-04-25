@@ -60,62 +60,62 @@ export default class GameManager {
 			capacity: {
 				totalUpgrades: [50, 150, 300, 500, 750, 1000],
 				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50],
+				price: [0, 10, 20, 30, 40, 50]
 			},
 			// Pressure hull
 			depthLimit: {
 				totalUpgrades: [100, 300, 1000, 2000, 3000, 10000],
 				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50],
+				price: [0, 10, 20, 30, 40, 50]
 			},
 			// Armour (units are collisions allowed)
 			armour: {
 				totalUpgrades: [2, 3, 4, 5, 6],
 				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40],
+				price: [0, 10, 20, 30, 40]
 			},
 			// Chain length
 			chain: {
 				totalUpgrades: [2, 3, 4],
 				upgradesBought: 0,
-				price: [0, 10, 20],
+				price: [0, 10, 20]
 			},
 			// O2 tank (units are seconds underwater)
 			tank: {
 				totalUpgrades: [45, 90, 135, 180, 225, 270, 305],
 				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50, 60],
+				price: [0, 10, 20, 30, 40, 50, 60]
 			},
 			// Ship speed
 			shipSpeed: {
 				totalUpgrades: [5, 6, 7],
 				upgradesBought: 0,
-				price: [0, 10, 20],
+				price: [0, 10, 20]
 			},
 			// Claw speed
 			clawSpeed: {
 				totalUpgrades: [5, 6, 7],
 				upgradesBought: 0,
-				price: [0, 10, 20],
+				price: [0, 10, 20]
 			},
 			// Claw size (units are 'scale')
 			clawSize: {
 				totalUpgrades: [0.25, 0.3, 0.35, 0.4],
 				upgradesBought: 0,
-				price: [0, 10, 20, 30],
+				price: [0, 10, 20, 30]
 			},
 			// Location
 			location: {
 				totalUpgrades: [0, 1, 2],
 				upgradesBought: 0,
-				price: [0, 10, 20],
+				price: [0, 10, 20]
 			},
 			// Collectables - can collect fish (level 10, ore (level 21, research (level 32
 			collectable: {
 				totalUpgrades: [0, 1, 2],
 				upgradesBought: 0,
-				price: [0, 10, 20],
-			},
+				price: [0, 10, 20]
+			}
 		};
 
 		// Set the starting parameters for the submarine
@@ -134,28 +134,29 @@ export default class GameManager {
 				oreWeight: 0,
 				oreValue: 0,
 				researchWeight: 0,
-				researchValue: 0,
+				researchValue: 0
 			},
 			isAtSurface: true,
 			isDead: false,
 			holdFull: false,
 			oxygenLow: false,
-			pressureWarning: 0,
+			pressureWarning: 0
 		};
 	}
 
 	getUpgradeValue(upgradeType: keyof GameManager["upgrades"]) {
-		var upgradeData = this.upgrades[upgradeType];
+		const upgradeData = this.upgrades[upgradeType];
 		return upgradeData.totalUpgrades[upgradeData.upgradesBought];
 	}
 
 	// Called on clicking on an upgrade (returns true or false for whether it successfully upgraded or not)
 	purchaseUpgrade(upgradeType: keyof GameManager["upgrades"]) {
-		var upgradeData = this.upgrades[upgradeType];
+		const upgradeData = this.upgrades[upgradeType];
 		// First check whether there's an upgrade to be bought
 		if (upgradeData.upgradesBought < upgradeData.totalUpgrades.length - 1) {
 			// If there is an upgrade, check how much it costs
-			var upgradeCost = upgradeData.price[upgradeData.upgradesBought + 1];
+			const upgradeCost =
+				upgradeData.price[upgradeData.upgradesBought + 1];
 			// If we can afford it, increment the upgrade, and take the money
 			if (upgradeCost <= this.currentWealth) {
 				console.log("Upgrading: " + upgradeType);
@@ -174,7 +175,7 @@ export default class GameManager {
 	sellFish() {
 		console.log("I'm selling all my fish!");
 		// Get the current fish value in the sub and add it to the wealth scores
-		var cargoFishValue = this.submarine.cargo.fishValue;
+		const cargoFishValue = this.submarine.cargo.fishValue;
 		this.totalWealth += cargoFishValue;
 		this.currentWealth += cargoFishValue;
 
@@ -188,7 +189,7 @@ export default class GameManager {
 	sellOre() {
 		console.log("I'm selling all my ore!");
 		// Get the current fish value in the sub and add it to the wealth scores
-		var cargoOreValue = this.submarine.cargo.oreValue;
+		const cargoOreValue = this.submarine.cargo.oreValue;
 		this.totalWealth += cargoOreValue;
 		this.currentWealth += cargoOreValue;
 
@@ -202,7 +203,7 @@ export default class GameManager {
 	sellResearch() {
 		console.log("I'm selling all my research!");
 		// Get the current fish value in the sub and add it to the wealth scores
-		var cargoResearchValue = this.submarine.cargo.researchValue;
+		const cargoResearchValue = this.submarine.cargo.researchValue;
 		this.totalWealth += cargoResearchValue;
 		this.currentWealth += cargoResearchValue;
 
@@ -215,15 +216,15 @@ export default class GameManager {
 	// Add the weight to be added to the cargo total weight, and check it doesn't exceed the total capacity
 	checkHoldCapacity(newWeight: number) {
 		// Get what the new total would be if we allowed it
-		var newTotal =
+		const newTotal =
 			this.submarine.cargo.fishWeight +
 			this.submarine.cargo.oreWeight +
 			this.submarine.cargo.researchWeight +
 			newWeight;
 		// If it's greater than the capacity, don't allow the catch
-		if (newTotal <= this.getUpgradeValue("capacity")) {
+		if (newTotal <= this.getUpgradeValue("capacity"))
 			return true;
-		} else {
+		else {
 			// Mark the hold as full so we can show the UI warning
 			this.submarine.holdFull = true;
 			return false;

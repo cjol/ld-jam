@@ -53,7 +53,8 @@ export default class Background extends Phaser.GameObjects.GameObject {
 		const flipOffset: number = level.length - 1;
 		const numberOfRows =
 			Math.FloorTo(this.height / size) + 1 - level.length - 2;
-		for (let i = 0; i < numberOfRows; i++) level.push(row.slice());
+		for (let i = 0; i < numberOfRows; i++)
+			level.push(row.slice());
 		level.push(penultimateRow);
 		level.push(phantoms);
 
@@ -61,7 +62,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
 			data: level,
 			tileWidth: size,
 			tileHeight: size,
-			insertNull: false,
+			insertNull: false
 		});
 		this.tilemap.addTilesetImage("background-tiles", undefined, 256, 256);
 		const layer = this.tilemap.createLayer(

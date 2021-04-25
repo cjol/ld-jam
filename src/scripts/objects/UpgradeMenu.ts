@@ -17,28 +17,28 @@ export default class UpgradeMenu {
 			{
 				key: "upgrade-cargo-capacity",
 				label: "Hold Size",
-				upgrade: "capacity",
+				upgrade: "capacity"
 			},
 			{
 				key: "upgrade-sub-speed",
 				label: "Ship Speed",
-				upgrade: "shipSpeed",
+				upgrade: "shipSpeed"
 			},
 			{
 				key: "upgrade-claw-speed",
 				label: "Claw Speed",
-				upgrade: "clawSpeed",
+				upgrade: "clawSpeed"
 			},
 			{
 				key: "upgrade-depth-limit",
 				label: "Hull",
-				upgrade: "depthLimit",
+				upgrade: "depthLimit"
 			},
 			{
 				key: "upgrade-chain-length",
 				label: "Claw Length",
-				upgrade: "chain",
-			},
+				upgrade: "chain"
+			}
 		];
 		this.buttons = buttons.map(
 			(b, i) =>
@@ -59,21 +59,21 @@ export default class UpgradeMenu {
 	// Show or hide all the buttons of the upgrade menu
 	showMenu(show: boolean) {
 		// For each button, show it if show is true and we can afford it
-		for (let b of this.buttons) {
+		for (const b of this.buttons) {
 			b.visible = false;
 			b.buttonText.visible = false;
 
 			// Are we showing the upgrade menu?
 			if (show) {
 				// Check what the next upgrade is
-				var upgradeData = this.gameManager.upgrades[b.upgradeName];
+				const upgradeData = this.gameManager.upgrades[b.upgradeName];
 				// First check whether there's an upgrade to be bought
 				if (
 					upgradeData.upgradesBought <
 					upgradeData.totalUpgrades.length - 1
 				) {
 					// If there is an upgrade, check how much it costs
-					var upgradeCost =
+					const upgradeCost =
 						upgradeData.price[upgradeData.upgradesBought + 1];
 					// If we can afford it and it exists, we can show the button
 					if (upgradeCost <= this.gameManager.currentWealth) {

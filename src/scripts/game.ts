@@ -14,15 +14,15 @@ const config = window.addEventListener("load", () => {
 			mode: Phaser.Scale.FIT,
 			autoCenter: Phaser.Scale.CENTER_BOTH,
 			width: window.innerWidth,
-			height: window.innerHeight,
+			height: window.innerHeight
 		},
 		scene: [MenuScene, PreloadScene, MainScene, UIScene],
 		physics: {
 			default: "matter",
 			matter: {
 				debug: false,
-				gravity: { y: 10 },
-			},
-		},
+				gravity: { y: 10 }
+			}
+		}
 	});
 });

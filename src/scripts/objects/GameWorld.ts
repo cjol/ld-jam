@@ -1,7 +1,7 @@
 import { Fish } from "./Fishes";
+import { gameManager } from "./GameManager";
 import { MechanicalHook } from "./MechanicalHook";
 import Submarine from "./Submarine";
-import { gameManager } from "./GameManager";
 
 export default class GameWorld {
 	scene: Phaser.Scene;
@@ -25,9 +25,9 @@ export default class GameWorld {
 			.map(detectObjs)
 			.filter((x): x is MatchedPair => x !== null)
 			.forEach((pair) => {
-				const hook = pair.hook;
 				const item = pair.item;
-				if (!(item instanceof Fish)) return;
+				if (!(item instanceof Fish))
+					return;
 
 				gameManager.catchFish(item);
 			});

@@ -30,7 +30,7 @@ export class Fish extends Phaser.Physics.Matter.Image {
 		// Create fish
 		super(scene.matter.world, 0, 0, "fish1", undefined, {
 			frictionAir: 0,
-			mass: 0.001,
+			mass: 0.001
 		});
 		scene.add.existing(this);
 
@@ -176,7 +176,7 @@ export class FishBand {
 			directionAngle: directionAngle,
 			direction: new Phaser.Math.Vector2(directionX, directionY),
 			speed: speed,
-			scale: scale,
+			scale: scale
 		};
 	}
 }
@@ -187,8 +187,8 @@ export class FishGroup {
 			minDepth: 0,
 			maxDepth: 1000,
 			maxNumberOfFish: 10,
-			availableFishTypes: [1, 2],
-		},
+			availableFishTypes: [1, 2]
+		}
 	];
 	private readonly fishBands: FishBand[] = [];
 

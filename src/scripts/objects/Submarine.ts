@@ -26,7 +26,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		// Create submarine
 		super(scene.matter.world, x, y, "submarine", undefined, {
 			frictionAir: 0.05,
-			mass: 500,
+			mass: 500
 		});
 
 		scene.add.existing(this);
@@ -57,7 +57,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 				up: "W",
 				down: "S",
 				left: "A",
-				right: "D",
+				right: "D"
 			},
 			true,
 			true
@@ -76,11 +76,10 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 	updateDepth() {
 		// Update the max depth if it needs it
-		var depth = (this.y - WATER_LEVEL) / 10;
+		const depth = (this.y - WATER_LEVEL) / 10;
 		gameManager.currentDepth = depth;
-		if (depth > gameManager.maxDepthReached) {
+		if (depth > gameManager.maxDepthReached)
 			gameManager.maxDepthReached = depth;
-		}
 	}
 
 	updateArm() {
@@ -88,7 +87,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	updateKeys() {
-		if (gameManager.submarine.isDead) return;
+		if (gameManager.submarine.isDead)
+			return;
 
 		const speed = gameManager.getUpgradeValue("shipSpeed");
 		// X direction - assume no key pressed
@@ -117,15 +117,14 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		}
 
 		// stop moving up past the water level
-		if (this.y < WATER_LEVEL) {
+		if (this.y < WATER_LEVEL)
 			this.y = WATER_LEVEL;
-		}
-		if (this.y < WATER_LEVEL + 20) {
+
+		if (this.y < WATER_LEVEL + 20)
 			gameManager.submarine.isAtSurface = true;
-		} else {
-			if (gameManager.submarine.isAtSurface) {
+		else {
+			if (gameManager.submarine.isAtSurface)
 				gameManager.submarine.isAtSurface = false;
-			}
 		}
 	}
 
@@ -134,9 +133,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		if (gameManager.submarine.isAtSurface) {
 			gameManager.submarine.oxygen += OXYGEN_REFUEL_RATE;
 			gameManager.submarine.oxygenLow = false;
-		} else {
+		} else
 			gameManager.submarine.oxygen -= OXYGEN_CONSUMPTION_RATE;
-		}
+
 		gameManager.submarine.oxygen = Math.max(
 			0,
 			Math.min(gameManager.submarine.oxygen, maxOxygen)
@@ -149,14 +148,12 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 
 		// Set the warning if the bar is nearly empty
-		if (gameManager.submarine.oxygen / maxOxygen <= 0.3) {
+		if (gameManager.submarine.oxygen / maxOxygen <= 0.3)
 			gameManager.submarine.oxygenLow = true;
-		}
 
 		// End the game
-		if (gameManager.submarine.oxygen <= 0) {
+		if (gameManager.submarine.oxygen <= 0)
 			this.killSubmarine();
-		}
 	}
 
 	updateHull() {
@@ -180,23 +177,21 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 
 		// Set the warning if the bar is nearly empty
-		if (gameManager.submarine.hull / maxHull < 0.3) {
+		if (gameManager.submarine.hull / maxHull < 0.3)
 			gameManager.submarine.pressureWarning = 2;
-		} else if (depthExceeded > 0) {
+		else if (depthExceeded > 0)
 			gameManager.submarine.pressureWarning = 1;
-		} else {
+		else
 			gameManager.submarine.pressureWarning = 0;
-		}
 
 		// End the game
-		if (gameManager.submarine.hull <= 0) {
+		if (gameManager.submarine.hull <= 0)
 			this.killSubmarine();
-		}
 	}
 
 	updateCargo() {
 		// Calculate the total amount in the hold
-		var totalCargo =
+		const totalCargo =
 			gameManager.submarine.cargo.fishWeight +
 			gameManager.submarine.cargo.oreWeight +
 			gameManager.submarine.cargo.researchWeight;
@@ -217,9 +212,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	checkUpgrades() {
-		if (gameManager.getUpgradeValue("chain") !== this.hook.getLength()) {
+		if (gameManager.getUpgradeValue("chain") !== this.hook.getLength())
 			this.upgradeArm();
-		}
 	}
 	upgradeArm() {
 		this.hook.destroy();
