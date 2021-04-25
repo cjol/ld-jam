@@ -139,12 +139,6 @@
  */
 
 /**
-* @author       Marcin Walczak <contact@marcin-walczak.pl>
-* @copyright    2021 Marcin Walczak
-* @license      {@link https://github.com/wiserim/phaser-raycaster/blob/master/LICENSE|MIT License}
-*/
-
-/**
 * @author       Richard Davey <rich@photonstorm.com>
 * @copyright    2020 Photon Storm Ltd.
 * @license      {@link https://github.com/photonstorm/phaser3-plugin-template/blob/master/LICENSE|MIT License}
