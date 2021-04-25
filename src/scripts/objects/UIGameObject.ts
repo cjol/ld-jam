@@ -56,62 +56,62 @@ export default class UIGameObject {
 		// Create the 'selling' buttons
 		this.sellFishButton = new UIButton(
 			this.scene,
-			"sell-fish-button",
 			"big-button",
 			"Sell Fish",
-			"none",
 			300,
 			200,
 			BIG_BUTTON_SCALE,
-			this.gameManager
+			() => {
+				gameManager.sellFish();
+			}
 		);
 		this.sellOreButton = new UIButton(
 			this.scene,
-			"sell-ore-button",
 			"big-button",
 			"Sell Ore",
-			"none",
 			300,
 			250,
 			BIG_BUTTON_SCALE,
-			this.gameManager
+			() => {
+				gameManager.sellOre();
+			}
 		);
 		this.sellResearchButton = new UIButton(
 			this.scene,
-			"sell-research-button",
 			"big-button",
 			"Sell Research",
-			"none",
 			300,
 			300,
 			BIG_BUTTON_SCALE,
-			this.gameManager
+			() => {
+				gameManager.sellResearch();
+			}
 		);
 
 		// Create the 'fix sub' button
 		this.fixSubButton = new UIButton(
 			this.scene,
-			"fix-sub-button",
 			"big-button",
 			"Fix Sub",
-			"none",
 			550,
 			50,
 			BIG_BUTTON_SCALE,
-			this.gameManager
+			() => {
+				gameManager.fixSub();
+			}
 		);
 
 		// Create the upgrade menu buttons
 		this.upgradeMenuButton = new UIButton(
 			this.scene,
-			"upgrade-menu-button",
 			"big-button",
 			"Shop",
-			"none",
 			550,
 			100,
 			BIG_BUTTON_SCALE,
-			this.gameManager
+			() => {
+				gameManager.upgradeMenuOpen = !gameManager.upgradeMenuOpen;
+			}
 		);
 		this.upgradeMenu = new UpgradeMenu(
 			this.scene,

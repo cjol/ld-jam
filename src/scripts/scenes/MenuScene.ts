@@ -1,4 +1,3 @@
-import { gameManager } from "../objects/GameManager";
 import UIButton from "../objects/UIButton";
 
 export default class MenuScene extends Phaser.Scene {
@@ -36,25 +35,23 @@ export default class MenuScene extends Phaser.Scene {
 		// Add a play button
 		this.playButton = new UIButton(
 			this,
-			"play-button",
 			"button-background-blue",
 			"Play!",
-			"none",
 			menuXPos,
 			menuYPos,
 			1,
-			gameManager,
+			() => this.startGame(),
 			false
 		);
 		this.playButton.setAlpha(1);
+	}
 
-		this.events.once("game-started", () => {
-			this.cameras.main
-				.fadeOut(500, 0, 0, 0)
-				.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-					this.scene.start("MainScene");
-					this.scene.start("UIScene");
-				});
-		});
+	private startGame(): void {
+		this.cameras.main
+			.fadeOut(500, 0, 0, 0)
+			.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+				this.scene.start("MainScene");
+				this.scene.start("UIScene");
+			});
 	}
 }
