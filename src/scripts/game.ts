@@ -1,9 +1,9 @@
-import 'phaser';
-import PhaserRaycaster from 'phaser-raycaster';
-import MenuScene from './scenes/menuScene';
-import MainScene from './scenes/mainScene';
-import PreloadScene from './scenes/preloadScene';
-import UIScene from './scenes/uiScene';
+import "phaser";
+
+import MainScene from "./scenes/mainScene";
+import MenuScene from "./scenes/menuScene";
+import PreloadScene from "./scenes/preloadScene";
+import UIScene from "./scenes/uiScene";
 
 const config = {
     type: Phaser.AUTO,
@@ -22,15 +22,6 @@ const config = {
             debug: false,
             gravity: { y: 10}
         }
-    },
-    plugins: {
-        scene: [
-            {
-                key: 'PhaserRaycaster',
-                plugin: PhaserRaycaster,
-                mapping: 'raycasterPlugin'
-            }
-        ]
     }
 }
 
