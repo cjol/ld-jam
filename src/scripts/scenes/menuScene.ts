@@ -46,8 +46,8 @@ export default class MenuScene extends Phaser.Scene {
 			this.cameras.main.once(
 				Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
 				(cam, effect) => {
-        this.scene.start('MainScene');
-        this.scene.start('UIScene');
+					this.scene.start("MainScene");
+					this.scene.start("UIScene");
 				}
 			);
 		});

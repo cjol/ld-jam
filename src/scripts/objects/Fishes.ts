@@ -28,9 +28,9 @@ export class Fish extends Phaser.Physics.Matter.Image {
 	// Constructor for a fish
 	constructor(scene: Phaser.Scene, band: FishBand) {
 		// Create fish
-		super(scene.matter.world, 0, 0, 'fish1', undefined, {
+		super(scene.matter.world, 0, 0, "fish1", undefined, {
 			frictionAir: 0,
-			mass: 0.001
+			mass: 0.001,
 		});
 		scene.add.existing(this);
 
@@ -51,7 +51,10 @@ export class Fish extends Phaser.Physics.Matter.Image {
 		this.displayWidth = this.width * parameters.scale;
 		this.displayHeight = this.height * parameters.scale;
 
-		this.setVelocity(parameters.direction.x * parameters.speed, parameters.direction.y * parameters.speed);
+		this.setVelocity(
+			parameters.direction.x * parameters.speed,
+			parameters.direction.y * parameters.speed
+		);
 		this.setRotationDeg(parameters.directionAngle);
 		this.setFlipX(true);
 
@@ -69,7 +72,10 @@ export class Fish extends Phaser.Physics.Matter.Image {
 				this.started = false;
 				this.offscreen = false;
 			}
-		} else if (!this.offscreen && (bounds.right < 0 || bounds.left > width)) {
+		} else if (
+			!this.offscreen &&
+			(bounds.right < 0 || bounds.left > width)
+		) {
 			this.offscreen = true;
 			this.band.recycleFish(this);
 		}
@@ -80,8 +86,7 @@ export class Fish extends Phaser.Physics.Matter.Image {
 	}
 
 	private setRotationDeg(angle: number): void {
-		if (angle >= 165 && angle <= 195)
-			this.setFlipY(true);
+		if (angle >= 165 && angle <= 195) this.setFlipY(true);
 		this.angle = angle;
 	}
 }
@@ -109,7 +114,11 @@ export class FishBand {
 
 		const half: number = this.parameters.maxNumberOfFish / 2;
 		for (let i = 0; i < this.parameters.maxNumberOfFish; i++) {
-			const parameters = this.spawnRandomFish(i < half, -FishBand.safetyGap, scene.cameras.main.width + FishBand.safetyGap);
+			const parameters = this.spawnRandomFish(
+				i < half,
+				-FishBand.safetyGap,
+				scene.cameras.main.width + FishBand.safetyGap
+			);
 			const fish: Fish = new Fish(scene, this);
 			fish.setParameters(parameters);
 			this.fishes.push(fish);
@@ -117,25 +126,49 @@ export class FishBand {
 	}
 
 	public recycleFish(fish: Fish): void {
-		const newParameters = this.spawnRandomFish(this.generator.pick([true, false]), -FishBand.safetyGap, this.scene.cameras.main.width + FishBand.safetyGap);
+		const newParameters = this.spawnRandomFish(
+			this.generator.pick([true, false]),
+			-FishBand.safetyGap,
+			this.scene.cameras.main.width + FishBand.safetyGap
+		);
 		fish.setParameters(newParameters);
 	}
 
 	// Update loop - game physics based on acceleration
 	update() {
-		this.fishes.forEach(fish => fish.update());
+		this.fishes.forEach((fish) => fish.update());
 	}
 
 	// Method to create a fish moving in a random direction
-	spawnRandomFish(leftSide: boolean, leftOffScreen: number, rightOffScreen: number): IFishParameters {
+	spawnRandomFish(
+		leftSide: boolean,
+		leftOffScreen: number,
+		rightOffScreen: number
+	): IFishParameters {
 		// Choose a random fish to create
 		const x: number = leftSide ? leftOffScreen : rightOffScreen;
-		const y: number = this.generator.integerInRange(this.parameters.minDepth, this.parameters.maxDepth);
-		const speed: number = this.generator.integerInRange(Fish.minSpeed, Fish.maxSpeed);
-		const type: number = this.generator.pick(this.parameters.availableFishTypes);
+		const y: number = this.generator.integerInRange(
+			this.parameters.minDepth,
+			this.parameters.maxDepth
+		);
+		const speed: number = this.generator.integerInRange(
+			Fish.minSpeed,
+			Fish.maxSpeed
+		);
+		const type: number = this.generator.pick(
+			this.parameters.availableFishTypes
+		);
 
-		const angleRange: number[] = leftSide ? this.generator.pick([[345, 360], [0, 15]]) : [165, 195];
-		const directionAngle: number = this.generator.integerInRange(angleRange[0], angleRange[1]);
+		const angleRange: number[] = leftSide
+			? this.generator.pick([
+					[345, 360],
+					[0, 15],
+			  ])
+			: [165, 195];
+		const directionAngle: number = this.generator.integerInRange(
+			angleRange[0],
+			angleRange[1]
+		);
 		const directionX = Math.cos(PMath.DEG_TO_RAD * directionAngle);
 		const directionY = Math.sin(PMath.DEG_TO_RAD * directionAngle);
 
@@ -151,7 +184,7 @@ export class FishBand {
 			directionAngle: directionAngle,
 			direction: new Phaser.Math.Vector2(directionX, directionY),
 			speed: speed,
-			scale: scale
+			scale: scale,
 		};
 	}
 }
@@ -162,23 +195,23 @@ export class FishGroup {
 			minDepth: 0,
 			maxDepth: 1000,
 			maxNumberOfFish: 10,
-			availableFishTypes: [ 1, 2 ]
-		}
+			availableFishTypes: [1, 2],
+		},
 	];
 	private readonly fishBands: FishBand[] = [];
 
 	// Constructor for a fish
 	constructor(scene: Phaser.Scene, minSafeHeight: number) {
 		// Create fish group
-		this.fishBands = this.bandParameters.map(x => {
+		this.fishBands = this.bandParameters.map((x) => {
 			x.minDepth += minSafeHeight;
 			x.maxDepth += minSafeHeight;
 			return new FishBand(scene, x);
-		})
+		});
 	}
 
 	// Update loop - game physics based on acceleration
 	update() {
-		this.fishBands.forEach(band => band.update());
+		this.fishBands.forEach((band) => band.update());
 	}
 }

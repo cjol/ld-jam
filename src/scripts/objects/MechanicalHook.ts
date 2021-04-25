@@ -59,31 +59,37 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 		prev?: Phaser.Physics.Matter.Image
 	) {
 		// Create claw
-		super(scene.matter.world, x , y, "chain", undefined, {
+		super(scene.matter.world, x, y, "chain", undefined, {
 			// frictionAir: 0.05,
-			mass: 3,
+			mass: 0.3,
 		});
 
-    this.setIgnoreGravity(true);
+		this.setIgnoreGravity(true);
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_ARM_SEGMENT);
 		this.setCollidesWith(0);
-    // this.setAngle(90)
+		// this.setAngle(90)
 
 		this.scene = scene;
-		this.displayHeight = SEGMENT_LENGTH/4;
+		this.displayHeight = SEGMENT_LENGTH / 4;
 		this.displayWidth = SEGMENT_LENGTH;
 		scene.add.existing(this);
 
 		if (prev) {
-      this.y += SEGMENT_LENGTH;
+			this.y += SEGMENT_LENGTH;
 			scene.matter.add.constraint(
 				prev as any,
 				this as any,
 				CONSTRAINT_LENGTH,
 				SEGMENT_STIFFNESS,
 				{
-					pointA: { x: SEGMENT_LENGTH / 2 - SEGMENT_LENGTH/8, y: 0 },
-					pointB: { x: -SEGMENT_LENGTH / 2 + SEGMENT_LENGTH/8, y: 0 },
+					pointA: {
+						x: SEGMENT_LENGTH / 2 - SEGMENT_LENGTH / 8,
+						y: 0,
+					},
+					pointB: {
+						x: -SEGMENT_LENGTH / 2 + SEGMENT_LENGTH / 8,
+						y: 0,
+					},
 				}
 			);
 		}
@@ -99,8 +105,8 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 		// Create claw
 		super(
 			scene.matter.world,
-			parent.x ,
-			parent.y+ SEGMENT_LENGTH / 2,
+			parent.x,
+			parent.y + SEGMENT_LENGTH / 2,
 			"mechanical-hook",
 			undefined,
 			{
@@ -108,13 +114,12 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 				mass: 2,
 			}
 		);
-    	this.setIgnoreGravity(false);
+		this.setIgnoreGravity(false);
 
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(
 			// CollisionCategories.SUBMARINEs |
-				CollisionCategories.WALLS |
-				CollisionCategories.FISH
+			CollisionCategories.WALLS | CollisionCategories.FISH
 		);
 
 		this.prev = parent;
@@ -142,7 +147,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 
 	// alternative update function using mouse instead of keyboard
 	updateMouse() {
-		const cameraOffset = (this.scene.cameras.main.worldView.top);
+		const cameraOffset = this.scene.cameras.main.worldView.top;
 		const target = new Phaser.Math.Vector2(
 			this.scene.input.activePointer.worldX,
 			this.scene.input.activePointer.worldY + cameraOffset
@@ -151,7 +156,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			this.y = WATER_LEVEL + 1;
 		} else {
 			const distance = target.subtract(this);
-      const speed = gameManager.getUpgradeValue("clawSpeed");
+			const speed = gameManager.getUpgradeValue("clawSpeed");
 			if (
 				distance.length() > speed &&
 				!gameManager.submarine.isAtSurface &&

@@ -9,7 +9,7 @@ export default class MainScene extends Phaser.Scene {
 	private submarine: Submarine;
 	private fishGroup: FishGroup;
 	private background: Background;
-    private surfaceVessel: Phaser.GameObjects.Image;
+	private surfaceVessel: Phaser.GameObjects.Image;
 	private width: number;
 	private height: number;
 
@@ -18,7 +18,7 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	create() {
-		this.cameras.main.fadeIn(500, 0, 0, 0)
+		this.cameras.main.fadeIn(500, 0, 0, 0);
 
 		// Get the game width and height
 		this.width = this.cameras.main.width;
@@ -33,15 +33,16 @@ export default class MainScene extends Phaser.Scene {
 		this.background = new Background(this, maxDepth);
 
 		// Add a ship to the surface
-		this.surfaceVessel = new Phaser.GameObjects.Image(this,300,40,'surface-vessel');
-        this.surfaceVessel.setScale(0.15).flipX = true;
-        this.add.existing(this.surfaceVessel);
-
-
-		this.fishGroup = new FishGroup(
+		this.surfaceVessel = new Phaser.GameObjects.Image(
 			this,
-			this.background.SafeSpawnHeight
+			300,
+			40,
+			"surface-vessel"
 		);
+		this.surfaceVessel.setScale(0.15).flipX = true;
+		this.add.existing(this.surfaceVessel);
+
+		this.fishGroup = new FishGroup(this, this.background.SafeSpawnHeight);
 		this.submarine = new Submarine(this, this.width / 2);
 		this.gameWorld = new GameWorld(this, this.submarine);
 

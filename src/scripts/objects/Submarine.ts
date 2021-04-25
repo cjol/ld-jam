@@ -75,12 +75,11 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	updateDepth() {
-
 		// Update the max depth if it needs it
 		var depth = (this.y - WATER_LEVEL) / 10;
-		gameManager.currentDepth = depth
+		gameManager.currentDepth = depth;
 		if (depth > gameManager.maxDepthReached) {
-			gameManager.maxDepthReached = depth
+			gameManager.maxDepthReached = depth;
 		}
 	}
 
@@ -89,8 +88,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	updateKeys() {
-		if (gameManager.submarine.isDead)
-			return;
+		if (gameManager.submarine.isDead) return;
 
 		const speed = gameManager.getUpgradeValue("shipSpeed");
 		// X direction - assume no key pressed
@@ -164,8 +162,11 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	updateHull() {
 		const maxHull = gameManager.getUpgradeValue("depthLimit");
 		// calculate how much past the maxHull we are
-		const depthExceeded = Math.max(0, (gameManager.currentDepth / maxHull) - 1)
-			gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
+		const depthExceeded = Math.max(
+			0,
+			gameManager.currentDepth / maxHull - 1
+		);
+		gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
 		// clamp to 0-maxHull range
 		gameManager.submarine.hull = Math.max(
 			0,
@@ -185,7 +186,6 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.submarine.pressureWarning = 1;
 		} else {
 			gameManager.submarine.pressureWarning = 0;
-
 		}
 
 		// End the game
@@ -229,5 +229,4 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.getUpgradeValue("chain")
 		);
 	}
-
 }

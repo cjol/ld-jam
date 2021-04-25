@@ -1,95 +1,107 @@
-
 import GameManager from "./GameManager";
 
-export default class UIButton extends Phaser.GameObjects.Image{
+export default class UIButton extends Phaser.GameObjects.Image {
+	gameManager: GameManager;
+	buttonKey: string;
+	upgradeName: string;
+	buttonText: Phaser.GameObjects.Text;
 
-    gameManager: GameManager;
-    buttonKey: string;
-    upgradeName: string;
-    buttonText: Phaser.GameObjects.Text;
+	constructor(
+		scene: Phaser.Scene,
+		buttonKey: string,
+		buttonText: string,
+		upgradeName: string,
+		x: number,
+		y: number,
+		gameManager: GameManager
+	) {
+		// Add the image
+		super(scene, x, y, "button-background");
+		scene.add.existing(this);
 
-    constructor(scene: Phaser.Scene, buttonKey: string, buttonText: string, upgradeName: string, x: number, y: number, gameManager:GameManager) {
+		// Add text to the button
+		this.buttonText = new Phaser.GameObjects.Text(scene, x, y, buttonText, {
+			color: "black",
+			fontSize: "18px",
+		}).setOrigin(0.5);
+		scene.add.existing(this.buttonText);
 
-        // Add the image
-        super(scene,x,y,'button-background');
-        scene.add.existing(this);
+		this.buttonKey = buttonKey;
+		this.upgradeName = upgradeName;
+		this.gameManager = gameManager;
 
-        // Add text to the button
-        this.buttonText = new Phaser.GameObjects.Text(scene, x, y, buttonText, { color: 'black', fontSize: '18px' }).setOrigin(0.5);
-        scene.add.existing(this.buttonText);
+		// Make the button interactive, set the scale and set it as transparent at first
+		this.setInteractive({ useHandCursor: true });
+		this.setScale(0.2, 0.1);
+		this.setAlpha(0.25);
 
-        this.buttonKey = buttonKey;
-        this.upgradeName = upgradeName;
-        this.gameManager = gameManager;
+		let self = this;
 
-        // Make the button interactive, set the scale and set it as transparent at first
-        this.setInteractive({useHandCursor:true});
-        this.setScale(0.2,0.1);
-        this.setAlpha(0.25);
+		// Set the on click method
+		this.on("pointerdown", function () {
+			self.buttonWasClicked();
+		});
+		this.on("pointerover", function () {
+			self.buttonMouseover();
+		});
+		this.on("pointerout", function () {
+			self.buttonMouseout();
+		});
+	}
 
-        let self = this;
+	// Run when the button is clicked
+	buttonWasClicked() {
+		let didUpgrade = false;
+		switch (this.buttonKey) {
+			// Selling buttons
+			case "sell-fish-button":
+				this.gameManager.sellFish();
+				break;
+			case "sell-ore-button":
+				this.gameManager.sellOre();
+				break;
+			case "sell-research-button":
+				this.gameManager.sellResearch();
+				break;
 
-        // Set the on click method
-        this.on('pointerdown',function(){self.buttonWasClicked()})
-        this.on('pointerover',function(){self.buttonMouseover()})
-        this.on('pointerout',function(){self.buttonMouseout()})
+			// Open the upgrade menu
+			case "upgrade-menu-button":
+				this.gameManager.upgradeMenuOpen = !this.gameManager
+					.upgradeMenuOpen;
+				break;
 
-    }
+			// Upgrade buttons
+			case "upgrade-oxygen-button":
+				didUpgrade = this.gameManager.purchaseUpgrade("tank");
+				break;
+			case "upgrade-cargo-capacity":
+				didUpgrade = this.gameManager.purchaseUpgrade("capacity");
+				break;
+			case "upgrade-chain-length":
+				didUpgrade = this.gameManager.purchaseUpgrade("chain");
+				break;
+			case "upgrade-sub-speed":
+				didUpgrade = this.gameManager.purchaseUpgrade("shipSpeed");
+				break;
+			case "upgrade-claw-speed":
+				didUpgrade = this.gameManager.purchaseUpgrade("clawSpeed");
+				break;
+			case "upgrade-depth-limit":
+				didUpgrade = this.gameManager.purchaseUpgrade("depthLimit");
+				break;
 
-    // Run when the button is clicked
-    buttonWasClicked() {
-        let didUpgrade = false;
-        switch(this.buttonKey) {
-            // Selling buttons
-            case 'sell-fish-button':
-                this.gameManager.sellFish();
-                break;
-            case 'sell-ore-button':
-                this.gameManager.sellOre();
-                break;
-            case 'sell-research-button':
-                this.gameManager.sellResearch();
-                break;
-
-            // Open the upgrade menu
-            case 'upgrade-menu-button':
-                this.gameManager.upgradeMenuOpen = !this.gameManager.upgradeMenuOpen;
-                break;
-
-            // Upgrade buttons
-            case 'upgrade-oxygen-button':
-                didUpgrade = this.gameManager.purchaseUpgrade('tank');
-                break;
-            case 'upgrade-cargo-capacity':
-                didUpgrade = this.gameManager.purchaseUpgrade('capacity');
-                break;
-            case 'upgrade-chain-length':
-                didUpgrade = this.gameManager.purchaseUpgrade('chain');
-                break;
-            case 'upgrade-sub-speed':
-                didUpgrade = this.gameManager.purchaseUpgrade('shipSpeed');
-                break;
-            case 'upgrade-claw-speed':
-                didUpgrade = this.gameManager.purchaseUpgrade('clawSpeed');
-                break;
-            case 'upgrade-depth-limit':
-                didUpgrade = this.gameManager.purchaseUpgrade('depthLimit');
-                break;
-
-            // Main menu buttons
-            case 'play-button':
-                // Trigger starting the game
-                this.scene.events.emit('game-started');
-                break;
-        }
-        if (didUpgrade) this.scene.events.emit('upgraded');
-
-    }
-    buttonMouseover() {
-        this.setAlpha(1)
-    }
-    buttonMouseout() {  
-        this.setAlpha(0.25)
-    }
-
+			// Main menu buttons
+			case "play-button":
+				// Trigger starting the game
+				this.scene.events.emit("game-started");
+				break;
+		}
+		if (didUpgrade) this.scene.events.emit("upgraded");
+	}
+	buttonMouseover() {
+		this.setAlpha(1);
+	}
+	buttonMouseout() {
+		this.setAlpha(0.25);
+	}
 }
