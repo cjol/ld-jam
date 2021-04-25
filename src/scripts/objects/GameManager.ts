@@ -1,7 +1,5 @@
-import { Fish } from "./Fishes";
-import { Hazard } from "./Hazards";
-import { MechanicalHook } from "./MechanicalHook";
-import Submarine from "./Submarine";
+import { Fish } from "./fish/Fish";
+import { Hazard } from "./hazard/Hazard";
 
 interface Upgrade {
 	totalUpgrades: number[];
@@ -249,7 +247,7 @@ export default class GameManager {
 
 	hitHazard(hazard: Hazard) {
 		// Add the fish's weight to the hold
-		this.submarine.hull -= hazard.weight;
+		this.submarine.hull -= hazard.damage;
 		// Destroy the fish
 		hazard.hit();
 	}
