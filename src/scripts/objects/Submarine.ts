@@ -7,7 +7,7 @@ type Key = "up" | "down" | "left" | "right";
 const OXYGEN_BAR_OFFSET_Y = -80;
 const HULL_BAR_OFFSET_Y = -100;
 const OXYGEN_CONSUMPTION_RATE = 0.05;
-const HULL_DAMAGE_RATE = 0.05;
+const HULL_DAMAGE_RATE = 1;
 const OXYGEN_REFUEL_RATE = 1;
 const CARGO_BAR_OFFSET_Y = -60;
 export const WATER_LEVEL = 220;
@@ -82,9 +82,6 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		if (depth > gameManager.maxDepthReached) {
 			gameManager.maxDepthReached = depth
 		}
-		// Check how close we are to the sub's pressure limit
-		var subDepthLimit = gameManager.getUpgradeValue('depthLimit');
-		gameManager.submarine.pressureWarning = 0;
 	}
 
 	updateArm() {
@@ -186,6 +183,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.submarine.pressureWarning = 2;
 		} else if (depthExceeded > 0) {
 			gameManager.submarine.pressureWarning = 1;
+		} else {
+			gameManager.submarine.pressureWarning = 0;
+
 		}
 
 		// End the game
