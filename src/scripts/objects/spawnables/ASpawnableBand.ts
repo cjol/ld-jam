@@ -48,6 +48,7 @@ export abstract class ASpawnableBand<
 		item.dead = true;
 		item.x = -400;
 		item.y = -400;
+		item.setVelocity(0, 0);
 		this.activeNumberOfItems--;
 	}
 
