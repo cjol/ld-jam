@@ -55,8 +55,9 @@ export class Fish extends Phaser.Physics.Matter.Image {
 			parameters.direction.x * parameters.speed,
 			parameters.direction.y * parameters.speed
 		);
-		this.setRotationDeg(parameters.directionAngle);
 		this.setFlipX(true);
+		this.setFlipY(false);
+		this.setRotationDeg(parameters.directionAngle);
 
 		this.worth = parameters.worth;
 		this.weight = parameters.weight;
@@ -86,7 +87,8 @@ export class Fish extends Phaser.Physics.Matter.Image {
 	}
 
 	private setRotationDeg(angle: number): void {
-		if (angle >= 165 && angle <= 195) this.setFlipY(true);
+		if (angle > 165 && angle < 195)
+			this.setFlipY(true);
 		this.angle = angle;
 	}
 }
@@ -143,7 +145,7 @@ export class FishBand {
 			this.parameters.minDepth,
 			this.parameters.maxDepth
 		);
-		const speed: number = this.generator.integerInRange(
+		const speed: number = this.generator.realInRange(
 			Fish.minSpeed,
 			Fish.maxSpeed
 		);
