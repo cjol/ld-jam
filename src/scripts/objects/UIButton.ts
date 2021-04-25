@@ -65,13 +65,13 @@ export default class UIButton extends Phaser.GameObjects.Image{
                 didUpgrade = this.gameManager.purchaseUpgrade('chain');
                 break;
             case 'upgrade-sub-speed':
-                this.gameManager.purchaseUpgrade('shipSpeed');
+                didUpgrade = this.gameManager.purchaseUpgrade('shipSpeed');
                 break;
             case 'upgrade-claw-speed':
-                this.gameManager.purchaseUpgrade('clawSpeed');
+                didUpgrade = this.gameManager.purchaseUpgrade('clawSpeed');
                 break;
             case 'upgrade-depth-limit':
-                this.gameManager.purchaseUpgrade('depthLimit');
+                didUpgrade = this.gameManager.purchaseUpgrade('depthLimit');
                 break;
         }
         if (didUpgrade) this.scene.events.emit('upgraded');

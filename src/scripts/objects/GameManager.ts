@@ -134,7 +134,7 @@ export default class GameManager {
         return upgradeData.totalUpgrades[upgradeData.upgradesBought];
     }
 
-    // Called on clicking on an upgrade
+    // Called on clicking on an upgrade (returns true or false for whether it successfully upgraded or not)
     purchaseUpgrade(upgradeType: keyof GameManager["upgrades"]) {
         
         var upgradeData = this.upgrades[upgradeType]
@@ -147,9 +147,10 @@ export default class GameManager {
                 console.log("Upgrading: " + upgradeType)
                 upgradeData.upgradesBought += 1;
                 this.currentWealth -= upgradeCost;
+                return true
             } else {
                 console.log("Insufficient funds")
-                return true;
+                return false;
             }
 
         }
