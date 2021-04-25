@@ -234,7 +234,11 @@ export default class GameManager {
 
 	// Called when the submarine catches a fish. It needs to get the fish that was caught, and add its weight to the sub's cargo
 	catchFish(fish: Fish) {
-		if (!this.checkHoldCapacity(fish.weight) || this.submarine.isAtSurface)
+		if (
+			!this.checkHoldCapacity(fish.weight) ||
+			this.submarine.isAtSurface ||
+			this.submarine.isDead
+		)
 			return;
 
 		// Add the fish's weight to the hold
@@ -246,6 +250,9 @@ export default class GameManager {
 	}
 
 	hitHazard(hazard: Hazard) {
+		if (this.submarine.isDead)
+			return;
+
 		// Add the fish's weight to the hold
 		this.submarine.hull -= hazard.damage;
 		// Destroy the fish
