@@ -1,4 +1,5 @@
 import { Fish } from "./Fishes";
+import { Hazard } from "./Hazards";
 import { MechanicalHook } from "./MechanicalHook";
 import Submarine from "./Submarine";
 
@@ -242,6 +243,13 @@ export default class GameManager {
 		this.submarine.cargo.fishValue += fish.worth;
 		// Destroy the fish
 		fish.catch();
+	}
+
+	hitHazard(hazard: Hazard) {
+		// Add the fish's weight to the hold
+		this.submarine.hull -= hazard.weight;
+		// Destroy the fish
+		hazard.hit();
 	}
 
 	// Called when the submarine picks up some ore. Get the weight and value and add it to the hold
