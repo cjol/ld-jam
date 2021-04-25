@@ -10,11 +10,11 @@ export default class UpgradeMenu {
         this.buttons = [];
         // List of buttons to add
         this.buttons.push(new UIButton(scene,'upgrade-oxygen-button','O2 Tank',x,y,gameManager));
-        this.buttons.push(new UIButton(scene,'upgrade-cargo-capacity','Hold Size',x,y+100,gameManager));
-        this.buttons.push(new UIButton(scene,'upgrade-sub-speed','Ship Speed',x,y+200,gameManager));
-        this.buttons.push(new UIButton(scene,'upgrade-claw-speed','Claw Speed',x,y+300,gameManager));
-        this.buttons.push(new UIButton(scene,'upgrade-depth-limit','Pressure Limit',x,y+400,gameManager));
-        this.buttons.push(new UIButton(scene,'upgrade-chain-length','Arm Segments',x,y+500,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-cargo-capacity','Hold Size',x,y+50,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-sub-speed','Ship Speed',x,y+100,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-claw-speed','Claw Speed',x,y+150,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-depth-limit','Pressure Limit',x,y+200,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-chain-length','Arm Segments',x,y+250,gameManager));
 
     }
 

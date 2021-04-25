@@ -63,6 +63,9 @@ export default class UIGameObject {
         this.upgradeMenuButton.visible = isAtSurface;
         this.upgradeMenuButton.buttonText.visible = isAtSurface;
 
+        // Assume no warnings necessary
+        this.warningMessage.setText('').visible = false;
+
         // If the hold is full, show the warning
         const {holdFull} = this.gameManager.submarine;
         if (holdFull) {this.warningMessage.setText('Hold Full!').visible = holdFull};
@@ -79,7 +82,6 @@ export default class UIGameObject {
         // Show or don't show the upgrade menu
         if (!isAtSurface) {this.gameManager.upgradeMenuOpen = false};
         this.upgradeMenu.showMenu(this.gameManager.upgradeMenuOpen);
-
 
         // Update the tracker texts
         this.currentWealthText.setText("Gold: " + this.gameManager.currentWealth)

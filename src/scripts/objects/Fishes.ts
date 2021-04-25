@@ -170,13 +170,13 @@ export class FishGroup {
         const x: number = generator.integerInRange(64, scene.cameras.main.width - 64);
         const y: number = generator.integerInRange(minSafeHeight + 64, scene.cameras.main.height - 64);
         const speed: number = generator.integerInRange(Fish.maxSpeed / 2, Fish.maxSpeed);
-        const worth: number = generator.integerInRange(0, 10000);
         const type: number = generator.integerInRange(1, 3);
         const directionAngle: number = generator.rotation();
         const directionX = Math.cos(directionAngle);
         const directionY = Math.sin(directionAngle);
         const scale = generator.realInRange(0.25, 1);
-        const weight: number = 20 * scale;
+        const weight: number = Math.floor(20 * scale);
+        const worth: number = weight;
 
         return {
             type: type,

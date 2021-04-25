@@ -14,7 +14,7 @@ export default class UIButton extends Phaser.GameObjects.Image{
         scene.add.existing(this);
 
         // Add text to the button
-        this.buttonText = new Phaser.GameObjects.Text(scene, x, y, buttonText, { color: 'green', fontSize: '28px' });
+        this.buttonText = new Phaser.GameObjects.Text(scene, x, y, buttonText, { color: 'green', fontSize: '22px' }).setOrigin(0.5);
         scene.add.existing(this.buttonText);
 
         this.buttonKey = buttonKey;
@@ -22,7 +22,7 @@ export default class UIButton extends Phaser.GameObjects.Image{
 
         // Make the button interactive, set the scale and set it as transparent at first
         this.setInteractive({useHandCursor:true});
-        // this.setScale(0.25);
+        this.setScale(0.7,0.25);
         this.setAlpha(0.25);
 
         let self = this;
