@@ -102,9 +102,13 @@ export default class UIButton extends Phaser.GameObjects.Image {
 			this.scene.events.emit("upgraded");
 	}
 	buttonMouseover() {
-		this.setAlpha(1);
+		if (this.buttonKey != "play-button")
+			this.setAlpha(1);
+
 	}
 	buttonMouseout() {
-		this.setAlpha(0.25);
+		if (this.buttonKey != "play-button")
+			this.setAlpha(0.25);
+
 	}
 }
