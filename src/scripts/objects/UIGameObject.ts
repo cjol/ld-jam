@@ -1,6 +1,11 @@
 import GameManager from "./GameManager";
 import UIButton from "./UIButton";
 import UpgradeMenu from "./UpgradeMenu";
+import { Bar } from "./Bar";
+
+const OXYGEN_CONSUMPTION_RATE = 0.05;
+const HULL_DAMAGE_RATE = 1;
+const OXYGEN_REFUEL_RATE = 1;
 
 // The UI game object contains lots of UI elements to be shown / hidden. Pressing UI buttons should call functions in the GameManager (usually)
 export default class UIGameObject {
@@ -16,6 +21,9 @@ export default class UIGameObject {
 	currentWealthText: Phaser.GameObjects.Text;
 	maxDepthText: Phaser.GameObjects.Text;
 	currentDepthText: Phaser.GameObjects.Text;
+	cargoBar: Bar;
+	oxygenBar: Bar;
+	hullBar: Bar;
 
 	// Add all the required buttons
 	constructor(scene: Phaser.Scene, gameManager: GameManager) {
@@ -119,6 +127,27 @@ export default class UIGameObject {
 			{ color: "green", fontSize: "36px" }
 		).setOrigin(0.5);
 		scene.add.existing(this.maxDepthText);
+
+		// Create the three progress bars
+		// Get the bar positions from the screen size
+		const screenWidth = this.scene.cameras.main.width;
+		const screenHeight = this.scene.cameras.main.height;
+		const edgeOffset = 50;
+		const yPosLower = screenHeight - 100;
+		const yPosUpper = screenHeight - 200;
+		const xPosLeft = 200 + edgeOffset;
+		const xPosRight = screenWidth - (200 + edgeOffset);
+		// Draw the bars
+		this.cargoBar = new Bar(scene, xPosLeft, yPosLower, 100, 100, "cargo");
+		this.hullBar = new Bar(scene, xPosRight, yPosLower, 100, 100, "hull");
+		this.oxygenBar = new Bar(
+			scene,
+			xPosRight,
+			yPosUpper,
+			100,
+			100,
+			"oxygen"
+		);
 	}
 
 	update() {
@@ -136,8 +165,13 @@ export default class UIGameObject {
 		if (isAtSurface) {
 			this.upgradeMenuButton.visible = hasMoney;
 			this.upgradeMenuButton.buttonText.visible = hasMoney;
-			this.fixSubButton.visible = isDamaged;
-			this.fixSubButton.buttonText.visible = isDamaged;
+			if (hasMoney) {
+				this.fixSubButton.visible = isDamaged;
+				this.fixSubButton.buttonText.visible = isDamaged;
+			} else {
+				this.fixSubButton.visible = false;
+				this.fixSubButton.buttonText.visible = false;
+			}
 			this.sellFishButton.visible = subHasFish;
 			this.sellFishButton.buttonText.visible = subHasFish;
 			this.sellOreButton.visible = subHasOre;
@@ -178,7 +212,6 @@ export default class UIGameObject {
 		if (pressureWarning == 2)
 			this.warningMessage.setText("Hull Breach Critical!").visible = true;
 
-
 		// Show or don't show the upgrade menu
 		if (!isAtSurface)
 			this.gameManager.upgradeMenuOpen = false;
@@ -194,6 +227,76 @@ export default class UIGameObject {
 		);
 		this.maxDepthText.setText(
 			"Max Depth: " + Math.floor(this.gameManager.maxDepthReached)
+		);
+
+		// Update the three progress bars
+		this.updateOxygen();
+		this.updateHull();
+		this.updateCargo();
+	}
+
+	updateOxygen() {
+		const maxOxygen = this.gameManager.getUpgradeValue("tank");
+		if (this.gameManager.submarine.isAtSurface) {
+			this.gameManager.submarine.oxygen += OXYGEN_REFUEL_RATE;
+			this.gameManager.submarine.oxygenLow = false;
+		} else
+			this.gameManager.submarine.oxygen -= OXYGEN_CONSUMPTION_RATE;
+
+		this.gameManager.submarine.oxygen = Math.max(
+			0,
+			Math.min(this.gameManager.submarine.oxygen, maxOxygen)
+		);
+		this.oxygenBar.update(this.gameManager.submarine.oxygen, maxOxygen);
+
+		// Set the warning if the bar is nearly empty
+		if (this.gameManager.submarine.oxygen / maxOxygen <= 0.3)
+			this.gameManager.submarine.oxygenLow = true;
+
+		// End the game
+		if (this.gameManager.submarine.oxygen <= 0)
+			this.gameManager.markSubmarineDestroyed();
+	}
+
+	updateHull() {
+		const maxHull = this.gameManager.getUpgradeValue("depthLimit");
+		// calculate how much past the maxHull we are
+		const depthExceeded = Math.max(
+			0,
+			this.gameManager.currentDepth / maxHull - 1
+		);
+		this.gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
+		// clamp to 0-maxHull range
+		this.gameManager.submarine.hull = Phaser.Math.Clamp(
+			this.gameManager.submarine.hull,
+			0,
+			maxHull
+		);
+
+		this.hullBar.update(this.gameManager.submarine.hull, maxHull);
+
+		// Set the warning if the bar is nearly empty
+		if (this.gameManager.submarine.hull / maxHull < 0.3)
+			this.gameManager.submarine.pressureWarning = 2;
+		else if (depthExceeded > 0)
+			this.gameManager.submarine.pressureWarning = 1;
+		else
+			this.gameManager.submarine.pressureWarning = 0;
+
+		// End the game
+		if (this.gameManager.submarine.hull <= 0)
+			this.gameManager.markSubmarineDestroyed();
+	}
+
+	updateCargo() {
+		// Calculate the total amount in the hold
+		const totalCargo =
+			this.gameManager.submarine.cargo.fishWeight +
+			this.gameManager.submarine.cargo.oreWeight +
+			this.gameManager.submarine.cargo.researchWeight;
+		this.cargoBar.update(
+			totalCargo,
+			this.gameManager.getUpgradeValue("capacity")
 		);
 	}
 }

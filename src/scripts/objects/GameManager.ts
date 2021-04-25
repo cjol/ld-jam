@@ -45,6 +45,7 @@ export default class GameManager {
 	maxDepthReached: number;
 	currentDepth: number;
 	upgradeMenuOpen: boolean;
+	submarineIsDead: boolean;
 
 	// Initialise the game
 	constructor() {
@@ -54,6 +55,7 @@ export default class GameManager {
 		this.maxDepthReached = 0;
 		this.currentDepth = 0;
 		this.upgradeMenuOpen = false;
+		this.submarineIsDead = false;
 
 		// At the start of the game, set all upgrades to 0
 		this.upgrades = {
@@ -279,6 +281,10 @@ export default class GameManager {
 		// Update the hull score, and the currentWealth
 		this.submarine.hull += damageToFix;
 		this.currentWealth -= Math.floor(damageToFix * costOfFixing);
+	}
+
+	markSubmarineDestroyed() {
+		this.submarineIsDead = true;
 	}
 }
 
