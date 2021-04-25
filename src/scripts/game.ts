@@ -5,7 +5,10 @@ import MainScene from './scenes/mainScene';
 import PreloadScene from './scenes/preloadScene';
 import UIScene from './scenes/uiScene';
 
-const config = {
+const config = 
+
+window.addEventListener('load', () => {
+    const game = new Phaser.Game({
     type: Phaser.AUTO,
     backgroundColor: '#ffffff',
     scale: {
@@ -15,7 +18,7 @@ const config = {
         width: window.innerWidth,
         height: window.innerHeight
     },
-    scene: [PreloadScene, MenuScene, MainScene, UIScene],
+    scene: [MenuScene, PreloadScene, MainScene, UIScene],
     physics: {
         default: 'matter',
         matter: {
@@ -32,8 +35,5 @@ const config = {
             }
         ]
     }
-}
-
-window.addEventListener('load', () => {
-    const game = new Phaser.Game(config);
+});
 })

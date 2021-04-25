@@ -12,7 +12,7 @@ export default class UIScene extends Phaser.Scene {
     private UIGameObject: UIGameObject;
 
     constructor() {
-        super({ key: 'UIScene', active: true });
+        super({ key: 'UIScene' });
     }
 
     create() {
