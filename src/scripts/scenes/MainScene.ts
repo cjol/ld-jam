@@ -1,7 +1,7 @@
 import Background from "../objects/Background";
-import { FishGroup } from "../objects/Fishes";
-import { HazardGroup } from "../objects/Hazards";
+import { FishGroup } from "../objects/fish/FishGroup";
 import GameWorld from "../objects/GameWorld";
+import { HazardGroup } from "../objects/hazard/HazardGroup";
 import Submarine from "../objects/Submarine";
 
 export default class MainScene extends Phaser.Scene {
@@ -44,7 +44,10 @@ export default class MainScene extends Phaser.Scene {
 		this.add.existing(this.surfaceVessel);
 
 		this.fishGroup = new FishGroup(this, this.background.SafeSpawnHeight);
-		this.hazardGroup = new HazardGroup(this, this.background.SafeSpawnHeight);
+		this.hazardGroup = new HazardGroup(
+			this,
+			this.background.SafeSpawnHeight
+		);
 		this.submarine = new Submarine(this, this.width / 2);
 		this.gameWorld = new GameWorld(this, this.submarine);
 
