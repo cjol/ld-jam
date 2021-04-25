@@ -1,6 +1,5 @@
 import { Math } from "phaser";
 import { CollisionCategories } from "./CollisionCategories";
-import { Raycaster } from "./Raycaster";
 
 export default class Background extends Phaser.GameObjects.GameObject {
     private readonly BACKGROUND_COLOUR: number = 0x244b7e;
@@ -12,7 +11,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
     private width: number;
     private height: number;
 
-    constructor(scene: Phaser.Scene, maxDepth: number, raycaster: Raycaster) {
+    constructor(scene: Phaser.Scene, maxDepth: number) {
         super(scene, 'background');
 
         scene.add.existing(this);
@@ -80,9 +79,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
             }
         }
 
-        raycaster.registerBodies(layer, numberOfColumns, numberOfRows);
-
-        this.SafeSpawnHeight = level.length * size;
+        this.SafeSpawnHeight = flipOffset * size;
     }
 
     public draw(): void {
