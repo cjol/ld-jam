@@ -12,13 +12,13 @@ export class HazardGroup extends ASpawnableGroup<
 		{
 			minDepth: 200,
 			maxDepth: 1500,
-			minScale: 0.05,
-			maxScale: 0.02,
+			minScale: 0.2,
+			maxScale: 0.5,
 			damage: 5,
 			maxNumberOfItems: 10,
 			availableItemTypes: [1],
 			itemRespawnRate: 10 * 1000 // 10 seconds in milliseconds
-		}, 
+		},
 		//mines
 		{
 			minDepth: 1000,
