@@ -24,13 +24,13 @@ export default class UIGameObject {
         this.gameManager = gameManager;
 
         // Create the 'selling' buttons
-        this.sellFishButton = new UIButton(this.scene,'sell-fish-button','Sell Fish',100,100,this.gameManager)
-        this.sellOreButton = new UIButton(this.scene,'sell-ore-button','Sell Ore',100,200,this.gameManager)
-        this.sellResearchButton = new UIButton(this.scene,'sell-research-button','Sell Research',100,300,this.gameManager)
+        this.sellFishButton = new UIButton(this.scene,'sell-fish-button','Sell Fish','none',300,200,this.gameManager)
+        this.sellOreButton = new UIButton(this.scene,'sell-ore-button','Sell Ore','none',300,230,this.gameManager)
+        this.sellResearchButton = new UIButton(this.scene,'sell-research-button','Sell Research','none',300,260,this.gameManager)
 
         // Create the upgrade menu buttons
-        this.upgradeMenuButton = new UIButton(this.scene,'upgrade-menu-button','Upgrade',300,100,this.gameManager)
-        this.upgradeMenu = new UpgradeMenu(this.scene,400,200,this.gameManager);
+        this.upgradeMenuButton = new UIButton(this.scene,'upgrade-menu-button','Upgrade','none',550,100,this.gameManager)
+        this.upgradeMenu = new UpgradeMenu(this.scene,580,130,this.gameManager);
 
         // Create a warning message (can be used for multiple things)
         this.warningMessage = new Phaser.GameObjects.Text(scene, scene.cameras.main.width/2, scene.cameras.main.height-100, "I'm a warning", { color: 'red', fontSize: '56px' }).setOrigin(0.5)
@@ -52,16 +52,32 @@ export default class UIGameObject {
     }
 
     update() {
-        // If at the surface, show the selling buttons
+        // If at the surface, show the selling buttons (if anything to sell)
         const {isAtSurface} = this.gameManager.submarine;
-        this.sellFishButton.visible = isAtSurface;
-        this.sellFishButton.buttonText.visible = isAtSurface;
-        this.sellOreButton.visible = isAtSurface;
-        this.sellOreButton.buttonText.visible = isAtSurface;
-        this.sellResearchButton.visible = isAtSurface;
-        this.sellResearchButton.buttonText.visible = isAtSurface;
-        this.upgradeMenuButton.visible = isAtSurface;
-        this.upgradeMenuButton.buttonText.visible = isAtSurface;
+        const subHasFish = (this.gameManager.submarine.cargo.fishWeight > 0);
+        const subHasOre = (this.gameManager.submarine.cargo.oreWeight > 0);
+        const subHasResearch = (this.gameManager.submarine.cargo.researchWeight > 0);
+        const hasMoney = (this.gameManager.currentWealth > 0);
+
+        if (isAtSurface) {
+            this.upgradeMenuButton.visible = hasMoney;
+            this.upgradeMenuButton.buttonText.visible = hasMoney;
+            this.sellFishButton.visible = subHasFish;
+            this.sellFishButton.buttonText.visible = subHasFish;
+            this.sellOreButton.visible = subHasOre;
+            this.sellOreButton.buttonText.visible = subHasOre;
+            this.sellResearchButton.visible = subHasResearch;
+            this.sellResearchButton.buttonText.visible = subHasResearch;
+        } else {
+            this.upgradeMenuButton.visible = false;
+            this.upgradeMenuButton.buttonText.visible = false;
+            this.sellFishButton.visible = false;
+            this.sellFishButton.buttonText.visible = false;
+            this.sellOreButton.visible = false;
+            this.sellOreButton.buttonText.visible = false;
+            this.sellResearchButton.visible = false;
+            this.sellResearchButton.buttonText.visible = false;
+        }
 
         // Assume no warnings necessary
         this.warningMessage.setText('').visible = false;

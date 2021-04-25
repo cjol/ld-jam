@@ -43,7 +43,7 @@ export default class GameManager {
 
         // Initialise the trackers
         this.totalWealth = 0;
-        this.currentWealth = 1000;
+        this.currentWealth = 0;
         this.maxDepthReached = 0;
         this.currentDepth = 0;
         this.upgradeMenuOpen = false;

@@ -21,6 +21,7 @@ export default class UIScene extends Phaser.Scene {
 
         this.fpsText = new FpsText(this);
         this.UIGameObject = new UIGameObject(this, gameManager);
+
     }
 
     update(time: number, delta: number) {
