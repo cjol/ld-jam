@@ -157,6 +157,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		if (gameManager.getUpgradeValue("chain") !== this.hook.getLength())
 			this.upgradeArm();
 	}
+
 	upgradeArm() {
 		this.hook.destroy();
 		this.hook = new MechanicalArm(
