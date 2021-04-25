@@ -8,15 +8,26 @@ export class HazardGroup extends ASpawnableGroup<
 	IHazardBandParameters
 > {
 	private static readonly bandParameters: IHazardBandParameters[] = [
+		//sharks
 		{
-			minDepth: 150,
-			maxDepth: 1000,
-			minScale: 0.25,
-			maxScale: 0.25,
-			minDamage: 1,
-			maxDamage: 10,
-			maxNumberOfItems: 20,
+			minDepth: 200,
+			maxDepth: 1500,
+			minScale: 0.05,
+			maxScale: 0.02,
+			damage: 5,
+			maxNumberOfItems: 10,
 			availableItemTypes: [1],
+			itemRespawnRate: 10 * 1000 // 10 seconds in milliseconds
+		}, 
+		//mines
+		{
+			minDepth: 1000,
+			maxDepth: 3000,
+			minScale: 0.1,
+			maxScale: 0.02,
+			damage: 15,
+			maxNumberOfItems: 5,
+			availableItemTypes: [2],
 			itemRespawnRate: 10 * 1000 // 10 seconds in milliseconds
 		}
 	];
@@ -29,7 +40,6 @@ export class HazardGroup extends ASpawnableGroup<
 		scene: Phaser.Scene,
 		parameters: IHazardBandParameters
 	): ASpawnableBand<IHazardParameters, IHazardBandParameters> {
-		console.log(scene, parameters);
 		return new HazardBand(scene, parameters);
 	}
 }
