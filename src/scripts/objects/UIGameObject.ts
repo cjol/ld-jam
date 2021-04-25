@@ -30,7 +30,7 @@ export default class UIGameObject {
 
         // Create the upgrade menu buttons
         this.upgradeMenuButton = new UIButton(this.scene,'upgrade-menu-button','Upgrade','none',550,100,this.gameManager)
-        this.upgradeMenu = new UpgradeMenu(this.scene,580,130,this.gameManager);
+        this.upgradeMenu = new UpgradeMenu(this.scene,580,150,this.gameManager);
 
         // Create a warning message (can be used for multiple things)
         this.warningMessage = new Phaser.GameObjects.Text(scene, scene.cameras.main.width/2, scene.cameras.main.height-100, "I'm a warning", { color: 'red', fontSize: '56px' }).setOrigin(0.5)

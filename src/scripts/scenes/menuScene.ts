@@ -12,7 +12,7 @@ export default class MenuScene extends Phaser.Scene {
 	preload() {
 		this.load.image(
 			"button-background",
-			"assets/img/ui/button_background.png"
+			"assets/img/ui/button_background_2.png"
 		);
 		this.load.image("menu-background", "assets/img/ui/menu_background.png");
 	}
@@ -28,6 +28,7 @@ export default class MenuScene extends Phaser.Scene {
 			"menu-background"
 		);
 		this.add.existing(this.background);
+		this.background.setScale(0.2);
 
 		// Add a play button
 		this.playButton = new UIButton(
