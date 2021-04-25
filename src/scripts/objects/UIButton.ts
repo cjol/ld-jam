@@ -56,6 +56,11 @@ export default class UIButton extends Phaser.GameObjects.Image {
 			this.gameManager.sellResearch();
 			break;
 
+			// Fix the sub
+		case "fix-sub-button":
+			this.gameManager.fixSub();
+			break;
+
 			// Open the upgrade menu
 		case "upgrade-menu-button":
 			this.gameManager.upgradeMenuOpen = !this.gameManager

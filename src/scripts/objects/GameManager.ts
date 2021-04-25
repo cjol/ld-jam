@@ -43,6 +43,7 @@ export default class GameManager {
 	maxDepthReached: number;
 	currentDepth: number;
 	upgradeMenuOpen: boolean;
+	submarineIsDead: boolean;
 
 	// Initialise the game
 	constructor() {
@@ -52,6 +53,7 @@ export default class GameManager {
 		this.maxDepthReached = 0;
 		this.currentDepth = 0;
 		this.upgradeMenuOpen = false;
+		this.submarineIsDead = false;
 
 		// At the start of the game, set all upgrades to 0
 		this.upgrades = {
@@ -258,6 +260,29 @@ export default class GameManager {
 	// Called when the submarine picks up some research. Get the weight and value and add it to the hold
 	collectResearch() {
 		// Will need to write this once we have created the Research class (as for fish)
+	}
+
+	// Fix the submarine by as much money as you can
+	fixSub() {
+		// How much is the sub damaged?
+		const damage = this.getUpgradeValue("depthLimit") - this.submarine.hull;
+
+		// Cost of fixing - units are 'pounds per point of damage'
+		const costOfFixing = 0.5;
+
+		// Max damage that could be fixed for current wealth
+		const costLimit = Math.floor(this.currentWealth / costOfFixing);
+
+		// We will fix up to the total damage, or until we run out of money
+		const damageToFix = Math.min(damage, costLimit);
+
+		// Update the hull score, and the currentWealth
+		this.submarine.hull += damageToFix;
+		this.currentWealth -= Math.floor(damageToFix * costOfFixing);
+	}
+
+	markSubmarineDestroyed() {
+		this.submarineIsDead = true;
 	}
 }
 

@@ -4,30 +4,33 @@ interface BarConfig {
 	lowThreshold: number;
 	width: number;
 	height: number;
+	label: string;
 }
 const healthConfig: BarConfig = {
-	width: 80,
-	height: 16,
+	width: 400,
+	height: 50,
 	lowColor: 0xff0000,
 	color: 0x00ff88,
-	lowThreshold: 0.5
+	lowThreshold: 0.5,
+	label: "Hull Integrity"
 };
 const oxygenConfig: BarConfig = {
-	width: 80,
-	height: 16,
+	width: 400,
+	height: 50,
 	lowColor: 0xff0000,
 	color: 0x0088ff,
-	lowThreshold: 0.5
+	lowThreshold: 0.5,
+	label: "Oxygen Remaining"
 };
 const cargoConfig: BarConfig = {
-	width: 80,
-	height: 16,
+	width: 400,
+	height: 50,
 	lowColor: 0x555555,
 	color: 0x555555,
-	lowThreshold: 0.3
+	lowThreshold: 0.3,
+	label: "Hold Space"
 };
-const BAR_WIDTH = 80,
-	BAR_HEIGHT = 16;
+
 export class Bar extends Phaser.GameObjects.Graphics {
 	x: number;
 	y: number;
@@ -35,6 +38,7 @@ export class Bar extends Phaser.GameObjects.Graphics {
 	maxValue: number;
 	config: BarConfig;
 	barName: string;
+	barLabel: Phaser.GameObjects.Text;
 
 	constructor(
 		scene: Phaser.Scene,
@@ -60,14 +64,22 @@ export class Bar extends Phaser.GameObjects.Graphics {
 			this.config = cargoConfig;
 
 		this.barName = barName;
+
+		// Add a label to the bar
+		this.barLabel = new Phaser.GameObjects.Text(
+			scene,
+			this.x,
+			this.y - 20,
+			this.config.label,
+			{ color: "black", fontSize: "24px" }
+		).setOrigin(0.5);
+		scene.add.existing(this.barLabel);
 	}
 
-	update(x: number, y: number, value: number, maxValue?: number) {
+	update(value: number, maxValue?: number) {
 		if (maxValue)
 			this.maxValue = maxValue;
 		this.value = value;
-		this.x = x;
-		this.y = y;
 		this.clear();
 
 		//  BG
