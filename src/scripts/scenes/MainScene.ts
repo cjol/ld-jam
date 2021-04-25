@@ -43,12 +43,19 @@ export default class MainScene extends Phaser.Scene {
 		gameManager.initialise();
 
 		this.cameras.main.startFollow(this.submarine);
-		this.scene
-			.get("UIScene")
-			.events.on("upgraded", () => this.submarine.checkUpgrades());
+		this.events.once("shutdown", this.shutdown, this);
+		this.scene.get("UIScene").events.on("upgraded", this.doUpgrades, this);
 	}
 
-	update(time: number, delta: number) {
+	private shutdown() {
+		this.scene.get("UIScene").events.off("upgraded", this.doUpgrades, this);
+	}
+
+	private doUpgrades(): void {
+		this.submarine.checkUpgrades();
+	}
+
+	public update(time: number, delta: number) {
 		this.background.draw();
 		this.submarine.update(time);
 
