@@ -1,11 +1,12 @@
 import { ASpawnableBand } from "./ASpawnableBand";
 import { ISpawnableBandParameters } from "./ISpawnableBandParameters";
+import { ISpawnableGroup } from "./ISpawnableGroup";
 import { ISpawnableParameters } from "./ISpawnableParameters";
 
 export abstract class ASpawnableGroup<
 	T extends ISpawnableParameters,
 	K extends ISpawnableBandParameters
-> {
+> implements ISpawnableGroup {
 	private readonly bands: ASpawnableBand<T, K>[] = [];
 
 	// Constructor for a fish
