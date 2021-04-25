@@ -11,6 +11,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	keys: Record<Key, Phaser.Input.Keyboard.Key>;
 	hook: MechanicalArm;
 	scene: Phaser.Scene;
+	// TODO: yes this is hacky
+	wasDeadLastTimeIChecked: boolean;
 
 	// Constructor for submarine
 	constructor(scene: Phaser.Scene, x: number, y: number = WATER_LEVEL - 20) {
@@ -59,11 +61,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.updateKeys();
 		this.updateArm();
 		this.updateDepth();
-		if (gameManager.submarine.isDead) {
-			if (gameManager.submarine.diedAt == 0)
-				gameManager.submarine.diedAt = time;
-
-			this.killSubmarine(time);
+		if (gameManager.submarine.isDead && !this.wasDeadLastTimeIChecked) {
+			this.killSubmarine();
 		}
 	}
 
@@ -119,14 +118,18 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	// Function to run if you kill the submarine
-	killSubmarine(time) {
-		gameManager.submarine.isDead = true;
+	killSubmarine() {
+		this.wasDeadLastTimeIChecked = true;
+		const callback = (_, progress: number) => {
+			if (progress >= 1) {
+				this.scene.scene.remove("UIScene");
+				this.scene.scene.start("MenuScene");
+			}
+		};
+		this.scene.cameras.main.fadeOut(5000, 50, 0, 0, callback)
 		this.setFrictionAir(0.5);
-		this.setAngularVelocity(0.1);
+		this.setAngularVelocity(0.5);
 		this.setIgnoreGravity(false);
-		this.setColor(0xff0000);
-		// This function will check whether it's time to go to the main menu yet
-		this.goToMainMenu(time);
 	}
 
 	takeDamage(intensity: number) {
@@ -161,12 +164,4 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 	}
 
-	// Go to the main menu, if the sub has been dead for 5 seconds
-	goToMainMenu(time) {
-		console.log("Checking whether to go to main menu");
-		if (time - gameManager.submarine.diedAt > 5000) {
-			this.scene.scene.remove("UIScene");
-			this.scene.scene.start("MenuScene");
-		}
-	}
 }
