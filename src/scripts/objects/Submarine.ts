@@ -34,7 +34,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		this.setCollisionCategory(CollisionCategories.SUBMARINE);
 		this.setCollidesWith(
-			CollisionCategories.WALLS | CollisionCategories.MECHANICAL_HOOK
+			CollisionCategories.WALLS | CollisionCategories.MECHANICAL_HOOK | CollisionCategories.HAZARD
 		);
 
 		this.hook = new MechanicalArm(

@@ -5,4 +5,5 @@ export class CollisionCategories {
 	public static readonly WALLS: number = 0x1000;
 	public static readonly PHANTOM_WALLS: number = 0x10000;
 	public static readonly FISH: number = 0x100000;
+	public static readonly HAZARD: number = 0x100000;
 }

@@ -1,5 +1,6 @@
 import { Fish } from "./Fishes";
 import { gameManager } from "./GameManager";
+import { Hazard } from "./Hazards";
 import { MechanicalHook } from "./MechanicalHook";
 import Submarine from "./Submarine";
 
@@ -26,15 +27,22 @@ export default class GameWorld {
 			.filter((x): x is MatchedPair => x !== null)
 			.forEach((pair) => {
 				const item = pair.item;
-				if (!(item instanceof Fish))
-					return;
-
-				gameManager.catchFish(item);
+				if (pair.type === "hook" && item instanceof Fish) {
+					gameManager.catchFish(item);
+				}
+				if (pair.type === "sub" && item instanceof Hazard) {
+					gameManager.hitHazard(item);
+				}
 			});
 	}
 }
 type MatchedPair = {
+	type: "hook" ;
 	hook: MechanicalHook;
+	item: Phaser.GameObjects.GameObject;
+} | {
+	type: "sub" ;
+	sub: Submarine;
 	item: Phaser.GameObjects.GameObject;
 };
 
@@ -42,9 +50,13 @@ function detectObjs(
 	pair: Phaser.Types.Physics.Matter.MatterCollisionData
 ): null | MatchedPair {
 	if (pair.bodyA.gameObject instanceof MechanicalHook)
-		return { hook: pair.bodyA.gameObject, item: pair.bodyB.gameObject };
+		return { type: "hook", hook: pair.bodyA.gameObject, item: pair.bodyB.gameObject };
+	if (pair.bodyA.gameObject instanceof Submarine)
+		return { type: "sub", sub: pair.bodyA.gameObject, item: pair.bodyB.gameObject };
+	else if (pair.bodyB.gameObject instanceof Submarine)
+		return { type: "sub", sub: pair.bodyB.gameObject, item: pair.bodyA.gameObject };
 	else if (pair.bodyB.gameObject instanceof MechanicalHook)
-		return { hook: pair.bodyB.gameObject, item: pair.bodyA.gameObject };
+		return { type:"hook", hook: pair.bodyB.gameObject, item: pair.bodyA.gameObject };
 
 	return null;
 }

@@ -173,13 +173,11 @@ export default class UIGameObject {
 		// Show the pressure warning (overwrites low o2 if necessary)
 		const { pressureWarning } = this.gameManager.submarine;
 		if (pressureWarning == 1)
-			this.warningMessage.setText("Hull Failing!").visible = true;
+			this.warningMessage.setText("Hull Breach!").visible = true;
 
-		if (pressureWarning == 2) {
-			this.warningMessage.setText(
-				"Hull Pressure Critical!"
-			).visible = true;
-		}
+		if (pressureWarning == 2)
+			this.warningMessage.setText("Hull Breach Critical!").visible = true;
+
 
 		// Show or don't show the upgrade menu
 		if (!isAtSurface)
