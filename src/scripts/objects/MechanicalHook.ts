@@ -27,7 +27,7 @@ export class MechanicalArm {
 			CONSTRAINT_LENGTH,
 			SEGMENT_STIFFNESS,
 			{
-				pointA: { x: 0, y: 0 },
+				pointA: { x: 0, y: 15 },
 				pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 },
 			}
 		);
@@ -108,7 +108,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 				mass: 2,
 			}
 		);
-    this.setIgnoreGravity(true);
+    	this.setIgnoreGravity(false);
 
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(
@@ -133,41 +133,19 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 				pointB: { x: 0, y: 0 },
 			}
 		);
-
-		// this.keys = scene.input.keyboard.addKeys(
-		// 	{
-		// 		up: "UP",
-		// 		down: "DOWN",
-		// 		left: "LEFT",
-		// 		right: "RIGHT",
-		// 	},
-		// 	true,
-		// 	true
-		// ) as Record<string, Phaser.Input.Keyboard.Key>;
 	}
 
 	update() {
 		this.updateMouse();
-		// this.updateKeys();
 		this.angle = this.prev.angle - 90;
 	}
 
-	// updateKeys() {
-	// 	if (this.keys.left.isDown) this.setVelocityX(-HOOK_SPEED);
-	// 	else if (this.keys.right.isDown) this.setVelocityX(HOOK_SPEED);
-
-	// 	if (this.keys.up.isDown) this.setVelocityY(-HOOK_SPEED);
-	// 	else if (this.keys.down.isDown) this.setVelocityY(HOOK_SPEED);
-	// }
-
 	// alternative update function using mouse instead of keyboard
 	updateMouse() {
-		// const angle = Phaser.Math.Vector2(this.scene.input, this);
-		// if (this.scene.input.activePointer.leftButtonDown()) {
-
+		const cameraOffset = (this.scene.cameras.main.worldView.top);
 		const target = new Phaser.Math.Vector2(
-			this.scene.input.mousePointer.worldX,
-			this.scene.input.mousePointer.worldY
+			this.scene.input.activePointer.worldX,
+			this.scene.input.activePointer.worldY + cameraOffset
 		);
 		if (this.y < WATER_LEVEL) {
 			this.y = WATER_LEVEL + 1;
