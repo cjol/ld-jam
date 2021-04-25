@@ -253,6 +253,25 @@ export default class GameManager {
 	collectResearch() {
 		// Will need to write this once we have created the Research class (as for fish)
 	}
+
+	// Fix the submarine by as much money as you can
+	fixSub() {
+		// How much is the sub damaged?
+		const damage = this.getUpgradeValue("depthLimit") - this.submarine.hull;
+
+		// Cost of fixing - units are 'pounds per point of damage'
+		const costOfFixing = 0.5;
+
+		// Max damage that could be fixed for current wealth
+		const costLimit = Math.floor(this.currentWealth / costOfFixing);
+
+		// We will fix up to the total damage, or until we run out of money
+		const damageToFix = Math.min(damage, costLimit);
+
+		// Update the hull score, and the currentWealth
+		this.submarine.hull += damageToFix;
+		this.currentWealth -= Math.floor(damageToFix * costOfFixing);
+	}
 }
 
 export const gameManager = new GameManager();

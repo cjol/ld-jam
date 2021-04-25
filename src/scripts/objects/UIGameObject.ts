@@ -9,6 +9,7 @@ export default class UIGameObject {
 	sellFishButton: UIButton;
 	sellOreButton: UIButton;
 	sellResearchButton: UIButton;
+	fixSubButton: UIButton;
 	warningMessage: Phaser.GameObjects.Text;
 	upgradeMenuButton: UIButton;
 	upgradeMenu: UpgradeMenu;
@@ -47,6 +48,17 @@ export default class UIGameObject {
 			"none",
 			300,
 			260,
+			this.gameManager
+		);
+
+		// Create the 'fix sub' button
+		this.fixSubButton = new UIButton(
+			this.scene,
+			"fix-sub-button",
+			"Fix Sub",
+			"none",
+			550,
+			50,
 			this.gameManager
 		);
 
@@ -117,10 +129,15 @@ export default class UIGameObject {
 		const subHasResearch =
 			this.gameManager.submarine.cargo.researchWeight > 0;
 		const hasMoney = this.gameManager.currentWealth > 0;
+		const isDamaged =
+			this.gameManager.submarine.hull <
+			this.gameManager.getUpgradeValue("depthLimit");
 
 		if (isAtSurface) {
 			this.upgradeMenuButton.visible = hasMoney;
 			this.upgradeMenuButton.buttonText.visible = hasMoney;
+			this.fixSubButton.visible = isDamaged;
+			this.fixSubButton.buttonText.visible = isDamaged;
 			this.sellFishButton.visible = subHasFish;
 			this.sellFishButton.buttonText.visible = subHasFish;
 			this.sellOreButton.visible = subHasOre;
@@ -130,6 +147,8 @@ export default class UIGameObject {
 		} else {
 			this.upgradeMenuButton.visible = false;
 			this.upgradeMenuButton.buttonText.visible = false;
+			this.fixSubButton.visible = false;
+			this.fixSubButton.buttonText.visible = false;
 			this.sellFishButton.visible = false;
 			this.sellFishButton.buttonText.visible = false;
 			this.sellOreButton.visible = false;
@@ -154,7 +173,7 @@ export default class UIGameObject {
 		// Show the pressure warning (overwrites low o2 if necessary)
 		const { pressureWarning } = this.gameManager.submarine;
 		if (pressureWarning == 1)
-			this.warningMessage.setText("Hull Failure").visible = true;
+			this.warningMessage.setText("Hull Failing!").visible = true;
 
 		if (pressureWarning == 2) {
 			this.warningMessage.setText(
