@@ -4,9 +4,9 @@ import { ISpawnableBandParameters } from "../spawnables/ISpawnableBandParameters
 import { Hazard, IHazardParameters } from "./Hazard";
 
 export interface IHazardBandParameters extends ISpawnableBandParameters {
-	minDamage: number;
-	maxDamage: number;
+	damage: number;
 }
+const SIZE_DAMAGE_RATIO = 100;
 
 export class HazardBand extends ASpawnableBand<
 	IHazardParameters,
@@ -26,10 +26,7 @@ export class HazardBand extends ASpawnableBand<
 		const parameters: IHazardParameters = <IHazardParameters>(
 			super.getBaseParameters(leftSide)
 		);
-		parameters.damage = this.generator.integerInRange(
-			this.hazardBandParameters.minDamage,
-			this.hazardBandParameters.maxDamage
-		);
+		parameters.damage = parameters.scale * SIZE_DAMAGE_RATIO * this.parameters.damage;
 		return parameters;
 	}
 

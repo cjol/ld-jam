@@ -18,7 +18,7 @@ export class Hazard extends ASpawnable<
 	// Constructor for a hazard
 	public constructor(scene: Phaser.Scene, band: HazardBand) {
 		// Create hazard
-		super(scene, band, "submarine");
+		super(scene, band, "hazard1");
 
 		this.hazardBand = band;
 
@@ -30,6 +30,8 @@ export class Hazard extends ASpawnable<
 
 	public setParameters(parameters: IHazardParameters) {
 		super.setParameters(parameters);
+
+		this.setTexture(`hazard${parameters.type}`);
 
 		this.damage = parameters.damage;
 	}
