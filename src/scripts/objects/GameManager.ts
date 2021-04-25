@@ -69,7 +69,7 @@ export default class GameManager {
             },
             // Chain length
             chain: {
-                totalUpgrades: [1, 2, 3, 4],
+                totalUpgrades: [2, 3, 4],
                 upgradesBought: 0,
                 price: [0, 10, 20]
             },
@@ -143,9 +143,11 @@ export default class GameManager {
             if (upgradeCost <= this.currentWealth) {
                 upgradeData.upgradesBought += 1;
                 this.currentWealth -= upgradeCost;
+                return true;
             }
 
         }
+        return false;
     }
 
     // Called when the submarine tries to sell all its fish

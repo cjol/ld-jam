@@ -13,6 +13,7 @@ export default class UpgradeMenu {
         // List of buttons to add
         this.buttons.push(new UIButton(scene,'upgrade-oxygen-button','O2 Tank',x,y,gameManager));
         this.buttons.push(new UIButton(scene,'upgrade-cargo-capacity','Hold Size',x,y+100,gameManager));
+        this.buttons.push(new UIButton(scene,'upgrade-chain-length','Arm Segments',x,y+200,gameManager));
 
     }
 

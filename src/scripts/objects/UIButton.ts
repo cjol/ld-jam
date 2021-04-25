@@ -36,6 +36,7 @@ export default class UIButton extends Phaser.GameObjects.Image{
 
     // Run when the button is clicked
     buttonWasClicked() {
+        let didUpgrade = false;
         switch(this.buttonKey) {
             // Selling buttons
             case 'sell-fish-button':
@@ -55,12 +56,17 @@ export default class UIButton extends Phaser.GameObjects.Image{
 
             // Upgrade buttons
             case 'upgrade-oxygen-button':
-                this.gameManager.purchaseUpgrade('tank');
+                didUpgrade = this.gameManager.purchaseUpgrade('tank');
                 break;
             case 'upgrade-cargo-capacity':
-                this.gameManager.purchaseUpgrade('capacity');
+                didUpgrade = this.gameManager.purchaseUpgrade('capacity');
+                break;
+            case 'upgrade-chain-length':
+                didUpgrade = this.gameManager.purchaseUpgrade('chain');
                 break;
         }
+        if (didUpgrade) this.scene.events.emit('upgraded');
+
     }
     buttonMouseover() {
         this.setAlpha(1)

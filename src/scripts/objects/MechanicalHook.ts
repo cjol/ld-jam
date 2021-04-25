@@ -41,6 +41,10 @@ export class MechanicalArm {
 		this.hook.update();
 	}
 
+	getLength() {
+		return this.segments.length;
+	}
+
 	destroy() {
 		this.segments.forEach((x) => x.destroy());
 		this.hook.destroy();

@@ -34,7 +34,11 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			CollisionCategories.WALLS | CollisionCategories.MECHANICAL_HOOK
 		);
 
-		this.hook = new MechanicalArm(scene, this);
+		this.hook = new MechanicalArm(
+			scene,
+			this,
+			gameManager.getUpgradeValue("chain")
+		);
 		this.oxygenBar = new Bar(scene, 50, 50, 100, 100, "health");
 		this.cargoBar = new Bar(scene, 50, 50, 100, 100, "cargo");
 		this.setScale(0.25);
@@ -60,30 +64,21 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.updateArm();
 		this.updateOxygen();
 		this.updateCargo();
-        // Update the max depth if it needs it
-        var depth = (this.y - WATER_LEVEL) / 10;
-        gameManager.currentDepth = depth
-        if (depth > gameManager.maxDepthReached) {
-            gameManager.maxDepthReached = depth
-        }
+		// Update the max depth if it needs it
+		var depth = (this.y - WATER_LEVEL) / 10;
+		gameManager.currentDepth = depth;
+		if (depth > gameManager.maxDepthReached) {
+			gameManager.maxDepthReached = depth;
+		}
 	}
 
 	updateArm() {
 		this.hook.update();
 	}
 
-	upgradeArm() {
-		this.hook.destroy();
-		this.hook = new MechanicalArm(
-			this.scene,
-			this,
-			gameManager.getUpgradeValue("chain")
-		);
-	}
-
 	updateKeys() {
 		if (!gameManager.submarine.isDead) {
-        const speed = gameManager.getUpgradeValue("shipSpeed");
+			const speed = gameManager.getUpgradeValue("shipSpeed");
 			// X direction - assume no key pressed
 			// Check for left and right keys
 			let flipX = this.flipX;
@@ -150,9 +145,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		// End the game
 		if (gameManager.submarine.oxygen <= 0) {
 			gameManager.submarine.isDead = true;
-            this.setFrictionAir(0.5)
+			this.setFrictionAir(0.5);
 			this.setAngularVelocity(0.1);
-            this.setIgnoreGravity(false);
+			this.setIgnoreGravity(false);
 		}
 	}
 
@@ -169,4 +164,18 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.getUpgradeValue("capacity")
 		);
 	}
+    checkUpgrades() {
+        if (gameManager.getUpgradeValue("chain") !== this.hook.getLength()) {
+            this.upgradeArm();
+        }
+    }
+	upgradeArm() {
+		this.hook.destroy();
+		this.hook = new MechanicalArm(
+			this.scene,
+			this,
+			gameManager.getUpgradeValue("chain")
+		);
+	}
+
 }
