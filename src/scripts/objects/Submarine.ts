@@ -10,6 +10,7 @@ const BUOYANCY = 1.8;
 export default class Submarine extends Phaser.Physics.Matter.Image {
 	keys: Record<Key, Phaser.Input.Keyboard.Key>;
 	hook: MechanicalArm;
+	scene: Phaser.Scene;
 
 	// Constructor for submarine
 	constructor(scene: Phaser.Scene, x: number, y: number = WATER_LEVEL - 20) {
@@ -21,7 +22,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		scene.add.existing(this);
 		this.setupKeys();
-
+		this.scene = scene;
 		this.setCollisionCategory(CollisionCategories.SUBMARINE);
 		this.setCollidesWith(
 			CollisionCategories.WALLS |
@@ -54,13 +55,16 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	// Update loop - game physics based on acceleration
-	update() {
+	update(time) {
 		this.updateKeys();
 		this.updateArm();
 		this.updateDepth();
-		if (gameManager.submarineIsDead)
-			this.killSubmarine();
+		if (gameManager.submarine.isDead) {
+			if (gameManager.submarine.diedAt == 0)
+				gameManager.submarine.diedAt = time;
 
+			this.killSubmarine(time);
+		}
 	}
 
 	updateDepth() {
@@ -118,11 +122,14 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	// Function to run if you kill the submarine
-	killSubmarine() {
+	killSubmarine(time) {
 		gameManager.submarine.isDead = true;
 		this.setFrictionAir(0.5);
 		this.setAngularVelocity(0.1);
 		this.setIgnoreGravity(false);
+
+		// This function will check whether it's time to go to the main menu yet
+		this.goToMainMenu(time);
 	}
 
 	checkUpgrades() {
@@ -136,5 +143,14 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			this,
 			gameManager.getUpgradeValue("chain")
 		);
+	}
+
+	// Go to the main menu, if the sub has been dead for 5 seconds
+	goToMainMenu(time) {
+		console.log("Checking whether to go to main menu");
+		if (time - gameManager.submarine.diedAt > 5000) {
+			this.scene.scene.remove("UIScene");
+			this.scene.scene.start("MenuScene");
+		}
 	}
 }

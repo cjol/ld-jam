@@ -34,6 +34,7 @@ export default class GameManager {
 		};
 		isAtSurface: boolean;
 		isDead: boolean;
+		diedAt: number;
 		holdFull: boolean;
 		oxygenLow: boolean;
 		pressureWarning: number;
@@ -43,7 +44,6 @@ export default class GameManager {
 	maxDepthReached: number;
 	currentDepth: number;
 	upgradeMenuOpen: boolean;
-	submarineIsDead: boolean;
 
 	// Initialise the game
 	constructor() {
@@ -53,7 +53,6 @@ export default class GameManager {
 		this.maxDepthReached = 0;
 		this.currentDepth = 0;
 		this.upgradeMenuOpen = false;
-		this.submarineIsDead = false;
 
 		// At the start of the game, set all upgrades to 0
 		this.upgrades = {
@@ -139,6 +138,7 @@ export default class GameManager {
 			},
 			isAtSurface: true,
 			isDead: false,
+			diedAt: 0,
 			holdFull: false,
 			oxygenLow: false,
 			pressureWarning: 0
@@ -282,7 +282,7 @@ export default class GameManager {
 	}
 
 	markSubmarineDestroyed() {
-		this.submarineIsDead = true;
+		this.submarine.isDead = true;
 	}
 }
 
