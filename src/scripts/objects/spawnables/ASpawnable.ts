@@ -22,13 +22,18 @@ export abstract class ASpawnable<
 			frictionAir: 0,
 			mass: 0.001
 		});
-		scene.add.existing(this);
 
 		this.band = band;
 
 		this.setSensor(true);
 		this.setIgnoreGravity(true);
+
+		this.beforeSceneAdd(scene);
+
+		scene.add.existing(this);
 	}
+
+	protected beforeSceneAdd(scene: Phaser.Scene): void {}
 
 	public setParameters(parameters: T) {
 		this.x = parameters.position.x;
