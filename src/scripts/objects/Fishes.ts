@@ -155,8 +155,8 @@ export class FishBand {
 
 		const angleRange: number[] = leftSide
 			? this.generator.pick([
-					[345, 360],
-					[0, 15],
+				[345, 360],
+				[0, 15]
 			  ])
 			: [165, 195];
 		const directionAngle: number = this.generator.integerInRange(
@@ -187,7 +187,7 @@ export class FishGroup {
 	private readonly bandParameters: IBandParameters[] = [
 		{
 			minDepth: 0,
-			maxDepth: 1000,
+			maxDepth: 200,
 			maxNumberOfFish: 10,
 			availableFishTypes: [1, 2]
 		}
