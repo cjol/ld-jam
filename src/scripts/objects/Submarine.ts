@@ -41,7 +41,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 		this.oxygenBar = new Bar(scene, 50, 50, 100, 100, "health");
 		this.cargoBar = new Bar(scene, 50, 50, 100, 100, "cargo");
-		this.setScale(0.25);
+
+		this.displayWidth = this.width * 0.25;
+		this.displayHeight = this.height * 0.25;
 		this.setIgnoreGravity(true);
 	}
 
@@ -69,23 +71,22 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 	updateDepth() {
 
-        // Update the max depth if it needs it
-        var depth = (this.y - WATER_LEVEL) / 10;
-        gameManager.currentDepth = depth
-        if (depth > gameManager.maxDepthReached) {
-            gameManager.maxDepthReached = depth
-        }
+		// Update the max depth if it needs it
+		var depth = (this.y - WATER_LEVEL) / 10;
+		gameManager.currentDepth = depth
+		if (depth > gameManager.maxDepthReached) {
+			gameManager.maxDepthReached = depth
+		}
 		// Check how close we are to the sub's pressure limit
 		var subDepthLimit = gameManager.getUpgradeValue('depthLimit');
 		gameManager.submarine.pressureWarning = 0;
 		if ((depth / subDepthLimit) >= 0.8) {
 			gameManager.submarine.pressureWarning = 1;
-		} 
+		}
 		if (depth >= subDepthLimit) {
 			gameManager.submarine.pressureWarning = 2;
 			this.killSubmarine();
-		} 
-
+		}
 	}
 
 	updateArm() {
@@ -93,43 +94,44 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	updateKeys() {
-		if (!gameManager.submarine.isDead) {
-			const speed = gameManager.getUpgradeValue("shipSpeed");
-			// X direction - assume no key pressed
-			// Check for left and right keys
-			let flipX = this.flipX;
-			if (this.keys.left.isDown) {
-				this.setVelocityX(-speed);
-				flipX = true;
-			} else if (this.keys.right.isDown) {
-				this.setVelocityX(speed);
-				flipX = false;
-			}
+		if (gameManager.submarine.isDead)
+			return;
 
-			// Force the sub not to rotate
-			this.setFlip(flipX, false);
-			this.setRotation(0);
+		const speed = gameManager.getUpgradeValue("shipSpeed");
+		// X direction - assume no key pressed
+		// Check for left and right keys
+		let flipX = this.flipX;
+		if (this.keys.left.isDown) {
+			this.setVelocityX(-speed);
+			flipX = true;
+		} else if (this.keys.right.isDown) {
+			this.setVelocityX(speed);
+			flipX = false;
+		}
 
-			// Y direction - assume no key pressed
-			// Check for up and down keys
-			if (this.keys.up.isDown) {
-				this.setVelocityY(-speed * BUOYANCY);
-				this.setRotation(flipX ? 0.1 : -0.1);
-			} else if (this.keys.down.isDown) {
-				this.setVelocityY(speed);
-				this.setRotation(flipX ? -0.1 : 0.1);
-			}
+		// Force the sub not to rotate
+		this.setFlip(flipX, false);
+		this.setRotation(0);
 
-			// stop moving up past the water level
-			if (this.y < WATER_LEVEL) {
-				this.y = WATER_LEVEL;
-			}
-			if (this.y < WATER_LEVEL + 20) {
-				gameManager.submarine.isAtSurface = true;
-			} else {
-				if (gameManager.submarine.isAtSurface) {
-					gameManager.submarine.isAtSurface = false;
-				}
+		// Y direction - assume no key pressed
+		// Check for up and down keys
+		if (this.keys.up.isDown) {
+			this.setVelocityY(-speed * BUOYANCY);
+			this.setRotation(flipX ? 0.1 : -0.1);
+		} else if (this.keys.down.isDown) {
+			this.setVelocityY(speed);
+			this.setRotation(flipX ? -0.1 : 0.1);
+		}
+
+		// stop moving up past the water level
+		if (this.y < WATER_LEVEL) {
+			this.y = WATER_LEVEL;
+		}
+		if (this.y < WATER_LEVEL + 20) {
+			gameManager.submarine.isAtSurface = true;
+		} else {
+			if (gameManager.submarine.isAtSurface) {
+				gameManager.submarine.isAtSurface = false;
 			}
 		}
 	}
@@ -180,18 +182,17 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 	// Function to run if you kill the submarine
 	killSubmarine() {
-
 		gameManager.submarine.isDead = true;
 		this.setFrictionAir(0.5);
 		this.setAngularVelocity(0.1);
 		this.setIgnoreGravity(false);
 	}
 
-    checkUpgrades() {
-        if (gameManager.getUpgradeValue("chain") !== this.hook.getLength()) {
-            this.upgradeArm();
-        }
-    }
+	checkUpgrades() {
+		if (gameManager.getUpgradeValue("chain") !== this.hook.getLength()) {
+			this.upgradeArm();
+		}
+	}
 	upgradeArm() {
 		this.hook.destroy();
 		this.hook = new MechanicalArm(
