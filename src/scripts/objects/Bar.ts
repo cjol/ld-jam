@@ -2,29 +2,29 @@ interface BarConfig {
 	color: number;
 	lowColor: number;
 	lowThreshold: number;
-	width: number;
-	height: number;
+	// width: number;
+	// height: number;
 	label: string;
 }
 const healthConfig: BarConfig = {
-	width: 400,
-	height: 50,
+	// width: 400,
+	// height: 50,
 	lowColor: 0xff0000,
 	color: 0x00ff88,
 	lowThreshold: 0.5,
 	label: "Hull Integrity"
 };
 const oxygenConfig: BarConfig = {
-	width: 400,
-	height: 50,
+	// width: 400,
+	// height: 50,
 	lowColor: 0xff0000,
 	color: 0x0088ff,
 	lowThreshold: 0.5,
 	label: "Oxygen Remaining"
 };
 const cargoConfig: BarConfig = {
-	width: 400,
-	height: 50,
+	// width: 400,
+	// height: 50,
 	lowColor: 0x555555,
 	color: 0x555555,
 	lowThreshold: 0.3,
@@ -37,6 +37,8 @@ export class Bar extends Phaser.GameObjects.Graphics {
 	value: number;
 	maxValue: number;
 	config: BarConfig;
+	barWidth: number;
+	barHeight: number;
 	barName: string;
 	barLabel: Phaser.GameObjects.Text;
 
@@ -46,6 +48,8 @@ export class Bar extends Phaser.GameObjects.Graphics {
 		y: number,
 		maxValue: number,
 		value = maxValue,
+		barWidth: number,
+		barHeight: number,
 		barName: string
 	) {
 		super(scene);
@@ -53,6 +57,8 @@ export class Bar extends Phaser.GameObjects.Graphics {
 		this.y = y;
 		this.maxValue = maxValue;
 		this.value = value;
+		this.barWidth = barWidth;
+		this.barHeight = barHeight;
 		scene.add.existing(this);
 		if (barName == "oxygen")
 			this.config = oxygenConfig;
@@ -69,9 +75,9 @@ export class Bar extends Phaser.GameObjects.Graphics {
 		this.barLabel = new Phaser.GameObjects.Text(
 			scene,
 			this.x,
-			this.y - 20,
+			this.y - 10,
 			this.config.label,
-			{ color: "black", fontSize: "24px" }
+			{ color: "black", fontSize: "16px" }
 		).setOrigin(0.5);
 		scene.add.existing(this.barLabel);
 	}
@@ -84,20 +90,15 @@ export class Bar extends Phaser.GameObjects.Graphics {
 
 		//  BG
 		this.fillStyle(0x000000);
-		this.fillRect(
-			-this.config.width / 2,
-			0,
-			this.config.width,
-			this.config.height
-		);
+		this.fillRect(-this.barWidth / 2, 0, this.barWidth, this.barHeight);
 
 		//  Health
 		this.fillStyle(0xffffff);
 		this.fillRect(
-			-this.config.width / 2 + 2,
+			-this.barWidth / 2 + 2,
 			0 + 2,
-			this.config.width - 4,
-			this.config.height - 4
+			this.barWidth - 4,
+			this.barHeight - 4
 		);
 		const percent = this.value / this.maxValue;
 		if (percent < this.config.lowThreshold)
@@ -105,13 +106,8 @@ export class Bar extends Phaser.GameObjects.Graphics {
 		else
 			this.fillStyle(this.config.color);
 
-		const d = Math.floor(percent * (this.config.width - 4));
+		const d = Math.floor(percent * (this.barWidth - 4));
 
-		this.fillRect(
-			-this.config.width / 2 + 2,
-			0 + 2,
-			d,
-			this.config.height - 4
-		);
+		this.fillRect(-this.barWidth / 2 + 2, 0 + 2, d, this.barHeight - 4);
 	}
 }

@@ -26,6 +26,7 @@ export default class UIGameObject {
 	cargoBar: Bar;
 	oxygenBar: Bar;
 	hullBar: Bar;
+	infoPanel: Phaser.GameObjects.Image;
 	leftBarsBG: Phaser.GameObjects.Image;
 	rightBarsBG: Phaser.GameObjects.Image;
 
@@ -33,6 +34,24 @@ export default class UIGameObject {
 	constructor(scene: Phaser.Scene, gameManager: GameManager) {
 		this.scene = scene;
 		this.gameManager = gameManager;
+
+		// Create the three progress bars
+		// Get the bar positions from the screen size
+		const screenWidth = this.scene.cameras.main.width;
+		const screenHeight = this.scene.cameras.main.height;
+		const standardScreenWidth = 1550;
+		const standardScreenHeight = 972;
+		const screenWidthRatio = screenWidth / standardScreenWidth;
+		const screenHeightRatio = screenHeight / standardScreenHeight;
+		const barWidth = Math.ceil(200 * screenWidthRatio);
+		const barHeight = Math.ceil(25 * screenHeightRatio);
+		const edgeOffset = 75 * screenWidthRatio;
+		const yPosLower = screenHeight - 2 * barHeight;
+		const yPosUpper = screenHeight - 4 * barHeight;
+		const xPosLeft = barWidth / 2 + edgeOffset;
+		const xPosRight = screenWidth - (barWidth / 2 + edgeOffset);
+		const xPosInfo = xPosRight - edgeOffset;
+		const yPosInfo = 125 * screenHeightRatio;
 
 		// Create the 'selling' buttons
 		this.sellFishButton = new UIButton(
@@ -112,71 +131,101 @@ export default class UIGameObject {
 		this.warningMessage.visible = false;
 		scene.add.existing(this.warningMessage);
 
+		// Draw a background for the control panel
+		this.infoPanel = new Phaser.GameObjects.Image(
+			scene,
+			xPosInfo,
+			yPosInfo,
+			"ui-backdrop"
+		);
+		scene.add.existing(this.infoPanel);
+		this.infoPanel.setScale(
+			0.4 * screenWidthRatio,
+			0.35 * screenHeightRatio
+		);
+
 		// Create a text message for current gold
 		this.currentWealthText = new Phaser.GameObjects.Text(
 			scene,
-			(3 * scene.cameras.main.width) / 4,
-			50,
-			"Gold: 0",
-			{ color: "green", fontSize: "36px" }
+			xPosInfo,
+			yPosInfo - 50 * screenHeightRatio,
+			"Current Gold: 0",
+			{ color: "black", fontSize: "36px" }
 		).setOrigin(0.5);
 		scene.add.existing(this.currentWealthText);
 
 		// Create a text message for current depth
 		this.currentDepthText = new Phaser.GameObjects.Text(
 			scene,
-			(3 * scene.cameras.main.width) / 4,
-			80,
+			xPosInfo,
+			yPosInfo + 0 * screenHeightRatio,
 			"Current Depth: 0",
-			{ color: "green", fontSize: "36px" }
+			{ color: "black", fontSize: "36px" }
 		).setOrigin(0.5);
 		scene.add.existing(this.currentDepthText);
 
 		// Create a text message for best depth
 		this.maxDepthText = new Phaser.GameObjects.Text(
 			scene,
-			(3 * scene.cameras.main.width) / 4,
-			110,
+			xPosInfo,
+			yPosInfo + 50 * screenHeightRatio,
 			"Max Depth: 0",
-			{ color: "green", fontSize: "36px" }
+			{ color: "black", fontSize: "36px" }
 		).setOrigin(0.5);
 		scene.add.existing(this.maxDepthText);
 
-		// Create the three progress bars
-		// Get the bar positions from the screen size
-		const screenWidth = this.scene.cameras.main.width;
-		const screenHeight = this.scene.cameras.main.height;
-		const edgeOffset = 100;
-		const yPosLower = screenHeight - 100;
-		const yPosUpper = screenHeight - 200;
-		const xPosLeft = 200 + edgeOffset;
-		const xPosRight = screenWidth - (200 + edgeOffset);
 		// Draw a background for the left and right sides
 		this.leftBarsBG = new Phaser.GameObjects.Image(
 			scene,
 			xPosLeft,
-			(yPosLower + yPosUpper) / 2 + 10,
+			(yPosLower + yPosUpper) / 2 + 5,
 			"ui-backdrop"
 		);
 		scene.add.existing(this.leftBarsBG);
-		this.leftBarsBG.setScale(0.4, 0.45);
+		this.leftBarsBG.setScale(
+			0.2 * screenWidthRatio,
+			0.25 * screenHeightRatio
+		);
 		this.rightBarsBG = new Phaser.GameObjects.Image(
 			scene,
 			xPosRight,
-			(yPosLower + yPosUpper) / 2 + 10,
+			(yPosLower + yPosUpper) / 2 + 5,
 			"ui-backdrop"
 		);
 		scene.add.existing(this.rightBarsBG);
-		this.rightBarsBG.setScale(0.4, 0.45);
+		this.rightBarsBG.setScale(
+			0.2 * screenWidthRatio,
+			0.25 * screenHeightRatio
+		);
 		// Draw the bars
-		this.cargoBar = new Bar(scene, xPosLeft, yPosLower, 100, 100, "cargo");
-		this.hullBar = new Bar(scene, xPosRight, yPosLower, 100, 100, "hull");
+		this.cargoBar = new Bar(
+			scene,
+			xPosLeft,
+			yPosLower,
+			100,
+			100,
+			barWidth,
+			barHeight,
+			"cargo"
+		);
+		this.hullBar = new Bar(
+			scene,
+			xPosRight,
+			yPosLower,
+			100,
+			100,
+			barWidth,
+			barHeight,
+			"hull"
+		);
 		this.oxygenBar = new Bar(
 			scene,
 			xPosRight,
 			yPosUpper,
 			100,
 			100,
+			barWidth,
+			barHeight,
 			"oxygen"
 		);
 	}
@@ -251,7 +300,7 @@ export default class UIGameObject {
 
 		// Update the tracker texts
 		this.currentWealthText.setText(
-			"Gold: " + this.gameManager.currentWealth
+			"Current Gold: " + this.gameManager.currentWealth
 		);
 		this.currentDepthText.setText(
 			"Current Depth: " + Math.floor(this.gameManager.currentDepth)

@@ -23,6 +23,8 @@ export default class MenuScene extends Phaser.Scene {
 		const menuXPos = this.cameras.main.width / 2;
 		const menuYPos = this.cameras.main.height / 2;
 
+		const scale = this.cameras.main.width / 1980;
+
 		// Menu Background
 		this.background = new Phaser.GameObjects.Image(
 			this,
@@ -31,7 +33,7 @@ export default class MenuScene extends Phaser.Scene {
 			"menu-background"
 		);
 		this.add.existing(this.background);
-		this.background.setScale(1);
+		this.background.setScale(scale);
 
 		// Add a play button
 		this.playButton = new UIButton(
@@ -45,6 +47,7 @@ export default class MenuScene extends Phaser.Scene {
 			1,
 			gameManager
 		);
+		this.playButton.setAlpha(1);
 
 		this.scene.get("MenuScene").events.on("game-started", (e) => {
 			this.cameras.main.fadeOut(500, 0, 0, 0);
