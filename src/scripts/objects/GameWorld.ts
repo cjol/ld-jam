@@ -30,8 +30,10 @@ export default class GameWorld {
 				if (pair.type === "hook" && item instanceof Fish)
 					gameManager.catchFish(item);
 
-				if (pair.type === "sub" && item instanceof Hazard)
+				if (pair.type === "sub" && item instanceof Hazard) {
 					gameManager.hitHazard(item);
+					this.submarine.takeDamage(item.damage / 20);
+				}
 			});
 	}
 }
@@ -54,26 +56,26 @@ function detectObjs(
 		return {
 			type: "hook",
 			hook: pair.bodyA.gameObject,
-			item: pair.bodyB.gameObject
+			item: pair.bodyB.gameObject,
 		};
 	}
 	if (pair.bodyA.gameObject instanceof Submarine) {
 		return {
 			type: "sub",
 			sub: pair.bodyA.gameObject,
-			item: pair.bodyB.gameObject
+			item: pair.bodyB.gameObject,
 		};
 	} else if (pair.bodyB.gameObject instanceof Submarine) {
 		return {
 			type: "sub",
 			sub: pair.bodyB.gameObject,
-			item: pair.bodyA.gameObject
+			item: pair.bodyA.gameObject,
 		};
 	} else if (pair.bodyB.gameObject instanceof MechanicalHook) {
 		return {
 			type: "hook",
 			hook: pair.bodyB.gameObject,
-			item: pair.bodyA.gameObject
+			item: pair.bodyA.gameObject,
 		};
 	}
 

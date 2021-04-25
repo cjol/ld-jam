@@ -28,7 +28,7 @@ export class MechanicalArm {
 			SEGMENT_STIFFNESS,
 			{
 				pointA: { x: 0, y: 15 },
-				pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 }
+				pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 },
 			}
 		);
 
@@ -48,6 +48,16 @@ export class MechanicalArm {
 	destroy() {
 		this.segments.forEach((x) => x.destroy());
 		this.hook.destroy();
+	}
+
+	setTint(t?: number) {
+		if (t) {
+			this.segments.forEach((x) => (x.tint = t));
+			this.hook.tint = t;
+		} else {
+			this.segments.forEach((x) => x.clearTint());
+			this.hook.clearTint();
+		}
 	}
 }
 
@@ -84,12 +94,12 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 				{
 					pointA: {
 						x: SEGMENT_LENGTH / 2 - SEGMENT_LENGTH / 8,
-						y: 0
+						y: 0,
 					},
 					pointB: {
 						x: -SEGMENT_LENGTH / 2 + SEGMENT_LENGTH / 8,
-						y: 0
-					}
+						y: 0,
+					},
 				}
 			);
 		}
@@ -124,7 +134,9 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(
 			// CollisionCategories.SUBMARINE |
-			CollisionCategories.WALLS | CollisionCategories.FISH | CollisionCategories.HAZARD
+			CollisionCategories.WALLS |
+				CollisionCategories.FISH |
+				CollisionCategories.HAZARD
 		);
 		this.sub = submarine;
 		this.prev = parent;
@@ -140,7 +152,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			SEGMENT_STIFFNESS,
 			{
 				pointA: { x: SEGMENT_LENGTH / 2, y: 0 },
-				pointB: { x: 0, y: 0 }
+				pointB: { x: 0, y: 0 },
 			}
 		);
 	}
