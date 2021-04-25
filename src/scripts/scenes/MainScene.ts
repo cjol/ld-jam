@@ -1,7 +1,6 @@
 import Background from "../objects/Background";
 import { FishGroup } from "../objects/Fishes";
 import GameWorld from "../objects/GameWorld";
-import { MechanicalHook } from "../objects/MechanicalHook";
 import Submarine from "../objects/Submarine";
 
 export default class MainScene extends Phaser.Scene {

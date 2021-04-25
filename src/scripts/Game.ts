@@ -1,9 +1,9 @@
 import "phaser";
 
-import MainScene from "./scenes/mainScene";
-import MenuScene from "./scenes/menuScene";
-import PreloadScene from "./scenes/preloadScene";
-import UIScene from "./scenes/uiScene";
+import MainScene from "./scenes/MainScene";
+import MenuScene from "./scenes/MenuScene";
+import PreloadScene from "./scenes/PreloadScene";
+import UIScene from "./scenes/UIScene";
 
 const config = window.addEventListener("load", () => {
 	const game = new Phaser.Game({
