@@ -118,7 +118,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(
-			// CollisionCategories.SUBMARINEs |
+			// CollisionCategories.SUBMARINE |
 			CollisionCategories.WALLS | CollisionCategories.FISH
 		);
 

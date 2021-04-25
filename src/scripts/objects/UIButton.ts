@@ -88,7 +88,9 @@ export default class UIButton extends Phaser.GameObjects.Image {
 				break;
 			case "upgrade-depth-limit":
 				didUpgrade = this.gameManager.purchaseUpgrade("depthLimit");
-				this.gameManager.submarine.hull = this.gameManager.getUpgradeValue("depthLimit");
+				this.gameManager.submarine.hull = this.gameManager.getUpgradeValue(
+					"depthLimit"
+				);
 				break;
 
 			// Main menu buttons

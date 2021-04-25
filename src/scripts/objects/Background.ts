@@ -114,9 +114,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
 		);
 		this.graphics.fillRect(0, 0, this.width, this.height);
 
-		this.graphics.fillStyle(
-			this.SKY_COLOUR
-		);
+		this.graphics.fillStyle(this.SKY_COLOUR);
 		this.graphics.fillRect(0, 0, this.width, this.SKY_HEIGHT);
 	}
 }
