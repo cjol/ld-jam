@@ -4,7 +4,7 @@ import { CollisionCategories } from "./CollisionCategories";
 export default class Background extends Phaser.GameObjects.GameObject {
 	private readonly SKY_COLOUR: number = 0xabdfe4;
 	private readonly SKY_HEIGHT: number = 180;
-	private readonly BACKGROUND_COLOUR: number = 0x3895c7;
+	private readonly BACKGROUND_COLOUR: number = 0x254c7e;
 	private readonly graphics: Phaser.GameObjects.Graphics;
 	private readonly tilemap: Phaser.Tilemaps.Tilemap;
 
