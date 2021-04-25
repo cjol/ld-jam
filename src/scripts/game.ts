@@ -1,5 +1,6 @@
 import 'phaser';
 import PhaserRaycaster from 'phaser-raycaster';
+import MenuScene from './scenes/menuScene';
 import MainScene from './scenes/mainScene';
 import PreloadScene from './scenes/preloadScene';
 import UIScene from './scenes/uiScene';
@@ -14,7 +15,7 @@ const config = {
         width: window.innerWidth,
         height: window.innerHeight
     },
-    scene: [PreloadScene, MainScene, UIScene],
+    scene: [PreloadScene, MenuScene, MainScene, UIScene],
     physics: {
         default: 'matter',
         matter: {

@@ -5,9 +5,10 @@ export default class UIButton extends Phaser.GameObjects.Image{
 
     gameManager: GameManager;
     buttonKey: string;
+    upgradeName: string;
     buttonText: Phaser.GameObjects.Text;
 
-    constructor(scene: Phaser.Scene, buttonKey: string, buttonText: string, x: number, y: number, gameManager:GameManager) {
+    constructor(scene: Phaser.Scene, buttonKey: string, buttonText: string, upgradeName: string, x: number, y: number, gameManager:GameManager) {
 
         // Add the image
         super(scene,x,y,'button-background');
@@ -18,6 +19,7 @@ export default class UIButton extends Phaser.GameObjects.Image{
         scene.add.existing(this.buttonText);
 
         this.buttonKey = buttonKey;
+        this.upgradeName = upgradeName;
         this.gameManager = gameManager;
 
         // Make the button interactive, set the scale and set it as transparent at first
@@ -72,6 +74,12 @@ export default class UIButton extends Phaser.GameObjects.Image{
                 break;
             case 'upgrade-depth-limit':
                 didUpgrade = this.gameManager.purchaseUpgrade('depthLimit');
+                break;
+
+            // Main menu buttons
+            case 'play-button':
+                // Trigger starting the game
+                this.scene.events.emit('game-started');
                 break;
         }
         if (didUpgrade) this.scene.events.emit('upgraded');
