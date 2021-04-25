@@ -75,6 +75,12 @@ export default class UIButton extends Phaser.GameObjects.Image{
             case 'upgrade-depth-limit':
                 didUpgrade = this.gameManager.purchaseUpgrade('depthLimit');
                 break;
+
+            // Main menu buttons
+            case 'play-button':
+                // Trigger starting the game
+                this.scene.events.emit('game-started');
+                break;
         }
         if (didUpgrade) this.scene.events.emit('upgraded');
 

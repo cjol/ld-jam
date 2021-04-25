@@ -13,11 +13,13 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image('background-tiles', 'assets/img/tiles/wall.png');
         this.load.image('button-background', 'assets/img/ui/button_background.png');
         this.load.image('surface-vessel', 'assets/img/Fishing_vessel_1.png');
+        this.load.image('menu-background', 'assets/img/ui/menu_background.png');
     }
 
     create() {
         this.scene.start('MainScene');
         this.scene.start('UIScene');
+        // this.scene.start('MenuScene');
 
         /**
          * This is how you would dynamically import the mainScene class (with code splitting),
