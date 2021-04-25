@@ -28,11 +28,10 @@ export class MechanicalArm {
 			SEGMENT_STIFFNESS,
 			{
 				pointA: { x: 0, y: 15 },
-				pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 },
+				pointB: { x: -SEGMENT_LENGTH / 2 + 10, y: 0 }
 			}
 		);
 
-		// TODO: sub and hook should collide; chains should not
 		this.hook = new MechanicalHook(scene, this.segments[links - 1], sub);
 	}
 
@@ -71,7 +70,7 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 		// Create claw
 		super(scene.matter.world, x, y, "chain", undefined, {
 			frictionAir: 0.05,
-			mass: 0.3,
+			mass: 0.3
 		});
 
 		this.setIgnoreGravity(true);
@@ -94,12 +93,12 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 				{
 					pointA: {
 						x: SEGMENT_LENGTH / 2 - SEGMENT_LENGTH / 8,
-						y: 0,
+						y: 0
 					},
 					pointB: {
 						x: -SEGMENT_LENGTH / 2 + SEGMENT_LENGTH / 8,
-						y: 0,
-					},
+						y: 0
+					}
 				}
 			);
 		}
@@ -126,7 +125,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			undefined,
 			{
 				frictionAir: 0.05,
-				mass: 2,
+				mass: 2
 			}
 		);
 		this.setIgnoreGravity(true);
@@ -152,7 +151,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			SEGMENT_STIFFNESS,
 			{
 				pointA: { x: SEGMENT_LENGTH / 2, y: 0 },
-				pointB: { x: 0, y: 0 },
+				pointB: { x: 0, y: 0 }
 			}
 		);
 	}
@@ -189,9 +188,9 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 				this.y = hookPos.y;
 			}
 		}
-		if (this.y < WATER_LEVEL) {
+		if (this.y < WATER_LEVEL)
 			this.y = WATER_LEVEL;
-		}
+
 	}
 	updateMouse() {
 		const cameraOffset = this.scene.cameras.main.worldView.top;
