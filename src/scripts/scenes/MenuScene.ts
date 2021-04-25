@@ -43,7 +43,8 @@ export default class MenuScene extends Phaser.Scene {
 			menuXPos,
 			menuYPos,
 			1,
-			gameManager
+			gameManager,
+			false
 		);
 		this.playButton.setAlpha(1);
 

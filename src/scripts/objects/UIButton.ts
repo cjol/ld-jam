@@ -15,7 +15,8 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		x: number,
 		y: number,
 		scale: number,
-		gameManager: GameManager
+		gameManager: GameManager,
+		allowHover: boolean = true
 	) {
 		// Add the image
 		super(scene, x, y, buttonBackground);
@@ -39,8 +40,11 @@ export default class UIButton extends Phaser.GameObjects.Image {
 
 		// Set the on click method
 		this.on("pointerdown", () => this.buttonWasClicked());
-		this.on("pointerover", () => this.buttonMouseover());
-		this.on("pointerout", () => this.buttonMouseout());
+
+		if (allowHover) {
+			this.on("pointerover", () => this.buttonMouseover());
+			this.on("pointerout", () => this.buttonMouseout());
+		}
 	}
 
 	// Run when the button is clicked
@@ -101,14 +105,12 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		if (didUpgrade)
 			this.scene.events.emit("upgraded");
 	}
-	buttonMouseover() {
-		if (this.buttonKey != "play-button")
-			this.setAlpha(1);
 
+	private buttonMouseover(): void {
+		this.setAlpha(1);
 	}
-	buttonMouseout() {
-		if (this.buttonKey != "play-button")
-			this.setAlpha(0.25);
 
+	private buttonMouseout(): void {
+		this.setAlpha(0.25);
 	}
 }
