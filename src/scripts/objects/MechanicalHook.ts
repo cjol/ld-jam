@@ -33,7 +33,7 @@ export class MechanicalArm {
 		);
 
 		// TODO: sub and hook should collide; chains should not
-		this.hook = new MechanicalHook(scene, this.segments[links - 1]);
+		this.hook = new MechanicalHook(scene, this.segments[links - 1], sub);
 	}
 
 	update() {
@@ -60,8 +60,8 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 	) {
 		// Create claw
 		super(scene.matter.world, x, y, "chain", undefined, {
-			// frictionAir: 0.05,
-			mass: 0.3
+			frictionAir: 0.05,
+			mass: 0.3,
 		});
 
 		this.setIgnoreGravity(true);
@@ -99,9 +99,14 @@ export class MechanicalArmSegment extends Phaser.Physics.Matter.Image {
 export class MechanicalHook extends Phaser.Physics.Matter.Image {
 	// private readonly keys: Record<string, Phaser.Input.Keyboard.Key>;
 	private readonly prev: Phaser.Physics.Matter.Image;
+	sub: Submarine;
 
 	// Constructor for the claw
-	constructor(scene: Phaser.Scene, parent: Phaser.Physics.Matter.Image) {
+	constructor(
+		scene: Phaser.Scene,
+		parent: Phaser.Physics.Matter.Image,
+		submarine: Submarine
+	) {
 		// Create claw
 		super(
 			scene.matter.world,
@@ -110,8 +115,8 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			"mechanical-hook",
 			undefined,
 			{
-				// frictionAir: 0.05,
-				mass: 2
+				frictionAir: 0.05,
+				mass: 2,
 			}
 		);
 		this.setIgnoreGravity(false);
@@ -121,7 +126,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			// CollisionCategories.SUBMARINE |
 			CollisionCategories.WALLS | CollisionCategories.FISH
 		);
-
+		this.sub = submarine;
 		this.prev = parent;
 		scene.add.existing(this);
 
@@ -141,11 +146,41 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 	}
 
 	update() {
-		this.updateMouse();
+		this.updateMouse2();
 		this.angle = this.prev.angle - 90;
 	}
 
-	// alternative update function using mouse instead of keyboard
+	// alternative update function using position instead of acceleration
+	updateMouse2() {
+		const cameraOffset = this.scene.cameras.main.worldView.top;
+		const mouse = new Phaser.Math.Vector2(
+			this.scene.input.activePointer.worldX,
+			this.scene.input.activePointer.worldY + cameraOffset
+		);
+		const subToMouse = mouse.clone().subtract(this.sub);
+
+		if (
+			!gameManager.submarine.isAtSurface &&
+			!gameManager.submarine.isDead
+		) {
+			const maxDistance =
+				gameManager.getUpgradeValue("chain") * (SEGMENT_LENGTH - 20);
+			if (subToMouse.length() < maxDistance) {
+				this.x = mouse.x;
+				this.y = mouse.y;
+			} else {
+				const hookPos = subToMouse
+					.clone()
+					.setLength(maxDistance)
+					.add(this.sub);
+				this.x = hookPos.x;
+				this.y = hookPos.y;
+			}
+		}
+		if (this.y < WATER_LEVEL) {
+			this.y = WATER_LEVEL;
+		}
+	}
 	updateMouse() {
 		const cameraOffset = this.scene.cameras.main.worldView.top;
 		const target = new Phaser.Math.Vector2(
