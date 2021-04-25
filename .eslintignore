@@ -1,0 +1,10 @@
+# don't ever lint node_modules
+node_modules
+webpack
+.github
+.vscode
+assets
+pwa
+readme
+typings
+.eslintrc.js
