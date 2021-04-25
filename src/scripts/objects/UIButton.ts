@@ -34,9 +34,9 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		this.gameManager = gameManager;
 
 		// Make the button interactive, set the scale and set it as transparent at first
-		this.setInteractive({ useHandCursor: true });
-		this.setScale(scale, scale * 0.7);
-		this.setAlpha(0.25);
+		this.setInteractive({ useHandCursor: true })
+			.setScale(scale, scale * 0.7)
+			.setAlpha(0.25);
 
 		// Set the on click method
 		this.on("pointerdown", () => this.buttonWasClicked());
