@@ -1,6 +1,8 @@
 node_modules
 dist
 .cache
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 package-lock.json
 assets/*
