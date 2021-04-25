@@ -19,6 +19,16 @@ export default class Background extends Phaser.GameObjects.GameObject {
 		scene.add.existing(this);
 		this.graphics = scene.add.graphics();
 
+		// Add a ship to the surface
+		const surfaceVessel = new Phaser.GameObjects.Image(
+			scene,
+			300,
+			40,
+			"surface-vessel"
+		);
+		surfaceVessel.setScale(0.15).flipX = true;
+		scene.add.existing(surfaceVessel);
+
 		this.width = scene.cameras.main.width;
 		this.height = maxDepth;
 

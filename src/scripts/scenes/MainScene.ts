@@ -33,16 +33,6 @@ export default class MainScene extends Phaser.Scene {
 		// Add some objects
 		this.background = new Background(this, maxDepth);
 
-		// Add a ship to the surface
-		this.surfaceVessel = new Phaser.GameObjects.Image(
-			this,
-			300,
-			40,
-			"surface-vessel"
-		);
-		this.surfaceVessel.setScale(0.15).flipX = true;
-		this.add.existing(this.surfaceVessel);
-
 		this.fishGroup = new FishGroup(this, this.background.SafeSpawnHeight);
 		this.hazardGroup = new HazardGroup(
 			this,
