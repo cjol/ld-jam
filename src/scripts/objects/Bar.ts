@@ -9,6 +9,12 @@ interface BarConfig {
 const healthConfig: BarConfig = {
     width: 80, height: 16,
     lowColor: 0xff0000,
+    color: 0x00ff88,
+    lowThreshold: 0.5
+}
+const oxygenConfig: BarConfig = {
+    width: 80, height: 16,
+    lowColor: 0xff0000,
     color: 0x0088ff,
     lowThreshold: 0.5
 }
@@ -35,7 +41,8 @@ export class Bar extends Phaser.GameObjects.Graphics{
         this.maxValue = maxValue;
         this.value = value;
         scene.add.existing(this);
-        if (barName == 'health') {this.config = healthConfig};
+        if (barName == 'oxygen') {this.config = oxygenConfig};
+        if (barName == 'hull') {this.config = healthConfig};
         if (barName == 'cargo') {this.config = cargoConfig};
         this.barName = barName;
     }

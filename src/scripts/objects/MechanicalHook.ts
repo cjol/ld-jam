@@ -105,10 +105,10 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			undefined,
 			{
 				// frictionAir: 0.05,
-				mass: 5,
+				mass: 2,
 			}
 		);
-    this.setIgnoreGravity(false);
+    this.setIgnoreGravity(true);
 
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(

@@ -25,6 +25,7 @@ export default class GameManager {
     };
     submarine: {
         oxygen: number;
+        hull: number;
         cargo: { fishWeight: number, fishValue: number, oreWeight: number, oreValue: number, researchWeight: number, researchValue: number };
         isAtSurface: boolean;
         isDead: boolean;
@@ -119,6 +120,7 @@ export default class GameManager {
     initSub() {
         this.submarine = {
             oxygen: this.upgrades.tank.totalUpgrades[this.upgrades.tank.upgradesBought],
+            hull: this.getUpgradeValue("depthLimit"),
             cargo: { fishWeight: 0, fishValue: 0, oreWeight: 0, oreValue: 0, researchWeight: 0, researchValue: 0 },
             isAtSurface: true,
             isDead: false,

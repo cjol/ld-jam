@@ -10,7 +10,7 @@ const config =
 window.addEventListener('load', () => {
     const game = new Phaser.Game({
     type: Phaser.AUTO,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#244b7e',
     scale: {
         parent: 'phaser-game',
         mode: Phaser.Scale.FIT,
