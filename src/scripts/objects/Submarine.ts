@@ -19,7 +19,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		// Create submarine
 		super(scene.matter.world, x, y, "submarine", undefined, {
 			frictionAir: 0.05,
-			mass: 500,
+			mass: 500
 		});
 
 		scene.add.existing(this);
@@ -49,7 +49,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 				up: "W",
 				down: "S",
 				left: "A",
-				right: "D",
+				right: "D"
 			},
 			true,
 			true
@@ -61,9 +61,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.updateKeys();
 		this.updateArm();
 		this.updateDepth();
-		if (gameManager.submarine.isDead && !this.wasDeadLastTimeIChecked) {
+		if (gameManager.submarine.isDead && !this.wasDeadLastTimeIChecked)
 			this.killSubmarine();
-		}
+
 	}
 
 	updateDepth() {
@@ -79,7 +79,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	updateKeys() {
-		if (gameManager.submarine.isDead) return;
+		if (gameManager.submarine.isDead)
+			return;
 
 		const speed = gameManager.getUpgradeValue("shipSpeed");
 		// X direction - assume no key pressed
@@ -108,9 +109,11 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		}
 
 		// stop moving up past the water level
-		if (this.y < WATER_LEVEL) this.y = WATER_LEVEL;
+		if (this.y < WATER_LEVEL)
+			this.y = WATER_LEVEL;
 
-		if (this.y < WATER_LEVEL + 20) gameManager.submarine.isAtSurface = true;
+		if (this.y < WATER_LEVEL + 20)
+			gameManager.submarine.isAtSurface = true;
 		else {
 			if (gameManager.submarine.isAtSurface)
 				gameManager.submarine.isAtSurface = false;
@@ -126,28 +129,26 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 				this.scene.scene.start("MenuScene");
 			}
 		};
-		this.scene.cameras.main.fadeOut(5000, 50, 0, 0, callback)
+		this.scene.cameras.main.fadeOut(5000, 50, 0, 0, callback);
 		this.setFrictionAir(0.5);
-		this.setAngularVelocity(0.5);
 		this.setIgnoreGravity(false);
 	}
 
 	takeDamage(intensity: number) {
 		this.setColor(0xff1111);
 		const callback = (_, progress: number) => {
-			if (progress >= 1) {
+			if (progress >= 1)
 				this.setColor();
-			}
 		};
 		this.scene.cameras.main.shake(150, 0.03, false, callback);
 	}
 
 	setColor(t?: number) {
-		if (t) {
+		if (t)
 			this.tint = t;
-		} else {
+		else
 			this.clearTint();
-		}
+
 		this.hook.setTint(t);
 	}
 
@@ -163,5 +164,4 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			gameManager.getUpgradeValue("chain")
 		);
 	}
-
 }
