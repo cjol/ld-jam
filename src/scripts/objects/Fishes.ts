@@ -114,11 +114,7 @@ export class FishBand {
 
 		const half: number = this.parameters.maxNumberOfFish / 2;
 		for (let i = 0; i < this.parameters.maxNumberOfFish; i++) {
-			const parameters = this.spawnRandomFish(
-				i < half,
-				-FishBand.safetyGap,
-				scene.cameras.main.width + FishBand.safetyGap
-			);
+			const parameters = this.spawnRandomFish(i < half);
 			const fish: Fish = new Fish(scene, this);
 			fish.setParameters(parameters);
 			this.fishes.push(fish);
@@ -127,9 +123,7 @@ export class FishBand {
 
 	public recycleFish(fish: Fish): void {
 		const newParameters = this.spawnRandomFish(
-			this.generator.pick([true, false]),
-			-FishBand.safetyGap,
-			this.scene.cameras.main.width + FishBand.safetyGap
+			this.generator.pick([true, false])
 		);
 		fish.setParameters(newParameters);
 	}
@@ -140,13 +134,11 @@ export class FishBand {
 	}
 
 	// Method to create a fish moving in a random direction
-	spawnRandomFish(
-		leftSide: boolean,
-		leftOffScreen: number,
-		rightOffScreen: number
-	): IFishParameters {
+	spawnRandomFish(leftSide: boolean): IFishParameters {
 		// Choose a random fish to create
-		const x: number = leftSide ? leftOffScreen : rightOffScreen;
+		const x: number = leftSide
+			? -FishBand.safetyGap
+			: this.scene.cameras.main.width + FishBand.safetyGap;
 		const y: number = this.generator.integerInRange(
 			this.parameters.minDepth,
 			this.parameters.maxDepth
