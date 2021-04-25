@@ -14,9 +14,6 @@ interface IFishParameters {
 }
 
 export class Fish extends Phaser.Physics.Matter.Image {
-	public static readonly minSpeed: number = 0.5;
-	public static readonly maxSpeed: number = 1;
-
 	private readonly band: FishBand;
 
 	private started: boolean = false;
@@ -102,6 +99,10 @@ interface IBandParameters {
 
 export class FishBand {
 	private static readonly safetyGap: number = 200;
+	private static readonly minSpeed: number = 0.5;
+	private static readonly maxSpeed: number = 1;
+	private static readonly maxAngle: number = 15;
+
 	private readonly generator: PMath.RandomDataGenerator = new PMath.RandomDataGenerator();
 	private readonly parameters: IBandParameters;
 	private readonly scene: Scene;
@@ -137,28 +138,35 @@ export class FishBand {
 
 	// Method to create a fish moving in a random direction
 	spawnRandomFish(leftSide: boolean): IFishParameters {
-		// Choose a random fish to create
+		const width: number = this.scene.cameras.main.width;
 		const x: number = leftSide
 			? -FishBand.safetyGap
-			: this.scene.cameras.main.width + FishBand.safetyGap;
+			: width + FishBand.safetyGap;
 		const y: number = this.generator.integerInRange(
 			this.parameters.minDepth,
 			this.parameters.maxDepth
 		);
 		const speed: number = this.generator.realInRange(
-			Fish.minSpeed,
-			Fish.maxSpeed
+			FishBand.minSpeed,
+			FishBand.maxSpeed
 		);
 		const type: number = this.generator.pick(
 			this.parameters.availableFishTypes
 		);
 
+		const maxAngles = this.getMaxAngles(
+			x,
+			y,
+			this.parameters.minDepth,
+			this.parameters.maxDepth,
+			leftSide ? width : 0
+		);
 		const angleRange: number[] = leftSide
 			? this.generator.pick([
-				[345, 360],
-				[0, 15]
+				[360 - maxAngles.up, 360],
+				[0, maxAngles.down]
 			  ])
-			: [165, 195];
+			: [180 - maxAngles.down, 180 + maxAngles.up];
 		const directionAngle: number = this.generator.integerInRange(
 			angleRange[0],
 			angleRange[1]
@@ -181,13 +189,29 @@ export class FishBand {
 			scale: scale
 		};
 	}
+
+	private getMaxAngles(
+		x: number,
+		y: number,
+		minDepth: number,
+		maxDepth: number,
+		screenX: number
+	): { up: number; down: number } {
+		const x1 = screenX + Math.abs(x);
+		let upAngle: number = Math.atan((y - minDepth) / x1) * PMath.RAD_TO_DEG;
+		let downAngle: number =
+			Math.atan((maxDepth - y) / x1) * PMath.RAD_TO_DEG;
+		upAngle = Math.min(Math.floor(upAngle), FishBand.maxAngle);
+		downAngle = Math.min(Math.floor(downAngle), FishBand.maxAngle);
+		return { up: upAngle, down: downAngle };
+	}
 }
 
 export class FishGroup {
 	private readonly bandParameters: IBandParameters[] = [
 		{
 			minDepth: 0,
-			maxDepth: 200,
+			maxDepth: 500,
 			maxNumberOfFish: 10,
 			availableFishTypes: [1, 2]
 		}
