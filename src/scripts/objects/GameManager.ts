@@ -7,19 +7,82 @@ interface Upgrade {
 	price: number[];
 }
 
+interface Upgrades {
+	capacity: Upgrade;
+	depthLimit: Upgrade;
+	armour: Upgrade;
+	chain: Upgrade;
+	tank: Upgrade;
+	shipSpeed: Upgrade;
+	clawSpeed: Upgrade;
+	clawSize: Upgrade;
+	location: Upgrade;
+	collectable: Upgrade;
+}
+
 // Class to manage the game by keeping track of upgrades and money earned
 export default class GameManager {
-	upgrades: {
-		capacity: Upgrade;
-		depthLimit: Upgrade;
-		armour: Upgrade;
-		chain: Upgrade;
-		tank: Upgrade;
-		shipSpeed: Upgrade;
-		clawSpeed: Upgrade;
-		clawSize: Upgrade;
-		location: Upgrade;
-		collectable: Upgrade;
+	public readonly upgrades: Upgrades = {
+		// Capacity (units are pseudo-kg)
+		capacity: {
+			totalUpgrades: [50, 150, 300, 500, 750, 1000],
+			upgradesBought: 0,
+			price: [0, 10, 20, 30, 40, 50]
+		},
+		// Pressure hull
+		depthLimit: {
+			totalUpgrades: [150, 300, 450, 600, 750, 1000],
+			upgradesBought: 0,
+			price: [0, 10, 20, 30, 40, 50]
+		},
+		// Armour (units are collisions allowed)
+		armour: {
+			totalUpgrades: [2, 3, 4, 5, 6],
+			upgradesBought: 0,
+			price: [0, 10, 20, 30, 40]
+		},
+		// Chain length
+		chain: {
+			totalUpgrades: [2, 3, 4],
+			upgradesBought: 0,
+			price: [0, 10, 20]
+		},
+		// O2 tank (units are seconds underwater)
+		tank: {
+			totalUpgrades: [45000, 90, 135, 180, 225, 270, 305],
+			upgradesBought: 0,
+			price: [0, 10, 20, 30, 40, 50, 60]
+		},
+		// Ship speed
+		shipSpeed: {
+			totalUpgrades: [5, 6, 7],
+			upgradesBought: 0,
+			price: [0, 10, 20]
+		},
+		// Claw speed
+		clawSpeed: {
+			totalUpgrades: [5, 6, 7],
+			upgradesBought: 0,
+			price: [0, 10, 20]
+		},
+		// Claw size (units are 'scale')
+		clawSize: {
+			totalUpgrades: [0.25, 0.3, 0.35, 0.4],
+			upgradesBought: 0,
+			price: [0, 10, 20, 30]
+		},
+		// Location
+		location: {
+			totalUpgrades: [0, 1, 2],
+			upgradesBought: 0,
+			price: [0, 10, 20]
+		},
+		// Collectables - can collect fish (level 10, ore (level 21, research (level 32
+		collectable: {
+			totalUpgrades: [0, 1, 2],
+			upgradesBought: 0,
+			price: [0, 10, 20]
+		}
 	};
 	submarine: {
 		oxygen: number;
@@ -45,8 +108,7 @@ export default class GameManager {
 	currentDepth: number;
 	upgradeMenuOpen: boolean;
 
-	// Initialise the game
-	constructor() {
+	public initialise() {
 		// Initialise the trackers
 		this.totalWealth = 0;
 		this.currentWealth = 0;
@@ -54,75 +116,17 @@ export default class GameManager {
 		this.currentDepth = 0;
 		this.upgradeMenuOpen = false;
 
-		// At the start of the game, set all upgrades to 0
-		this.upgrades = {
-			// Capacity (units are pseudo-kg)
-			capacity: {
-				totalUpgrades: [50, 150, 300, 500, 750, 1000],
-				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50]
-			},
-			// Pressure hull
-			depthLimit: {
-				totalUpgrades: [150, 300, 450, 600, 750, 1000],
-				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50]
-			},
-			// Armour (units are collisions allowed)
-			armour: {
-				totalUpgrades: [2, 3, 4, 5, 6],
-				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40]
-			},
-			// Chain length
-			chain: {
-				totalUpgrades: [2, 3, 4],
-				upgradesBought: 0,
-				price: [0, 10, 20]
-			},
-			// O2 tank (units are seconds underwater)
-			tank: {
-				totalUpgrades: [45000, 90, 135, 180, 225, 270, 305],
-				upgradesBought: 0,
-				price: [0, 10, 20, 30, 40, 50, 60]
-			},
-			// Ship speed
-			shipSpeed: {
-				totalUpgrades: [5, 6, 7],
-				upgradesBought: 0,
-				price: [0, 10, 20]
-			},
-			// Claw speed
-			clawSpeed: {
-				totalUpgrades: [5, 6, 7],
-				upgradesBought: 0,
-				price: [0, 10, 20]
-			},
-			// Claw size (units are 'scale')
-			clawSize: {
-				totalUpgrades: [0.25, 0.3, 0.35, 0.4],
-				upgradesBought: 0,
-				price: [0, 10, 20, 30]
-			},
-			// Location
-			location: {
-				totalUpgrades: [0, 1, 2],
-				upgradesBought: 0,
-				price: [0, 10, 20]
-			},
-			// Collectables - can collect fish (level 10, ore (level 21, research (level 32
-			collectable: {
-				totalUpgrades: [0, 1, 2],
-				upgradesBought: 0,
-				price: [0, 10, 20]
-			}
-		};
+		this.upgrades.armour.upgradesBought = 0;
+		this.upgrades.capacity.upgradesBought = 0;
+		this.upgrades.chain.upgradesBought = 0;
+		this.upgrades.clawSize.upgradesBought = 0;
+		this.upgrades.clawSpeed.upgradesBought = 0;
+		this.upgrades.collectable.upgradesBought = 0;
+		this.upgrades.depthLimit.upgradesBought = 0;
+		this.upgrades.location.upgradesBought = 0;
+		this.upgrades.shipSpeed.upgradesBought = 0;
+		this.upgrades.tank.upgradesBought = 0;
 
-		// Set the starting parameters for the submarine
-		this.initSub();
-	}
-
-	initSub() {
 		this.submarine = {
 			oxygen: this.upgrades.tank.totalUpgrades[
 				this.upgrades.tank.upgradesBought

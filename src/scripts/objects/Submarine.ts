@@ -63,7 +63,6 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.updateDepth();
 		if (gameManager.submarine.isDead && !this.wasDeadLastTimeIChecked)
 			this.killSubmarine();
-
 	}
 
 	updateDepth() {
@@ -124,10 +123,12 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	killSubmarine() {
 		this.wasDeadLastTimeIChecked = true;
 		const callback = (_, progress: number) => {
-			if (progress >= 1) {
-				this.scene.scene.remove("UIScene");
-				this.scene.scene.start("MenuScene");
-			}
+			if (progress < 1)
+				return;
+
+			this.scene.scene.stop("UIScene");
+			this.scene.scene.stop("MainScene");
+			this.scene.scene.start("MenuScene");
 		};
 		this.scene.cameras.main.fadeOut(5000, 50, 0, 0, callback);
 		this.setFrictionAir(0.5);

@@ -1,5 +1,6 @@
 import Background from "../objects/Background";
 import { FishGroup } from "../objects/fish/FishGroup";
+import { gameManager } from "../objects/GameManager";
 import GameWorld from "../objects/GameWorld";
 import { HazardGroup } from "../objects/hazard/HazardGroup";
 import { ISpawnableGroup } from "../objects/spawnables/ISpawnableGroup";
@@ -8,13 +9,15 @@ import Submarine from "../objects/Submarine";
 export default class MainScene extends Phaser.Scene {
 	private submarine: Submarine;
 	private background: Background;
-	private spawnableGroups: ISpawnableGroup[] = [];
+	private spawnableGroups: ISpawnableGroup[];
 
 	constructor() {
 		super({ key: "MainScene" });
 	}
 
 	create() {
+		this.spawnableGroups = [];
+
 		this.cameras.main.fadeIn(500, 0, 0, 0);
 
 		// Get the game width and height
@@ -37,6 +40,7 @@ export default class MainScene extends Phaser.Scene {
 		this.submarine = new Submarine(this, width / 2);
 
 		new GameWorld(this, this.submarine);
+		gameManager.initialise();
 
 		this.cameras.main.startFollow(this.submarine);
 		this.scene

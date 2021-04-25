@@ -18,8 +18,6 @@ export default class MenuScene extends Phaser.Scene {
 	}
 
 	create() {
-		console.log("Creating menu background");
-
 		const menuXPos = this.cameras.main.width / 2;
 		const menuYPos = this.cameras.main.height / 2;
 
@@ -49,15 +47,13 @@ export default class MenuScene extends Phaser.Scene {
 		);
 		this.playButton.setAlpha(1);
 
-		this.scene.get("MenuScene").events.on("game-started", (e) => {
-			this.cameras.main.fadeOut(500, 0, 0, 0);
-			this.cameras.main.once(
-				Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
-				(cam, effect) => {
+		this.events.once("game-started", () => {
+			this.cameras.main
+				.fadeOut(500, 0, 0, 0)
+				.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
 					this.scene.start("MainScene");
 					this.scene.start("UIScene");
-				}
-			);
+				});
 		});
 	}
 }
