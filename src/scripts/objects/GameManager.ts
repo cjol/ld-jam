@@ -27,6 +27,7 @@ export default class GameManager {
         oxygen: number;
         cargo: { fishWeight: number, fishValue: number, oreWeight: number, oreValue: number, researchWeight: number, researchValue: number };
         isAtSurface: boolean;
+        isDead: boolean;
         holdFull: boolean;
         oxygenLow: boolean;
     }
@@ -68,7 +69,7 @@ export default class GameManager {
             },
             // Chain length
             chain: {
-                totalUpgrades: [2, 3, 4],
+                totalUpgrades: [1, 2, 3, 4],
                 upgradesBought: 0,
                 price: [0, 10, 20]
             },
@@ -118,7 +119,8 @@ export default class GameManager {
         this.submarine = {
             oxygen: this.upgrades.tank.totalUpgrades[this.upgrades.tank.upgradesBought],
             cargo: { fishWeight: 0, fishValue: 0, oreWeight: 0, oreValue: 0, researchWeight: 0, researchValue: 0 },
-            isAtSurface: false,
+            isAtSurface: true,
+            isDead: false,
             holdFull: false,
             oxygenLow: false
         }

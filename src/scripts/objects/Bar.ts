@@ -10,7 +10,7 @@ const healthConfig: BarConfig = {
     width: 80, height: 16,
     lowColor: 0xff0000,
     color: 0x0088ff,
-    lowThreshold: 0.3
+    lowThreshold: 0.5
 }
 const cargoConfig: BarConfig = {
     width: 80, height: 16,

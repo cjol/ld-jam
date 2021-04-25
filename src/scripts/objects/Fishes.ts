@@ -61,6 +61,7 @@ export class Fish extends Phaser.Physics.Matter.Image {
 
         this.setCollisionCategory(CollisionCategories.FISH);
         this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK | CollisionCategories.FISH);
+        this.setIgnoreGravity(true)
     }
 
     public update(delta: number) {
