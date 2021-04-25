@@ -5,7 +5,9 @@ import { MechanicalArm } from "./MechanicalHook";
 
 type Key = "up" | "down" | "left" | "right";
 const OXYGEN_BAR_OFFSET_Y = -80;
+const HULL_BAR_OFFSET_Y = -100;
 const OXYGEN_CONSUMPTION_RATE = 0.05;
+const HULL_DAMAGE_RATE = 0.05;
 const OXYGEN_REFUEL_RATE = 1;
 const CARGO_BAR_OFFSET_Y = -60;
 export const WATER_LEVEL = 220;
@@ -15,6 +17,7 @@ const BUOYANCY = 1.8;
 export default class Submarine extends Phaser.Physics.Matter.Image {
 	keys: Record<Key, Phaser.Input.Keyboard.Key>;
 	hook: MechanicalArm;
+	hullBar: Bar;
 	oxygenBar: Bar;
 	cargoBar: Bar;
 
@@ -39,7 +42,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			this,
 			gameManager.getUpgradeValue("chain")
 		);
-		this.oxygenBar = new Bar(scene, 50, 50, 100, 100, "health");
+		this.hullBar = new Bar(scene, 50, 50, 100, 100, "hull");
+		this.oxygenBar = new Bar(scene, 50, 50, 100, 100, "oxygen");
 		this.cargoBar = new Bar(scene, 50, 50, 100, 100, "cargo");
 
 		this.displayWidth = this.width * 0.25;
@@ -64,6 +68,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	update() {
 		this.updateKeys();
 		this.updateArm();
+		this.updateHull();
 		this.updateOxygen();
 		this.updateCargo();
 		this.updateDepth();
@@ -80,13 +85,6 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		// Check how close we are to the sub's pressure limit
 		var subDepthLimit = gameManager.getUpgradeValue('depthLimit');
 		gameManager.submarine.pressureWarning = 0;
-		if ((depth / subDepthLimit) >= 0.8) {
-			gameManager.submarine.pressureWarning = 1;
-		}
-		if (depth >= subDepthLimit) {
-			gameManager.submarine.pressureWarning = 2;
-			this.killSubmarine();
-		}
 	}
 
 	updateArm() {
@@ -162,6 +160,36 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		// End the game
 		if (gameManager.submarine.oxygen <= 0) {
+			this.killSubmarine();
+		}
+	}
+
+	updateHull() {
+		const maxHull = gameManager.getUpgradeValue("depthLimit");
+		// calculate how much past the maxHull we are
+		const depthExceeded = Math.max(0, (gameManager.currentDepth / maxHull) - 1)
+			gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
+		// clamp to 0-maxHull range
+		gameManager.submarine.hull = Math.max(
+			0,
+			Math.min(gameManager.submarine.hull, maxHull)
+		);
+		this.hullBar.update(
+			this.x,
+			this.y + HULL_BAR_OFFSET_Y,
+			gameManager.submarine.hull,
+			maxHull
+		);
+
+		// Set the warning if the bar is nearly empty
+		if (gameManager.submarine.hull / maxHull < 0.3) {
+			gameManager.submarine.pressureWarning = 2;
+		} else if (depthExceeded > 0) {
+			gameManager.submarine.pressureWarning = 1;
+		}
+
+		// End the game
+		if (gameManager.submarine.hull <= 0) {
 			this.killSubmarine();
 		}
 	}

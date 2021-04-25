@@ -5,9 +5,12 @@ import MenuScene from "./scenes/menuScene";
 import PreloadScene from "./scenes/preloadScene";
 import UIScene from "./scenes/uiScene";
 
-const config = {
+const config = 
+
+window.addEventListener('load', () => {
+    const game = new Phaser.Game({
     type: Phaser.AUTO,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#244b7e',
     scale: {
         parent: 'phaser-game',
         mode: Phaser.Scale.FIT,
@@ -15,7 +18,7 @@ const config = {
         width: window.innerWidth,
         height: window.innerHeight
     },
-    scene: [PreloadScene, MenuScene, MainScene, UIScene],
+    scene: [MenuScene, PreloadScene, MainScene, UIScene],
     physics: {
         default: 'matter',
         matter: {
@@ -23,8 +26,5 @@ const config = {
             gravity: { y: 10}
         }
     }
-}
-
-window.addEventListener('load', () => {
-    const game = new Phaser.Game(config);
+});
 })
