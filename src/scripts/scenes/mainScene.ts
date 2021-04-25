@@ -6,39 +6,45 @@ import { Raycaster } from "../objects/Raycaster";
 import Submarine from "../objects/Submarine";
 
 export default class MainScene extends Phaser.Scene {
-    private cursor: Phaser.Types.Input.Keyboard.CursorKeys;
-    private gameWorld: GameWorld;
-    private submarine: Submarine;
-    private hook: MechanicalHook;
-    private fishGroup: FishGroup;
-    private background: Background;
-    private width: number;
-    private height: number;
+	private gameWorld: GameWorld;
+	private submarine: Submarine;
+	private fishGroup: FishGroup;
+	private background: Background;
+	private width: number;
+	private height: number;
 
-    constructor() {
-        super({ key: 'MainScene' });
-    }
+	constructor() {
+		super({ key: "MainScene" });
+	}
 
-    create() {
-        this.width = this.cameras.main.width;
-        this.height = this.cameras.main.height;
+	create() {
+		this.width = this.cameras.main.width;
+		this.height = this.cameras.main.height;
 
-        const raycaster = new Raycaster(this.matter);
+		const raycaster = new Raycaster(this.matter);
 
-        const maxDepth: number = 10000;
-        this.matter.world.setBounds(0, 0, this.width, maxDepth);
-        this.cameras.main.setBounds(0, 0, this.width, maxDepth);
-        this.background = new Background(this, maxDepth, raycaster);
-        this.submarine = new Submarine(this, this.width / 2);
-        this.fishGroup = new FishGroup(this, raycaster, 10, this.background.SafeSpawnHeight);
-        this.gameWorld = new GameWorld(this,this.submarine);
+		const maxDepth: number = 10000;
+		this.matter.world.setBounds(0, 0, this.width, maxDepth);
+		this.cameras.main.setBounds(0, 0, this.width, maxDepth);
+		this.background = new Background(this, maxDepth, raycaster);
+		this.submarine = new Submarine(this, this.width / 2);
+		this.fishGroup = new FishGroup(
+			this,
+			raycaster,
+			10,
+			this.background.SafeSpawnHeight
+		);
+		this.gameWorld = new GameWorld(this, this.submarine);
 
-        this.cameras.main.startFollow(this.submarine);
-    }
+		this.cameras.main.startFollow(this.submarine);
+		this.scene
+			.get("UIScene")
+			.events.on("upgraded", (e) => this.submarine.checkUpgrades());
+	}
 
-    update(time: number, delta: number) {
-        this.background.draw();
-        this.submarine.update();
-        this.fishGroup.update(delta);
-    }
+	update(time: number, delta: number) {
+		this.background.draw();
+		this.submarine.update();
+		this.fishGroup.update(delta);
+	}
 }

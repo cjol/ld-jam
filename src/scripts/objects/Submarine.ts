@@ -34,7 +34,11 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 			CollisionCategories.WALLS | CollisionCategories.MECHANICAL_HOOK
 		);
 
-		this.hook = new MechanicalArm(scene, this);
+		this.hook = new MechanicalArm(
+			scene,
+			this,
+			gameManager.getUpgradeValue("chain")
+		);
 		this.oxygenBar = new Bar(scene, 50, 50, 100, 100, "health");
 		this.cargoBar = new Bar(scene, 50, 50, 100, 100, "cargo");
 		this.setScale(0.25);
@@ -88,18 +92,9 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.hook.update();
 	}
 
-	upgradeArm() {
-		this.hook.destroy();
-		this.hook = new MechanicalArm(
-			this.scene,
-			this,
-			gameManager.getUpgradeValue("chain")
-		);
-	}
-
 	updateKeys() {
 		if (!gameManager.submarine.isDead) {
-        const speed = gameManager.getUpgradeValue("shipSpeed");
+			const speed = gameManager.getUpgradeValue("shipSpeed");
 			// X direction - assume no key pressed
 			// Check for left and right keys
 			let flipX = this.flipX;
@@ -190,7 +185,20 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.setFrictionAir(0.5);
 		this.setAngularVelocity(0.1);
 		this.setIgnoreGravity(false);
+	}
 
+    checkUpgrades() {
+        if (gameManager.getUpgradeValue("chain") !== this.hook.getLength()) {
+            this.upgradeArm();
+        }
+    }
+	upgradeArm() {
+		this.hook.destroy();
+		this.hook = new MechanicalArm(
+			this.scene,
+			this,
+			gameManager.getUpgradeValue("chain")
+		);
 	}
 
 }
