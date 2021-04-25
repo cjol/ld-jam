@@ -223,6 +223,7 @@ export default class GameManager {
             // Add its value to the hold
             this.submarine.cargo.fishValue += fish.worth;
             // Destroy the fish
+            fish.catch();
         }
 
     }

@@ -37,8 +37,6 @@ export default class MainScene extends Phaser.Scene {
 		this.submarine = new Submarine(this, this.width / 2);
 		this.fishGroup = new FishGroup(
 			this,
-			raycaster,
-			200,
 			this.background.SafeSpawnHeight
 		);
 		this.gameWorld = new GameWorld(this, this.submarine);
@@ -56,6 +54,6 @@ export default class MainScene extends Phaser.Scene {
 	update(time: number, delta: number) {
 		this.background.draw();
 		this.submarine.update();
-		this.fishGroup.update(delta);
+		this.fishGroup.update();
 	}
 }

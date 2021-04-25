@@ -1,192 +1,184 @@
-import { Math as PMath } from "phaser";
+import { Math as PMath, Scene } from "phaser";
+
 import { CollisionCategories } from "./CollisionCategories";
-import { Raycaster } from "./Raycaster";
 
 interface IFishParameters {
-    type: number;
-    worth: number;
-    weight: number;
-    position: Phaser.Math.Vector2;
-    directionAngle: number;
-    direction: Phaser.Math.Vector2;
-    speed: number;
-    scale: number;
+	type: number;
+	worth: number;
+	weight: number;
+	position: Phaser.Math.Vector2;
+	directionAngle: number;
+	direction: Phaser.Math.Vector2;
+	speed: number;
+	scale: number;
 }
 
 export class Fish extends Phaser.Physics.Matter.Image {
-    private static readonly directions: Phaser.Math.Vector2[] = [
-        new Phaser.Math.Vector2(1, 0).rotate(60 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-60 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(45 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-45 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(30 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-30 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(15 * PMath.DEG_TO_RAD),
-        new Phaser.Math.Vector2(1, 0).rotate(-15 * PMath.DEG_TO_RAD)
-    ]
-    public static readonly minSpeed: number = 0;
-    public static readonly maxSpeed: number = 100;
-    public static readonly lookAheadDistance: number = 100;
+	public static readonly minSpeed: number = 0.5;
+	public static readonly maxSpeed: number = 1;
 
-    private readonly raycaster: Raycaster;
+	private readonly band: FishBand;
 
-    worth: number;
-    weight: number;
-    velocity: PMath.Vector2;
-    forward: PMath.Vector2;
+	private started: boolean = false;
+	private offscreen: boolean = false;
 
-    // Constructor for a fish
-    constructor(scene: Phaser.Scene, parameters: IFishParameters, raycaster: Raycaster) {
-        // Create fish
-        super(scene.matter.world, 0, 0, 'fish' + parameters.type, undefined, {
-            frictionAir: 0,
-            mass: 0.001
-        });
+	worth: number;
+	weight: number;
 
-        this.raycaster = raycaster;
+	// Constructor for a fish
+	constructor(scene: Phaser.Scene, band: FishBand) {
+		// Create fish
+		super(scene.matter.world, 0, 0, 'fish1', undefined, {
+			frictionAir: 0,
+			mass: 0.001
+		});
+		scene.add.existing(this);
 
-        this.x = parameters.position.x;
-        this.y = parameters.position.y;
-        this.displayWidth = this.width * parameters.scale;
-        this.displayHeight = this.height * parameters.scale;
-        this.velocity = parameters.direction
-            .clone()
-            .scale(parameters.speed);
-        this.forward = parameters.direction;
-        this.setRotationAngle(parameters.directionAngle);
+		this.band = band;
 
-        this.worth = parameters.worth;
-        this.weight = parameters.weight;
-        scene.add.existing(this);
+		this.setSensor(true);
+		this.setCollisionCategory(CollisionCategories.FISH);
+		this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK);
+		this.setIgnoreGravity(true);
+	}
 
-        this.setCollisionCategory(CollisionCategories.FISH);
-        this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK | CollisionCategories.FISH);
-        this.setIgnoreGravity(true)
-    }
+	public setParameters(parameters: IFishParameters) {
+		this.setTexture(`fish${parameters.type}`);
 
-    public update(delta: number) {
-        const scaledDelta = delta / 1000;
-        let acceleration: PMath.Vector2 = new PMath.Vector2(0, 0);
+		this.x = parameters.position.x;
+		this.y = parameters.position.y;
 
-        if (this.isGoingToCollide()) {
-            const avoidDirection: PMath.Vector2  = this.obstacleRays();
-            const collisionAvoidForce = this.steerTowards(avoidDirection);
-            acceleration.add(collisionAvoidForce);
-        }
+		this.displayWidth = this.width * parameters.scale;
+		this.displayHeight = this.height * parameters.scale;
 
-        this.velocity.add(acceleration.scale(scaledDelta));
-        let speed: number = this.velocity.length();
-        let direction = this.velocity.scale(1 / speed);
-        speed = PMath.Clamp(speed, Fish.minSpeed, Fish.maxSpeed);
-        this.velocity = direction
-            .clone()
-            .scale(speed);
+		this.setVelocity(parameters.direction.x * parameters.speed, parameters.direction.y * parameters.speed);
+		this.setRotationDeg(parameters.directionAngle);
+		this.setFlipX(true);
 
-        const timeVelocity: PMath.Vector2 = this.velocity
-            .clone()
-            .scale(scaledDelta);
-        this.x += timeVelocity.x;
-        this.y += timeVelocity.y;
-        this.setRotationAngle(direction.angle());
-        this.forward = direction;
-    }
+		this.worth = parameters.worth;
+		this.weight = parameters.weight;
+		this.started = true;
+		this.offscreen = true;
+	}
 
-    private setRotationAngle(angle: number): void {
-        if (angle >= 0)
-            this.setFlipX(true);
-        this.rotation = angle;
-    }
+	public update() {
+		const width = this.scene.cameras.main.width;
+		const bounds = this.getBounds();
+		if (this.started && this.offscreen) {
+			if (bounds.right <= width && bounds.left >= 0) {
+				this.started = false;
+				this.offscreen = false;
+			}
+		} else if (!this.offscreen && (bounds.right < 0 || bounds.left > width)) {
+			this.offscreen = true;
+			this.band.recycleFish(this);
+		}
+	}
 
-    private isGoingToCollide(): boolean {
-        const ray = this.raycaster.createRay();
-        const forwardRay = this.forward
-            .clone()
-            .scale(Fish.lookAheadDistance)
-        ray.setPositionAndDirection(this.x, this.y, forwardRay.x, forwardRay.y);
-        return ray.cast();
-    }
+	public catch() {
+		this.band.recycleFish(this);
+	}
 
-    private obstacleRays(): PMath.Vector2 {
-        for (const direction of Fish.directions) {
-            const rotatedDirection: PMath.Vector2 = direction
-                .clone()
-                .rotate(this.rotation);
-            const scaledDirection: PMath.Vector2 = rotatedDirection
-                .clone()
-                .scale(Fish.lookAheadDistance);
-            const ray = this.raycaster.createRay();
-            ray.setPositionAndDirection(this.x, this.y, scaledDirection.x, scaledDirection.y);
+	private setRotationDeg(angle: number): void {
+		if (angle >= 165 && angle <= 195)
+			this.setFlipY(true);
+		this.angle = angle;
+	}
+}
 
-            if (!ray.cast())
-                return rotatedDirection;
-        }
+interface IBandParameters {
+	minDepth: number;
+	maxDepth: number;
+	maxNumberOfFish: number;
+	availableFishTypes: number[];
+}
 
-        return this.forward;
-    }
+export class FishBand {
+	private static readonly safetyGap: number = 200;
+	private readonly generator: PMath.RandomDataGenerator = new PMath.RandomDataGenerator();
+	private readonly parameters: IBandParameters;
+	private readonly scene: Scene;
+	private readonly fishes: Fish[] = [];
 
-    private steerTowards(direction: PMath.Vector2): PMath.Vector2 {
-        const v = direction
-            .clone()
-            .normalize()
-            .scale(Fish.maxSpeed)
-            .subtract(this.velocity);
-        return this.clampMagnitude(v, 1000);
-    }
+	// Constructor for a fish
+	constructor(scene: Phaser.Scene, parameters: IBandParameters) {
+		this.scene = scene;
 
-    private clampMagnitude(vector: PMath.Vector2, max: number): PMath.Vector2 {
-        let length: number = vector.length();
-        let direction = vector
-            .clone()
-            .scale(1 / length);
-        length = PMath.Clamp(length, 0, max);
-        return direction.scale(length);
-    }
+		// Create fish group
+		this.parameters = parameters;
+
+		const half: number = this.parameters.maxNumberOfFish / 2;
+		for (let i = 0; i < this.parameters.maxNumberOfFish; i++) {
+			const parameters = this.spawnRandomFish(i < half, -FishBand.safetyGap, scene.cameras.main.width + FishBand.safetyGap);
+			const fish: Fish = new Fish(scene, this);
+			fish.setParameters(parameters);
+			this.fishes.push(fish);
+		}
+	}
+
+	public recycleFish(fish: Fish): void {
+		const newParameters = this.spawnRandomFish(this.generator.pick([true, false]), -FishBand.safetyGap, this.scene.cameras.main.width + FishBand.safetyGap);
+		fish.setParameters(newParameters);
+	}
+
+	// Update loop - game physics based on acceleration
+	update() {
+		this.fishes.forEach(fish => fish.update());
+	}
+
+	// Method to create a fish moving in a random direction
+	spawnRandomFish(leftSide: boolean, leftOffScreen: number, rightOffScreen: number): IFishParameters {
+		// Choose a random fish to create
+		const x: number = leftSide ? leftOffScreen : rightOffScreen;
+		const y: number = this.generator.integerInRange(this.parameters.minDepth, this.parameters.maxDepth);
+		const speed: number = this.generator.integerInRange(Fish.minSpeed, Fish.maxSpeed);
+		const type: number = this.generator.pick(this.parameters.availableFishTypes);
+
+		const angleRange: number[] = leftSide ? this.generator.pick([[345, 360], [0, 15]]) : [165, 195];
+		const directionAngle: number = this.generator.integerInRange(angleRange[0], angleRange[1]);
+		const directionX = Math.cos(PMath.DEG_TO_RAD * directionAngle);
+		const directionY = Math.sin(PMath.DEG_TO_RAD * directionAngle);
+
+		const scale = this.generator.realInRange(0.25, 1);
+		const weight: number = Math.floor(20 * scale);
+		const worth: number = weight;
+
+		return {
+			type: type,
+			worth: worth,
+			weight: weight,
+			position: new Phaser.Math.Vector2(x, y),
+			directionAngle: directionAngle,
+			direction: new Phaser.Math.Vector2(directionX, directionY),
+			speed: speed,
+			scale: scale
+		};
+	}
 }
 
 export class FishGroup {
-    fishes: Fish[];
+	private readonly bandParameters: IBandParameters[] = [
+		{
+			minDepth: 0,
+			maxDepth: 1000,
+			maxNumberOfFish: 10,
+			availableFishTypes: [ 1, 2 ]
+		}
+	];
+	private readonly fishBands: FishBand[] = [];
 
-    // Constructor for a fish
-    constructor(scene: Phaser.Scene, raycaster: Raycaster, numberOfFish: number, minSafeHeight: number) {
-        // Create fish group
-        this.fishes = [];
-        for (let i = 0; i < numberOfFish; i++) {
-            // Create the fish
-            const parameters: IFishParameters = this.spawnRandomFish(scene, minSafeHeight);
-            this.fishes[i] = new Fish(scene, parameters, raycaster);
-        }
-    }
+	// Constructor for a fish
+	constructor(scene: Phaser.Scene, minSafeHeight: number) {
+		// Create fish group
+		this.fishBands = this.bandParameters.map(x => {
+			x.minDepth += minSafeHeight;
+			x.maxDepth += minSafeHeight;
+			return new FishBand(scene, x);
+		})
+	}
 
-    // Update loop - game physics based on acceleration
-    update(delta: number) {
-        this.fishes.forEach(fish => fish.update(delta));
-    }
-
-    // Method to create a fish moving in a random direction
-    spawnRandomFish(scene: Phaser.Scene, minSafeHeight: number): IFishParameters {
-        const generator: PMath.RandomDataGenerator = new PMath.RandomDataGenerator();
-
-        // Choose a random fish to create
-        const x: number = generator.integerInRange(64, scene.cameras.main.width - 64);
-        const y: number = generator.integerInRange(minSafeHeight + 64, scene.cameras.main.height - 64);
-        const speed: number = generator.integerInRange(Fish.maxSpeed / 2, Fish.maxSpeed);
-        const type: number = generator.integerInRange(1, 3);
-        const directionAngle: number = generator.rotation();
-        const directionX = Math.cos(directionAngle);
-        const directionY = Math.sin(directionAngle);
-        const scale = generator.realInRange(0.25, 1);
-        const weight: number = Math.floor(20 * scale);
-        const worth: number = weight;
-
-        return {
-            type: type,
-            worth: worth,
-            weight: weight,
-            position: new Phaser.Math.Vector2(x, y),
-            directionAngle: directionAngle,
-            direction: new Phaser.Math.Vector2(directionX, directionY),
-            speed: speed,
-            scale: scale
-        };
-    }
+	// Update loop - game physics based on acceleration
+	update() {
+		this.fishBands.forEach(band => band.update());
+	}
 }
