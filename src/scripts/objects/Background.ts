@@ -2,7 +2,9 @@ import { Math } from "phaser";
 import { CollisionCategories } from "./CollisionCategories";
 
 export default class Background extends Phaser.GameObjects.GameObject {
-	private readonly BACKGROUND_COLOUR: number = 0x244b7e;
+	private readonly SKY_COLOUR: number = 0xabdfe4;
+	private readonly SKY_HEIGHT: number = 180;
+	private readonly BACKGROUND_COLOUR: number = 0x3895c7;
 	private readonly graphics: Phaser.GameObjects.Graphics;
 	private readonly tilemap: Phaser.Tilemaps.Tilemap;
 
@@ -111,5 +113,10 @@ export default class Background extends Phaser.GameObjects.GameObject {
 			0x000001
 		);
 		this.graphics.fillRect(0, 0, this.width, this.height);
+
+		this.graphics.fillStyle(
+			this.SKY_COLOUR
+		);
+		this.graphics.fillRect(0, 0, this.width, this.SKY_HEIGHT);
 	}
 }
