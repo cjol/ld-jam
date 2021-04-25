@@ -119,7 +119,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 				mass: 2,
 			}
 		);
-		this.setIgnoreGravity(false);
+		this.setIgnoreGravity(true);
 
 		this.setCollisionCategory(CollisionCategories.MECHANICAL_HOOK);
 		this.setCollidesWith(
@@ -146,7 +146,7 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 	}
 
 	update() {
-		this.updateMouse2();
+		this.updateMouse();
 		this.angle = this.prev.angle - 90;
 	}
 
@@ -187,9 +187,11 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 			this.scene.input.activePointer.worldX,
 			this.scene.input.activePointer.worldY + cameraOffset
 		);
-		if (this.y < WATER_LEVEL)
+		if (this.y < WATER_LEVEL) {
 			this.y = WATER_LEVEL + 1;
-		else {
+			this.setIgnoreGravity(false);
+		} else {
+			this.setIgnoreGravity(true);
 			const distance = target.subtract(this);
 			const speed = gameManager.getUpgradeValue("clawSpeed");
 			if (
