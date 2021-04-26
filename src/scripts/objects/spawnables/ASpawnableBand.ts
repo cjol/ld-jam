@@ -68,7 +68,10 @@ export abstract class ASpawnableBand<
 			return;
 
 		this.respawnTimer -= this.parameters.itemRespawnRate;
-		const firstDeadItem = this.items.filter((x) => x.dead)[0];
+		const deadItems = this.items.filter((x) => x.dead);
+		if (!deadItems || deadItems.length <= 0)
+			return;
+		const firstDeadItem = deadItems[0];
 		this.respawnItem(firstDeadItem);
 		this.activeNumberOfItems++;
 	}
