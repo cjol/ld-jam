@@ -32,6 +32,14 @@ export class Hazard extends ASpawnable<
 		);
 	}
 
+	public setParameters(parameters: IHazardParameters): void {
+		super.setParameters(parameters);
+
+		this.setTexture(`hazard${parameters.type}`);
+
+		this.damage = parameters.damage;
+	}
+
 	protected configureOrigin(parameters: IHazardParameters): void {
 		if (!parameters) {
 			super.configureOrigin();
