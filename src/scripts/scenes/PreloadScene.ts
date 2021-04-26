@@ -21,7 +21,8 @@ export default class PreloadScene extends Phaser.Scene {
 		this.load.image("surface-vessel", "assets/img/Fishing_vessel_1.png");
 		this.load.image("big-button", "assets/img/ui/Big_Button.png");
 		this.load.image("little-button", "assets/img/ui/Little_Button.png");
-		this.load.image("ui-backdrop", "assets/img/ui/Menu_Panel.png");
+		this.load.image("bottom-left-panel", "assets/img/ui/bottom-left-panel.png");
+		this.load.image("bottom-right-panel", "assets/img/ui/bottom-right-panel.png");
 
 		this.load.json("collision-data", "assets/json/collision.json");
 	}

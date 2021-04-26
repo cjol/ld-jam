@@ -1,13 +1,11 @@
+import { Bar } from "./Bar";
 import GameManager from "./GameManager";
 import UIButton from "./UIButton";
 import UpgradeMenu from "./UpgradeMenu";
-import { Bar } from "./Bar";
-import { WATER_LEVEL } from "./Submarine";
 
 const OXYGEN_CONSUMPTION_RATE = 0.05;
 const HULL_DAMAGE_RATE = 1;
 const OXYGEN_REFUEL_RATE = 1;
-
 const BIG_BUTTON_SCALE = 0.4;
 
 // The UI game object contains lots of UI elements to be shown / hidden. Pressing UI buttons should call functions in the GameManager (usually)
@@ -44,15 +42,6 @@ export default class UIGameObject {
 		const standardScreenHeight = 972;
 		const screenWidthRatio = screenWidth / standardScreenWidth;
 		const screenHeightRatio = screenHeight / standardScreenHeight;
-		const barWidth = Math.ceil(200 * screenWidthRatio);
-		const barHeight = Math.ceil(25 * screenHeightRatio);
-		const edgeOffset = 75 * screenWidthRatio;
-		const yPosLower = screenHeight - 2 * barHeight;
-		const yPosUpper = screenHeight - 4 * barHeight;
-		const xPosLeft = barWidth / 2 + edgeOffset;
-		const xPosRight = screenWidth - (barWidth / 2 + edgeOffset);
-		const xPosInfo = xPosRight - edgeOffset;
-		const yPosInfo = 125 * screenHeightRatio;
 
 		// Create the 'selling' buttons
 		this.sellFishButton = new UIButton(
@@ -123,114 +112,130 @@ export default class UIGameObject {
 			this.gameManager
 		);
 
-		// Draw a background for the control panel
-		this.infoPanel = new Phaser.GameObjects.Image(
-			scene,
-			xPosInfo,
-			yPosInfo,
-			"ui-backdrop"
-		);
-		scene.add.existing(this.infoPanel);
-		this.infoPanel.setScale(
-			0.4 * screenWidthRatio,
-			0.35 * screenHeightRatio
-		);
-
-		// Create a text message for current gold
-		this.currentWealthText = new Phaser.GameObjects.Text(
-			scene,
-			xPosInfo,
-			yPosInfo - 50 * screenHeightRatio,
-			"Current Gold: 0",
-			{ color: "black", fontSize: "36px" }
-		).setOrigin(0.5);
-		scene.add.existing(this.currentWealthText);
-
-		// Create a text message for current depth
-		this.currentDepthText = new Phaser.GameObjects.Text(
-			scene,
-			xPosInfo,
-			yPosInfo + 0 * screenHeightRatio,
-			"Current Depth: 0",
-			{ color: "black", fontSize: "36px" }
-		).setOrigin(0.5);
-		scene.add.existing(this.currentDepthText);
-
-		// Create a text message for best depth
-		this.maxDepthText = new Phaser.GameObjects.Text(
-			scene,
-			xPosInfo,
-			yPosInfo + 50 * screenHeightRatio,
-			"Max Depth: 0",
-			{ color: "black", fontSize: "36px" }
-		).setOrigin(0.5);
-		scene.add.existing(this.maxDepthText);
-
-		// Draw a background for the left and right sides
+		// Draw a background for the left side
 		this.leftBarsBG = new Phaser.GameObjects.Image(
 			scene,
-			xPosLeft,
-			(yPosLower + yPosUpper) / 2 + 5,
-			"ui-backdrop"
+			0,
+			0,
+			"bottom-left-panel"
 		);
+		this.leftBarsBG
+			.setScale(screenWidthRatio)
+			.setX(this.leftBarsBG.displayWidth / 2)
+			.setY(screenHeight - (this.leftBarsBG.displayHeight / 2));
 		scene.add.existing(this.leftBarsBG);
-		this.leftBarsBG.setScale(
-			0.2 * screenWidthRatio,
-			0.25 * screenHeightRatio
-		);
-		this.rightBarsBG = new Phaser.GameObjects.Image(
-			scene,
-			xPosRight,
-			(yPosLower + yPosUpper) / 2 + 5,
-			"ui-backdrop"
-		);
-		scene.add.existing(this.rightBarsBG);
-		this.rightBarsBG.setScale(
-			0.2 * screenWidthRatio,
-			0.25 * screenHeightRatio
-		);
-		// Draw the bars
+
+		const barsIconInset = (75 * screenWidthRatio);
+		const barsEdgeInset = (15 * screenWidthRatio);
+		const barsBGY = screenHeight - this.leftBarsBG.displayHeight;
+		const barsTopInset = (16 * screenWidthRatio);
+		const leftBarsWidth = this.leftBarsBG.displayWidth - barsIconInset - barsEdgeInset;
+		const leftBarsBarX = barsEdgeInset + (leftBarsWidth / 2);
+		const barHeight = Math.ceil(25 * screenHeightRatio);
+
+		// Draw the left bars
 		this.cargoBar = new Bar(
 			scene,
-			xPosLeft,
-			yPosLower,
+			leftBarsBarX,
+			barsBGY + (9 * barsTopInset),
 			100,
 			100,
-			barWidth,
+			leftBarsWidth,
 			barHeight,
-			"cargo"
-		);
-		this.hullBar = new Bar(
-			scene,
-			xPosRight,
-			yPosLower,
-			100,
-			100,
-			barWidth,
-			barHeight,
-			"hull"
-		);
-		this.oxygenBar = new Bar(
-			scene,
-			xPosRight,
-			yPosUpper,
-			100,
-			100,
-			barWidth,
-			barHeight,
-			"oxygen"
+			{
+				lowColor: 0x555555,
+				color: 0x555555,
+				lowThreshold: 0.3
+			}
 		);
 
 		// Create a warning message (can be used for multiple things)
 		this.warningMessage = new Phaser.GameObjects.Text(
 			scene,
-			xPosLeft,
-			yPosUpper,
+			barsEdgeInset,
+			barsBGY + barsTopInset + (8 * screenWidthRatio),
 			"I'm a warning",
-			{ color: "red", fontSize: "16px" }
-		).setOrigin(0.5);
+			{ color: "red", fontSize: `${20 * screenWidthRatio}px`, align: 'left' }
+		);
 		this.warningMessage.visible = false;
 		scene.add.existing(this.warningMessage);
+
+		// Create a text message for current gold
+		this.currentWealthText = new Phaser.GameObjects.Text(
+			scene,
+			barsEdgeInset,
+			barsBGY + (5 * barsTopInset),
+			"0G",
+			{ color: "black", fontSize: `${40 * screenWidthRatio}px`, align: 'left' }
+		);
+		scene.add.existing(this.currentWealthText);
+
+		this.rightBarsBG = new Phaser.GameObjects.Image(
+			scene,
+			0,
+			0,
+			"bottom-right-panel"
+		);
+		this.rightBarsBG
+			.setScale(screenWidthRatio)
+			.setX(screenWidth - (this.rightBarsBG.displayWidth / 2))
+			.setY(screenHeight - (this.rightBarsBG.displayHeight / 2));
+		scene.add.existing(this.rightBarsBG);
+
+		const rightBarsBGX = screenWidth - this.rightBarsBG.displayWidth;
+		const rightBarsWidth = this.rightBarsBG.displayWidth - barsIconInset - barsEdgeInset;
+		const rightBarsBarX = rightBarsBGX + barsIconInset + (rightBarsWidth / 2);
+		const rightBarsTextX = rightBarsBGX + barsIconInset;
+
+		// Draw the right bars
+		this.oxygenBar = new Bar(
+			scene,
+			rightBarsBarX,
+			barsBGY + (5 * barsTopInset),
+			100,
+			100,
+			rightBarsWidth,
+			barHeight,
+			{
+				lowColor: 0xff0000,
+				color: 0x0088ff,
+				lowThreshold: 0.5
+			}
+		);
+		this.hullBar = new Bar(
+			scene,
+			rightBarsBarX,
+			barsBGY + (9 * barsTopInset),
+			100,
+			100,
+			rightBarsWidth,
+			barHeight,
+			{
+				lowColor: 0xff0000,
+				color: 0x00ff88,
+				lowThreshold: 0.5
+			}
+		);
+
+		// Create a text message for current depth
+		this.currentDepthText = new Phaser.GameObjects.Text(
+			scene,
+			rightBarsTextX,
+			barsBGY + (barsTopInset),
+			"0m / 250m",
+			{ color: "black", fontSize: `${20 * screenWidthRatio}px`, align: 'left' }
+		);
+		scene.add.existing(this.currentDepthText);
+
+		// Create a text message for best depth
+		this.maxDepthText = new Phaser.GameObjects.Text(
+			scene,
+			rightBarsTextX,
+			barsBGY + (2 * barsTopInset) + (5 * screenWidthRatio),
+			"Max Depth: 0m",
+			{ color: "black", fontSize: `${20 * screenWidthRatio}px`, align: 'left' }
+		);
+		scene.add.existing(this.maxDepthText);
 	}
 
 	update() {
@@ -256,43 +261,40 @@ export default class UIGameObject {
 
 		// Assume no warnings necessary
 		this.warningMessage.setText("").visible = false;
-        let warningIntensity = 0;
+		let warningIntensity = 0;
 
 		// If the hold is full, show the warning
 		const { holdFull } = this.gameManager.submarine;
 		if (holdFull)
 			this.warningMessage.setText("Hold Full!").visible = holdFull;
 
-
-		const { pressureWarning,  oxygenLow  } = this.gameManager.submarine;
+		const { pressureWarning, oxygenLow } = this.gameManager.submarine;
 
 		// Show the pressure warning (overwrites hold full if necessary)
-		if (pressureWarning == 1) {
+		if (pressureWarning == 1)
 			this.warningMessage.setText("Hull Breach!").visible = true;
-            // warningIntensity = 1;
-        }
 
 		// If oxygen is low, show the warning (overwrites hull breach if necessary)
 		if (oxygenLow) {
 			this.warningMessage.setText("Oxygen Level Low!").visible = true;
-            warningIntensity = 2;
-        }
+			warningIntensity = 2;
+		}
 
 		if (pressureWarning == 2) {
 			this.warningMessage.setText("Hull Breach Critical!").visible = true;
-            warningIntensity = 2;
-        }
+			warningIntensity = 2;
+		}
 
-        if (this.gameManager.submarine.isDead || isAtSurface) warningIntensity = 0;
+		if (this.gameManager.submarine.isDead || isAtSurface)
+			warningIntensity = 0;
 
-        if (warningIntensity && !this.scene.cameras.main.fadeEffect.isRunning) {
-            const interval = warningIntensity === 2 ? 500 : 1000;
-            this.scene.cameras.main.fadeOut(interval, 150, 0, 0, (cam: Phaser.Cameras.Scene2D.Camera, progress) => {
-                if (progress >= 0.5) {
-                    cam.fadeIn(interval, 150, 0, 0)
-                }
-            });
-        }
+		if (warningIntensity && !this.scene.cameras.main.fadeEffect.isRunning) {
+			const interval = warningIntensity === 2 ? 500 : 1000;
+			this.scene.cameras.main.fadeOut(interval, 150, 0, 0, (cam: Phaser.Cameras.Scene2D.Camera, progress) => {
+				if (progress >= 0.5)
+					cam.fadeIn(interval, 150, 0, 0);
+			});
+		}
 
 		// Show or don't show the upgrade menu
 		if (!isAtSurface)
@@ -302,13 +304,13 @@ export default class UIGameObject {
 
 		// Update the tracker texts
 		this.currentWealthText.setText(
-			"Current Gold: " + this.gameManager.currentWealth
+			`${this.gameManager.currentWealth}G`
 		);
 		this.currentDepthText.setText(
-			"Current Depth: " + Math.floor(this.gameManager.currentDepth)
+			`${Math.floor(this.gameManager.currentDepth)}m / ${this.gameManager.getUpgradeValue("depthLimit")}m`
 		);
 		this.maxDepthText.setText(
-			"Max Depth: " + Math.floor(this.gameManager.maxDepthReached)
+			`Max Depth: ${Math.floor(this.gameManager.maxDepthReached)}m`
 		);
 
 		// Update the three progress bars
