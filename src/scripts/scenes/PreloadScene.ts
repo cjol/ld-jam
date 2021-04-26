@@ -22,5 +22,7 @@ export default class PreloadScene extends Phaser.Scene {
 		this.load.image("big-button", "assets/img/ui/Big_Button.png");
 		this.load.image("little-button", "assets/img/ui/Little_Button.png");
 		this.load.image("ui-backdrop", "assets/img/ui/Menu_Panel.png");
+
+		this.load.json("collision-data", "assets/json/collision.json");
 	}
 }

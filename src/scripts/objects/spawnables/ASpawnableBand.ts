@@ -22,24 +22,25 @@ export abstract class ASpawnableBand<
 
 	constructor(scene: Scene, parameters: K) {
 		this.scene = scene;
-
 		this.parameters = parameters;
+	}
 
+	public createItems(): void {
 		const half: number = this.parameters.maxNumberOfItems / 2;
 		for (let i = 0; i < this.parameters.maxNumberOfItems; i++) {
 			const parameters = this.spawnRandomItem(i < half);
-			const item: ASpawnable<T, K> = this.createNewItem(scene);
+			const item: ASpawnable<T, K> = this.createNewItem();
 			item.setParameters(parameters);
 			this.items.push(item);
 			this.activeNumberOfItems++;
 		}
 	}
 
-	protected abstract createNewItem(scene: Scene): ASpawnable<T, K>;
+	protected abstract createNewItem(): ASpawnable<T, K>;
 
 	public respawnItem(item: ASpawnable<T, K>): void {
 		const newParameters = this.spawnRandomItem(
-			this.generator.pick([true, false])
+			this.generator.pick([false])
 		);
 		item.setParameters(newParameters);
 	}
@@ -98,16 +99,12 @@ export abstract class ASpawnableBand<
 			this.parameters.maxDepth,
 			leftSide ? width : 0
 		);
-		const angleRange: number[] = leftSide
-			? this.generator.pick([
-				[360 - maxAngles.up, 360],
-				[0, maxAngles.down]
-			  ])
-			: [180 - maxAngles.down, 180 + maxAngles.up];
-		const directionAngle: number = this.generator.integerInRange(
-			angleRange[0],
-			angleRange[1]
+		let directionAngle: number = this.generator.integerInRange(
+			leftSide ? -maxAngles.up : maxAngles.up,
+			leftSide ? maxAngles.down : -maxAngles.down
 		);
+		if (!leftSide)
+			directionAngle += 180;
 		const directionX = Math.cos(PMath.DEG_TO_RAD * directionAngle);
 		const directionY = Math.sin(PMath.DEG_TO_RAD * directionAngle);
 
@@ -122,7 +119,8 @@ export abstract class ASpawnableBand<
 			directionAngle: directionAngle,
 			direction: new Phaser.Math.Vector2(directionX, directionY),
 			speed: speed,
-			scale: scale
+			scale: scale,
+			left: leftSide
 		};
 	}
 

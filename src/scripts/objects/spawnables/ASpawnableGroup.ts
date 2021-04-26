@@ -7,7 +7,10 @@ export abstract class ASpawnableGroup<
 	T extends ISpawnableParameters,
 	K extends ISpawnableBandParameters
 > implements ISpawnableGroup {
-	private readonly bands: ASpawnableBand<T, K>[] = [];
+	private readonly scene: Phaser.Scene;
+	private readonly bandParameters: K[];
+
+	private bands: ASpawnableBand<T, K>[] = [];
 
 	// Constructor for a fish
 	public constructor(
@@ -15,10 +18,11 @@ export abstract class ASpawnableGroup<
 		minSafeHeight: number,
 		bandParameters: K[]
 	) {
-		this.bands = bandParameters.map((x) => {
+		this.scene = scene;
+		this.bandParameters = bandParameters;
+		this.bandParameters.forEach((x) => {
 			x.minDepth += minSafeHeight;
 			x.maxDepth += minSafeHeight;
-			return this.CreateBand(scene, x);
 		});
 	}
 
@@ -26,6 +30,13 @@ export abstract class ASpawnableGroup<
 		scene: Phaser.Scene,
 		parameters: K
 	): ASpawnableBand<T, K>;
+
+	public create(): void {
+		this.bands = this.bandParameters.map((x) =>
+			this.CreateBand(this.scene, x)
+		);
+		this.bands.forEach((x) => x.createItems());
+	}
 
 	// Update loop - game physics based on acceleration
 	public update(delta: number): void {

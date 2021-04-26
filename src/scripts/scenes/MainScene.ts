@@ -37,6 +37,8 @@ export default class MainScene extends Phaser.Scene {
 		this.spawnableGroups.push(
 			new HazardGroup(this, this.background.SafeSpawnHeight)
 		);
+		this.spawnableGroups.forEach((x) => x.create());
+
 		this.submarine = new Submarine(this, width / 2);
 
 		new GameWorld(this, this.submarine);

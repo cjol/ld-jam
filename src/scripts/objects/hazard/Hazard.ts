@@ -21,6 +21,10 @@ export class Hazard extends ASpawnable<
 		super(scene, band, "hazard1");
 
 		this.hazardBand = band;
+	}
+
+	protected initialisePhysics(): void {
+		super.initialisePhysics();
 
 		this.setCollisionCategory(CollisionCategories.HAZARD);
 		this.setCollidesWith(
@@ -28,12 +32,20 @@ export class Hazard extends ASpawnable<
 		);
 	}
 
-	public setParameters(parameters: IHazardParameters) {
-		super.setParameters(parameters);
+	protected configureOrigin(parameters: IHazardParameters): void {
+		if (!parameters) {
+			super.configureOrigin();
+			return;
+		}
 
-		this.setTexture(`hazard${parameters.type}`);
-
-		this.damage = parameters.damage;
+		switch (parameters.type) {
+		case 1:
+			if (parameters.left)
+				this.setOrigin(0.54, 0.56);
+			else
+				this.setOrigin(0.46, 0.56);
+			break;
+		}
 	}
 
 	public hit() {

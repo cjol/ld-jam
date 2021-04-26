@@ -12,25 +12,33 @@ export class HazardBand extends ASpawnableBand<
 	IHazardParameters,
 	IHazardBandParameters
 > {
+	private readonly collisionData: any;
+
 	public constructor(scene: Phaser.Scene, parameters: IHazardBandParameters) {
 		super(scene, parameters);
+
+		this.collisionData = scene.cache.json.get("collision-data");
 	}
 
-	protected createNewItem(
-		scene: Phaser.Scene
-	): ASpawnable<IHazardParameters, IHazardBandParameters> {
-		return new Hazard(scene, this);
+	protected createNewItem(): ASpawnable<
+		IHazardParameters,
+		IHazardBandParameters
+		> {
+		return new Hazard(this.scene, this);
 	}
 
 	protected spawnRandomItem(leftSide: boolean): IHazardParameters {
 		const parameters: IHazardParameters = <IHazardParameters>(
 			super.getBaseParameters(leftSide)
 		);
-		parameters.damage = parameters.scale * SIZE_DAMAGE_RATIO * this.parameters.damage;
-		return parameters;
-	}
+		if (parameters.type === 1) {
+			parameters.vertices = this.collisionData[
+				`shark-${!leftSide ? "left" : "right"}`
+			].fixtures[0].vertices;
+		}
 
-	private get hazardBandParameters(): IHazardBandParameters {
-		return <IHazardBandParameters>this.parameters;
+		parameters.damage =
+			parameters.scale * SIZE_DAMAGE_RATIO * this.parameters.damage;
+		return parameters;
 	}
 }

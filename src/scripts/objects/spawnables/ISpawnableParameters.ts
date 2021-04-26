@@ -5,4 +5,6 @@ export interface ISpawnableParameters {
 	speed: number;
 	scale: number;
 	type: number;
+	vertices?: Phaser.Types.Math.Vector2Like[][];
+	left: boolean;
 }

@@ -24,6 +24,10 @@ export class Fish extends ASpawnable<IFishParameters, IFishBandParameters> {
 		super(scene, band, "fish1l1");
 
 		this.fishBand = band;
+	}
+
+	protected initialisePhysics(): void {
+		super.initialisePhysics();
 
 		this.setCollisionCategory(CollisionCategories.FISH);
 		this.setCollidesWith(CollisionCategories.MECHANICAL_HOOK);
@@ -44,8 +48,7 @@ export class Fish extends ASpawnable<IFishParameters, IFishBandParameters> {
 		this.layer2.setTexture(`fish${parameters.type}l2`);
 		this.layer2.x = this.x;
 		this.layer2.y = this.y;
-		this.layer2.displayWidth = this.displayWidth;
-		this.layer2.displayHeight = this.displayHeight;
+		this.layer2.scale = this.scale;
 		this.layer2.angle = this.angle;
 		this.layer2.setFlipX(this.flipX);
 		this.layer2.setFlipY(this.flipY);
@@ -66,11 +69,42 @@ export class Fish extends ASpawnable<IFishParameters, IFishBandParameters> {
 		this.layer2.y = this.y;
 	}
 
-	protected setRotationDeg(angle: number): void {
-		super.setRotationDeg(angle);
+	protected setRotationDeg(left: boolean, angle: number): void {
+		super.setRotationDeg(left, angle);
 
-		if (angle > 165 && angle < 195)
-			this.layer2.setFlipY(true);
+		if (left)
+			this.layer2.setFlipX(true);
+		else
+			this.layer2.setFlipX(false);
+
 		this.layer2.angle = angle;
+	}
+
+	protected configureOrigin(parameters: IFishParameters): void {
+		if (!parameters) {
+			super.configureOrigin();
+			return;
+		}
+
+		switch (parameters.type) {
+		case 1:
+			this.setOrigin(0.5, 0.58);
+			break;
+		case 2:
+			this.setOrigin();
+			break;
+		case 3:
+			this.setOrigin(parameters.left ? 0.48 : 0.52, 0.5);
+			break;
+		case 4:
+			this.setOrigin(parameters.left ? 0.48 : 0.52, 0.49);
+			break;
+		}
+	}
+
+	public setOrigin(x?: number | undefined, y?: number | undefined): this {
+		if (this.layer2)
+			this.layer2.setOrigin(x, y);
+		return super.setOrigin(x, y);
 	}
 }
