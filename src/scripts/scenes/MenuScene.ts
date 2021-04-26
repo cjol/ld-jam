@@ -27,17 +27,10 @@ export default class MenuScene extends Phaser.Scene {
 		const menuXPos = this.cameras.main.width / 2;
 		const menuYPos = this.cameras.main.height / 2;
 
-		const scale = this.cameras.main.width / 1980;
+		// const scale = this.cameras.main.width / 1980;
 
 		// Menu Background
-		this.background = new Phaser.GameObjects.Image(
-			this,
-			menuXPos,
-			menuYPos,
-			"menu-background"
-		);
-		this.add.existing(this.background);
-		this.background.setScale(scale);
+		this.addBackground(menuXPos, menuYPos);
 
         this.addTitle(menuXPos, menuYPos);
 
@@ -56,6 +49,20 @@ export default class MenuScene extends Phaser.Scene {
 
         new MenuControllers(this, menuXPos - 50, menuYPos + 70);
 	}
+
+    private addBackground(menuXPos: number, menuYPos: number) {
+        this.background = new Phaser.GameObjects.Image(
+            this,
+            menuXPos,
+            menuYPos,
+            "menu-background"
+        );
+        this.add.existing(this.background);
+
+        const targetWidth = 480;
+        const sf = targetWidth /this.background.displayWidth;
+        this.background.setScale(sf);
+    }
 
     private addTitle(menuXPos: number, menuYPos: number) {
         const title = this.add.text(menuXPos, menuYPos - 100, "Hook, Mines & Sinker!");
