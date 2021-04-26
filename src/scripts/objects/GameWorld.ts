@@ -39,15 +39,15 @@ export default class GameWorld {
 }
 type MatchedPair =
 	| {
-			type: "hook";
-			hook: MechanicalHook;
-			item: Phaser.GameObjects.GameObject;
-	  }
+		type: "hook";
+		hook: MechanicalHook;
+		item: Phaser.GameObjects.GameObject;
+	}
 	| {
-			type: "sub";
-			sub: Submarine;
-			item: Phaser.GameObjects.GameObject;
-	  };
+		type: "sub";
+		sub: Submarine;
+		item: Phaser.GameObjects.GameObject;
+	};
 
 function detectObjs(
 	pair: Phaser.Types.Physics.Matter.MatterCollisionData
