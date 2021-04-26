@@ -7,6 +7,8 @@ const OXYGEN_CONSUMPTION_RATE = 0.05;
 const HULL_DAMAGE_RATE = 1;
 const OXYGEN_REFUEL_RATE = 1;
 const BIG_BUTTON_SCALE = 0.4;
+const RED = 0xff0000;
+const ORANGE = 0xffa500;
 
 // The UI game object contains lots of UI elements to be shown / hidden. Pressing UI buttons should call functions in the GameManager (usually)
 export default class UIGameObject {
@@ -143,9 +145,7 @@ export default class UIGameObject {
 			leftBarsWidth,
 			barHeight,
 			{
-				lowColor: 0x555555,
-				color: 0x555555,
-				lowThreshold: 0.3
+				color: 0x555555
 			}
 		);
 
@@ -197,9 +197,11 @@ export default class UIGameObject {
 			rightBarsWidth,
 			barHeight,
 			{
-				lowColor: 0xff0000,
-				color: 0x0088ff,
-				lowThreshold: 0.5
+				warnThreshold: 0.5,
+				warnColor: ORANGE,
+				lowThreshold: 0.25,
+				lowColor: RED,
+				color: 0x0088ff
 			}
 		);
 		this.hullBar = new Bar(
@@ -211,9 +213,11 @@ export default class UIGameObject {
 			rightBarsWidth,
 			barHeight,
 			{
-				lowColor: 0xff0000,
-				color: 0x00ff88,
-				lowThreshold: 0.5
+				warnThreshold: 0.5,
+				warnColor: ORANGE,
+				lowThreshold: 0.25,
+				lowColor: RED,
+				color: 0x00ff88
 			}
 		);
 
@@ -261,7 +265,6 @@ export default class UIGameObject {
 
 		// Assume no warnings necessary
 		this.warningMessage.setText("").visible = false;
-		let warningIntensity = 0;
 
 		// If the hold is full, show the warning
 		const { holdFull } = this.gameManager.submarine;
@@ -275,25 +278,18 @@ export default class UIGameObject {
 			this.warningMessage.setText("Hull Breach!").visible = true;
 
 		// If oxygen is low, show the warning (overwrites hull breach if necessary)
-		if (oxygenLow) {
+		if (!oxygenLow)
+			this.oxygenBar.stopShake();
+		else {
 			this.warningMessage.setText("Oxygen Level Low!").visible = true;
-			warningIntensity = 2;
+			this.oxygenBar.shake();
 		}
 
-		if (pressureWarning == 2) {
+		if (pressureWarning !== 2)
+			this.hullBar.stopShake();
+		else {
 			this.warningMessage.setText("Hull Breach Critical!").visible = true;
-			warningIntensity = 2;
-		}
-
-		if (this.gameManager.submarine.isDead || isAtSurface)
-			warningIntensity = 0;
-
-		if (warningIntensity && !this.scene.cameras.main.fadeEffect.isRunning) {
-			const interval = warningIntensity === 2 ? 500 : 1000;
-			this.scene.cameras.main.fadeOut(interval, 150, 0, 0, (cam: Phaser.Cameras.Scene2D.Camera, progress) => {
-				if (progress >= 0.5)
-					cam.fadeIn(interval, 150, 0, 0);
-			});
+			this.hullBar.shake();
 		}
 
 		// Show or don't show the upgrade menu
@@ -334,7 +330,7 @@ export default class UIGameObject {
 		this.oxygenBar.update(this.gameManager.submarine.oxygen, maxOxygen);
 
 		// Set the warning if the bar is nearly empty
-		if (this.gameManager.submarine.oxygen / maxOxygen <= 0.3)
+		if (this.gameManager.submarine.oxygen / maxOxygen <= (this.oxygenBar.config.lowThreshold || 0))
 			this.gameManager.submarine.oxygenLow = true;
 
 		// End the game
@@ -360,7 +356,7 @@ export default class UIGameObject {
 		this.hullBar.update(this.gameManager.submarine.hull, maxHull);
 
 		// Set the warning if the bar is nearly empty
-		if (this.gameManager.submarine.hull / maxHull < 0.3)
+		if (this.gameManager.submarine.hull / maxHull < (this.hullBar.config.lowThreshold || 0))
 			this.gameManager.submarine.pressureWarning = 2;
 		else if (depthExceeded > 0)
 			this.gameManager.submarine.pressureWarning = 1;

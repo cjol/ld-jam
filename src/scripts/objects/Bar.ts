@@ -1,11 +1,17 @@
 export interface BarConfig {
 	color: number;
-	lowColor: number;
-	lowThreshold: number;
+	warnThreshold?: number;
+	warnColor?: number;
+	lowThreshold?: number;
+	lowColor?: number;
 	label?: string;
 }
 
 export class Bar extends Phaser.GameObjects.Graphics {
+	private static readonly wiggleRadius: number = 3;
+
+	private shakeXTween: Phaser.Tweens.Tween | null;
+	private shakeYTween: Phaser.Tweens.Tween | null;
 	x: number;
 	y: number;
 	value: number;
@@ -47,6 +53,8 @@ export class Bar extends Phaser.GameObjects.Graphics {
 			).setOrigin(0.5);
 			scene.add.existing(this.barLabel);
 		}
+
+
 	}
 
 	update(value: number, maxValue?: number) {
@@ -68,13 +76,54 @@ export class Bar extends Phaser.GameObjects.Graphics {
 			this.barHeight - 4
 		);
 		const percent = this.value / this.maxValue;
-		if (percent < this.config.lowThreshold)
+		if (this.config.lowThreshold && this.config.lowColor && percent < this.config.lowThreshold)
 			this.fillStyle(this.config.lowColor);
+		else if (this.config.warnThreshold && this.config.warnColor && percent < this.config.warnThreshold)
+			this.fillStyle(this.config.warnColor);
 		else
 			this.fillStyle(this.config.color);
 
 		const d = Math.floor(percent * (this.barWidth - 4));
 
 		this.fillRect(-this.barWidth / 2 + 2, 0 + 2, d, this.barHeight - 4);
+	}
+
+	private static wiggle(progress: number, period1: number, period2: number): number {
+		const current1: number = progress * Math.PI * 2 * period1;
+		const current2: number = progress * (Math.PI * 2 * period2 + Math.PI / 2);
+
+		return Math.sin(current1) * Math.cos(current2);
+	}
+
+	public shake() {
+		if (this.shakeXTween)
+			return;
+
+		this.shakeXTween = this.scene.tweens.add({
+			targets: this,
+			x: this.x + 5,
+			duration: 500,
+			repeat: -1,
+			ease: (progress) => Bar.wiggle(progress, 1, 2),
+			delay: 0
+		});
+		this.shakeYTween = this.scene.tweens.add({
+			targets: this,
+			y: this.y + 5,
+			duration: 500,
+			repeat: -1,
+			ease: (progress) => Bar.wiggle(progress, 4, 5),
+			delay: 100
+		});
+	}
+
+	public stopShake() {
+		if (!this.shakeXTween || !this.shakeYTween)
+			return;
+
+		this.shakeXTween.stop(0);
+		this.shakeXTween = null;
+		this.shakeYTween.stop(0);
+		this.shakeYTween = null;
 	}
 }
