@@ -1,7 +1,7 @@
 import UIButton from "./UIButton";
 import GameManager from "./GameManager";
 
-const LITTLE_BUTTON_SCALE = 0.4;
+const LITTLE_BUTTON_SCALE = 0.55;
 
 interface Button {
 	label: string;
@@ -53,7 +53,7 @@ export default class UpgradeMenu {
 				"little-button",
 				b.label,
 				x,
-				y + i * 50,
+				y + i * 55,
 				LITTLE_BUTTON_SCALE,
 				() => {
 					if (gameManager.purchaseUpgrade(b.upgrade)) {
@@ -101,6 +101,9 @@ export default class UpgradeMenu {
 			// If there is an upgrade, check how much it costs
 			const upgradeCost =
 				upgradeData.price[upgradeData.upgradesBought + 1];
+
+			uiButton.setText(`${button.label} (${upgradeCost})`);
+
 			// If we can afford it and it exists, we can show the button
 			if (upgradeCost > this.gameManager.currentWealth)
 				continue;

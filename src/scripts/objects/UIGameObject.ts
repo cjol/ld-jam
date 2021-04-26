@@ -2,6 +2,7 @@ import GameManager from "./GameManager";
 import UIButton from "./UIButton";
 import UpgradeMenu from "./UpgradeMenu";
 import { Bar } from "./Bar";
+import { WATER_LEVEL } from "./Submarine";
 
 const OXYGEN_CONSUMPTION_RATE = 0.05;
 const HULL_DAMAGE_RATE = 1;
@@ -117,7 +118,7 @@ export default class UIGameObject {
 		);
 		this.upgradeMenu = new UpgradeMenu(
 			this.scene,
-			720,
+			735,
 			100,
 			this.gameManager
 		);
@@ -255,24 +256,43 @@ export default class UIGameObject {
 
 		// Assume no warnings necessary
 		this.warningMessage.setText("").visible = false;
+        let warningIntensity = 0;
 
 		// If the hold is full, show the warning
 		const { holdFull } = this.gameManager.submarine;
 		if (holdFull)
 			this.warningMessage.setText("Hold Full!").visible = holdFull;
 
-		// If oxygen is low, show the warning (overwrites hold full if necessary)
-		const { oxygenLow } = this.gameManager.submarine;
-		if (oxygenLow)
-			this.warningMessage.setText("Oxygen Level Low!").visible = true;
 
-		// Show the pressure warning (overwrites low o2 if necessary)
-		const { pressureWarning } = this.gameManager.submarine;
-		if (pressureWarning == 1)
+		const { pressureWarning,  oxygenLow  } = this.gameManager.submarine;
+
+		// Show the pressure warning (overwrites hold full if necessary)
+		if (pressureWarning == 1) {
 			this.warningMessage.setText("Hull Breach!").visible = true;
+            // warningIntensity = 1;
+        }
 
-		if (pressureWarning == 2)
+		// If oxygen is low, show the warning (overwrites hull breach if necessary)
+		if (oxygenLow) {
+			this.warningMessage.setText("Oxygen Level Low!").visible = true;
+            warningIntensity = 2;
+        }
+
+		if (pressureWarning == 2) {
 			this.warningMessage.setText("Hull Breach Critical!").visible = true;
+            warningIntensity = 2;
+        }
+
+        if (this.gameManager.submarine.isDead || isAtSurface) warningIntensity = 0;
+
+        if (warningIntensity && !this.scene.cameras.main.fadeEffect.isRunning) {
+            const interval = warningIntensity === 2 ? 500 : 1000;
+            this.scene.cameras.main.fadeOut(interval, 150, 0, 0, (cam: Phaser.Cameras.Scene2D.Camera, progress) => {
+                if (progress >= 0.5) {
+                    cam.fadeIn(interval, 150, 0, 0)
+                }
+            });
+        }
 
 		// Show or don't show the upgrade menu
 		if (!isAtSurface)

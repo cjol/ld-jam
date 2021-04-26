@@ -82,6 +82,10 @@ export default class UIButton extends Phaser.GameObjects.Image {
 		this.disabled = false;
 	}
 
+	public setText(str: string):void {
+		this.buttonText.setText(str)
+	}
+
 	public setDisabled(disabled: boolean) {
 		if (disabled)
 			this.disable();
