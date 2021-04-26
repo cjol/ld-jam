@@ -14,7 +14,7 @@ export class HazardGroup extends ASpawnableGroup<
 			maxDepth: 1500,
 			minScale: 0.2,
 			maxScale: 0.5,
-			damage: 5,
+			damage: 1,
 			maxNumberOfItems: 10,
 			availableItemTypes: [1],
 			itemRespawnRate: 10 * 1000 // 10 seconds in milliseconds
@@ -25,7 +25,7 @@ export class HazardGroup extends ASpawnableGroup<
 			maxDepth: 3000,
 			minScale: 0.2,
 			maxScale: 0.5,
-			damage: 15,
+			damage: 5,
 			maxNumberOfItems: 5,
 			availableItemTypes: [2],
 			itemRespawnRate: 10 * 1000 // 10 seconds in milliseconds
