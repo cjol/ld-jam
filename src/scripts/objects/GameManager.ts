@@ -49,7 +49,7 @@ export default class GameManager {
 		},
 		// O2 tank (units are seconds underwater)
 		tank: {
-			totalUpgrades: [45000, 90, 135, 180, 225, 270, 305],
+			totalUpgrades: [45, 90, 135, 180, 225, 270, 305],
 			upgradesBought: 0,
 			price: [0, 10, 20, 30, 40, 50, 60]
 		},
