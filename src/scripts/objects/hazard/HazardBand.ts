@@ -31,10 +31,17 @@ export class HazardBand extends ASpawnableBand<
 		const parameters: IHazardParameters = <IHazardParameters>(
 			super.getBaseParameters(leftSide)
 		);
-		if (parameters.type === 1) {
+		switch (parameters.type) {
+		case 1:
 			parameters.vertices = this.collisionData[
 				`shark-${!leftSide ? "left" : "right"}`
 			].fixtures[0].vertices;
+			break;
+		case 2:
+			parameters.vertices = this.collisionData[
+				`mine`
+			].fixtures[0].vertices;
+			break;
 		}
 
 		parameters.damage =

@@ -23,8 +23,8 @@ export class HazardGroup extends ASpawnableGroup<
 		{
 			minDepth: 1000,
 			maxDepth: 3000,
-			minScale: 0.1,
-			maxScale: 0.02,
+			minScale: 0.2,
+			maxScale: 0.5,
 			damage: 15,
 			maxNumberOfItems: 5,
 			availableItemTypes: [2],
