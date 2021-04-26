@@ -7,16 +7,26 @@ export interface IFishBandParameters extends ISpawnableBandParameters {
 	rarities: number[];
 }
 
+const KG_PER_SCALE = 20;
+
 export class FishBand extends ASpawnableBand<
 	IFishParameters,
 	IFishBandParameters
 > {
-	private static readonly fishRarityColours: number[][] = [
+	private static readonly fishRarityColours: [number, number][] = [
 		[0xcccccc, 0x8e8c8d],
 		[0x86dca8, 0xa5a3a4],
 		[0xffaaee, 0x47ce7f],
 		[0xa26cf8, 0xffa700],
 		[0xffc467, 0xd96cc4]
+	];
+	// how many gold per kg of fish (fish range from 2-15)
+	private static readonly fishRarityWorth: number[] = [
+		0.5,
+		1,
+		1.5,
+		2,
+		2.5
 	];
 	private readonly collisionData: any;
 
@@ -41,12 +51,12 @@ export class FishBand extends ASpawnableBand<
 			`fish-${parameters.type}-${!leftSide ? "left" : "right"}`
 		].fixtures[0].vertices;
 
-		parameters.weight = Math.floor(20 * parameters.scale);
-		parameters.worth = parameters.weight;
+		parameters.weight = Math.floor(KG_PER_SCALE * parameters.scale);
 
 		const rarity = this.generator.pick(this.parameters.rarities);
 		parameters.layer1Tint = FishBand.fishRarityColours[rarity - 1][0];
 		parameters.layer2Tint = FishBand.fishRarityColours[rarity - 1][1];
+		parameters.worth = Math.floor(parameters.weight * FishBand.fishRarityWorth[rarity]);
 		return parameters;
 	}
 }

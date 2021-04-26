@@ -19,69 +19,71 @@ interface Upgrades {
 	location: Upgrade;
 	collectable: Upgrade;
 }
+const priceScale = [...Array(10)].map((_, i) => 10*(Math.pow(3, i) - 1))
+// const priceScale = [0, 20, 60, 80, 160, 320, 500]
 
 // Class to manage the game by keeping track of upgrades and money earned
 export default class GameManager {
 	public readonly upgrades: Upgrades = {
 		// Capacity (units are pseudo-kg)
 		capacity: {
-			totalUpgrades: [50, 150, 300, 500, 750, 1000],
+			totalUpgrades: [20, 50, 80, 110, 150, 200],
 			upgradesBought: 0,
-			price: [0, 10, 20, 30, 40, 50]
+			price: priceScale.slice(0, 6)
 		},
 		// Pressure hull
 		depthLimit: {
 			totalUpgrades: [150, 300, 450, 600, 750, 1000],
 			upgradesBought: 0,
-			price: [0, 10, 20, 30, 40, 50]
+			price: priceScale.slice(0, 6)
 		},
 		// Armour (units are collisions allowed)
 		armour: {
 			totalUpgrades: [2, 3, 4, 5, 6],
 			upgradesBought: 0,
-			price: [0, 10, 20, 30, 40]
+			price: priceScale.slice(0, 5)
 		},
 		// Chain length
 		chain: {
-			totalUpgrades: [2, 3, 4],
+			totalUpgrades: [2, 3, 4, 5],
 			upgradesBought: 0,
-			price: [0, 10, 20]
+			price: priceScale.slice(1, 5)
 		},
 		// O2 tank (units are seconds underwater)
 		tank: {
 			totalUpgrades: [45, 90, 135, 180, 225, 270, 305],
 			upgradesBought: 0,
-			price: [0, 10, 20, 30, 40, 50, 60]
+			price: priceScale.slice(0, 7)
 		},
 		// Ship speed
 		shipSpeed: {
 			totalUpgrades: [5, 6, 7],
 			upgradesBought: 0,
-			price: [0, 10, 20]
+			price: priceScale.slice(0, 3)
 		},
 		// Claw speed
 		clawSpeed: {
 			totalUpgrades: [5, 6, 7],
 			upgradesBought: 0,
-			price: [0, 10, 20]
+			price: priceScale.slice(0, 3)
 		},
 		// Claw size (units are 'scale')
 		clawSize: {
 			totalUpgrades: [0.25, 0.3, 0.35, 0.4],
 			upgradesBought: 0,
-			price: [0, 10, 20, 30]
+			price: priceScale.slice(0, 4)
 		},
 		// Location
 		location: {
 			totalUpgrades: [0, 1, 2],
 			upgradesBought: 0,
-			price: [0, 10, 20]
+			price: priceScale.slice(0, 3)
 		},
 		// Collectables - can collect fish (level 10, ore (level 21, research (level 32
 		collectable: {
 			totalUpgrades: [0, 1, 2],
 			upgradesBought: 0,
-			price: [0, 10, 20]
+			price: priceScale.slice(0, 3)
 		}
 	};
 	submarine: {

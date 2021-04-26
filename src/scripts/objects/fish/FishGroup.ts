@@ -9,35 +9,55 @@ export class FishGroup extends ASpawnableGroup<
 > {
 	private static readonly bandParameters: IFishBandParameters[] = [
 		{
-			minDepth: 0,
-			maxDepth: 1500,
-			maxNumberOfItems: 20,
+			minDepth: 50,
+			maxDepth: 2000,
+			maxNumberOfItems: 25,
 			availableItemTypes: [1, 2],
 			itemRespawnRate: 10 * 1000, // 10 seconds in milliseconds
 			minScale: 0.1,
 			maxScale: 0.25,
-			rarities: [1, 2, 3]
+			rarities: [1, 2, 3],
 		},
 		{
-			minDepth: 1500,
-			maxDepth: 3000,
+			minDepth: 2000,
+			maxDepth: 4000,
+			maxNumberOfItems: 20,
+			availableItemTypes: [1, 2, 3],
+			itemRespawnRate: 15 * 1000, // 15 seconds in milliseconds
+			minScale: 0.15,
+			maxScale: 0.35,
+			rarities: [1, 2, 3, 4],
+		},
+		{
+			minDepth: 4000,
+			maxDepth: 6000,
+			maxNumberOfItems: 18,
+			availableItemTypes: [1, 2, 3],
+			itemRespawnRate: 20 * 1000, // 20 seconds in milliseconds
+			minScale: 0.2,
+			maxScale: 0.4,
+			rarities: [3, 4],
+		},
+		{
+			minDepth: 6000,
+			maxDepth: 8000,
 			maxNumberOfItems: 15,
 			availableItemTypes: [1, 2, 3],
-			itemRespawnRate: 30 * 1000, // 30 seconds in milliseconds
-			minScale: 0.1,
+			itemRespawnRate: 40 * 1000, // 40 seconds in milliseconds
+			minScale: 0.25,
 			maxScale: 0.5,
-			rarities: [1, 2, 3, 4]
+			rarities: [3, 4, 5],
 		},
 		{
-			minDepth: 3000,
-			maxDepth: 4500,
-			maxNumberOfItems: 15,
+			minDepth: 8000,
+			maxDepth: 10000,
+			maxNumberOfItems: 12,
 			availableItemTypes: [1, 2, 3],
-			itemRespawnRate: 60 * 1000, // 30 seconds in milliseconds
+			itemRespawnRate: 60 * 1000, // 60 seconds in milliseconds
 			minScale: 0.25,
 			maxScale: 0.75,
-			rarities: [1, 2, 3, 4, 5]
-		}
+			rarities: [4, 5],
+		},
 	];
 
 	constructor(scene: Phaser.Scene, minSafeHeight: number) {
