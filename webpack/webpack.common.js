@@ -38,7 +38,7 @@ module.exports = {
 	plugins: [
 		new webpack.ProgressPlugin(),
 		new HtmlWebpackPlugin({
-			gameName: "Deep Sea Fishing",
+			gameName: "Hook, Mines & Sinker!",
 			template: "src/index.html",
 		}),
 		new CopyWebpackPlugin({
