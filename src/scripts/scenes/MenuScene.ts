@@ -47,6 +47,13 @@ export default class MenuScene extends Phaser.Scene {
 		);
 		this.playButton.setAlpha(1);
 
+		const treasure = this.add.text(
+			menuXPos,
+			this.cameras.main.height - 30,
+			"What treasures await at the bottom of the ocean?"
+		);
+		treasure.setOrigin(0.5);
+
         new MenuControllers(this, menuXPos - 50, menuYPos + 70);
 	}
 

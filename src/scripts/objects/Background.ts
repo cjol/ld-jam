@@ -112,6 +112,8 @@ export default class Background extends Phaser.GameObjects.GameObject {
 		}
 
 		this.SafeSpawnHeight = flipOffset * size;
+		const treasure = this.scene.add.text(this.width/2, 9900, "The real treasure was inside you all along!")
+		treasure.setOrigin(0.5);
 	}
 
 	public draw(): void {
