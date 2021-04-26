@@ -1,3 +1,4 @@
+import { gameManager } from "../objects/GameManager";
 import MenuControllers from "../objects/MenuControllers";
 import UIButton from "../objects/UIButton";
 
@@ -32,7 +33,7 @@ export default class MenuScene extends Phaser.Scene {
 		// Menu Background
 		this.addBackground(menuXPos, menuYPos);
 
-        this.addTitle(menuXPos, menuYPos);
+		this.addTitle(menuXPos, menuYPos);
 
 		// Add a play button
 		this.playButton = new UIButton(
@@ -54,31 +55,48 @@ export default class MenuScene extends Phaser.Scene {
 		);
 		treasure.setOrigin(0.5);
 
-        new MenuControllers(this, menuXPos - 50, menuYPos + 70);
+		if (gameManager.maxDepthReached > 0) {
+			const highScore = this.add.text(
+				menuXPos,
+				this.cameras.main.height - 120,
+				`Previous Best Depth: ${gameManager.maxDepthReached}m`
+			);
+			highScore.setOrigin(0.5);
+		}
+		if (gameManager.bestMaxDepthReached > 0) {
+			const highScore = this.add.text(
+				menuXPos,
+				this.cameras.main.height - 100,
+				`Overall Best Depth: ${gameManager.bestMaxDepthReached}m`
+			);
+			highScore.setOrigin(0.5);
+		}
+
+		new MenuControllers(this, menuXPos - 50, menuYPos + 70);
 	}
 
-    private addBackground(menuXPos: number, menuYPos: number) {
-        this.background = new Phaser.GameObjects.Image(
-            this,
-            menuXPos,
-            menuYPos,
-            "menu-background"
-        );
-        this.add.existing(this.background);
+	private addBackground(menuXPos: number, menuYPos: number) {
+		this.background = new Phaser.GameObjects.Image(
+			this,
+			menuXPos,
+			menuYPos,
+			"menu-background"
+		);
+		this.add.existing(this.background);
 
-        const targetWidth = 480;
-        const sf = targetWidth /this.background.displayWidth;
-        this.background.setScale(sf);
-    }
+		const targetWidth = 480;
+		const sf = targetWidth / this.background.displayWidth;
+		this.background.setScale(sf);
+	}
 
-    private addTitle(menuXPos: number, menuYPos: number) {
-        const title = this.add.text(menuXPos, menuYPos - 100, "Hook, Mines & Sinker!");
-        title.setFontSize(40);
-        const targetWidth = 300;
-        const sf = targetWidth / title.displayWidth;
-        title.setScale(sf);
-        title.setOrigin(0.5);
-    }
+	private addTitle(menuXPos: number, menuYPos: number) {
+		const title = this.add.text(menuXPos, menuYPos - 100, "Hook, Mines & Sinker!");
+		title.setFontSize(40);
+		const targetWidth = 300;
+		const sf = targetWidth / title.displayWidth;
+		title.setScale(sf);
+		title.setOrigin(0.5);
+	}
 
 	private startGame(): void {
 		this.cameras.main

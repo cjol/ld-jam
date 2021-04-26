@@ -28,8 +28,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.setCollisionCategory(CollisionCategories.SUBMARINE);
 		this.setCollidesWith(
 			CollisionCategories.WALLS |
-				CollisionCategories.MECHANICAL_HOOK |
-				CollisionCategories.HAZARD
+			CollisionCategories.MECHANICAL_HOOK |
+			CollisionCategories.HAZARD
 		);
 
 		this.hook = new MechanicalArm(
@@ -69,8 +69,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		// Update the max depth if it needs it
 		const depth = (this.y - WATER_LEVEL) / 10;
 		gameManager.currentDepth = depth;
-		if (depth > gameManager.maxDepthReached)
-			gameManager.maxDepthReached = depth;
+		gameManager.updateMaxDepth(depth);
 	}
 
 	updateArm() {

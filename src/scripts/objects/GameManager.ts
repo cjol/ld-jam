@@ -19,8 +19,9 @@ interface Upgrades {
 	location: Upgrade;
 	collectable: Upgrade;
 }
-const priceScale = [...Array(10)].map((_, i) => 10*(Math.pow(3, i) - 1))
+const priceScale = [...Array(10)].map((_, i) => 10 * (Math.pow(3, i) - 1))
 // const priceScale = [0, 20, 60, 80, 160, 320, 500]
+const LOCALSTORAGE_MAX_DEPTH_KEY = "hms-max-depth";
 
 // Class to manage the game by keeping track of upgrades and money earned
 export default class GameManager {
@@ -106,9 +107,15 @@ export default class GameManager {
 	};
 	totalWealth: number;
 	currentWealth: number;
-	maxDepthReached: number;
+	maxDepthReached: number = 0;
+	bestMaxDepthReached: number;
 	currentDepth: number;
 	upgradeMenuOpen: boolean;
+
+	public constructor() {
+		this.maxDepthReached = 0;
+		this.bestMaxDepthReached = this.getBestMaxDepth();
+	}
 
 	public initialise() {
 		// Initialise the trackers
@@ -296,6 +303,31 @@ export default class GameManager {
 
 	markSubmarineDestroyed() {
 		this.submarine.isDead = true;
+	}
+
+	updateMaxDepth(depth: number): void {
+		if (this.submarine.isDead)
+			return;
+
+		depth = Math.floor(depth);
+		if (depth > gameManager.maxDepthReached)
+			gameManager.maxDepthReached = depth;
+		if (depth > gameManager.bestMaxDepthReached) {
+			gameManager.bestMaxDepthReached = depth;
+			this.setBestMaxDepth(depth);
+		}
+	}
+
+	getBestMaxDepth(): number {
+		const value: string = localStorage.getItem(LOCALSTORAGE_MAX_DEPTH_KEY) || "0";
+		let numeric: number = parseInt(value, 10);
+		if (isNaN(numeric) || numeric < 0)
+			numeric = 0;
+		return numeric;
+	}
+
+	setBestMaxDepth(value: number): void {
+		localStorage.setItem(LOCALSTORAGE_MAX_DEPTH_KEY, value.toString());
 	}
 }
 
