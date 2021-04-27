@@ -58,8 +58,10 @@ export default class MainScene extends Phaser.Scene {
 	}
 
 	public update(time: number, delta: number) {
+		this.matter.step(delta);
+
 		this.background.draw();
-		this.submarine.update(time);
+		this.submarine.update();
 
 		for (const spawnableGroup of this.spawnableGroups)
 			spawnableGroup.update(delta);

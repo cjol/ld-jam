@@ -21,7 +21,8 @@ const config = window.addEventListener("load", () => {
 			default: "matter",
 			matter: {
 				debug: false,
-				gravity: { y: 10 }
+				gravity: { y: 10 },
+				autoUpdate: false
 			}
 		}
 	});

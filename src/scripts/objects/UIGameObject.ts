@@ -3,9 +3,9 @@ import GameManager from "./GameManager";
 import UIButton from "./UIButton";
 import UpgradeMenu from "./UpgradeMenu";
 
-const OXYGEN_CONSUMPTION_RATE = 0.05;
-const HULL_DAMAGE_RATE = 1;
-const OXYGEN_REFUEL_RATE = 1;
+const OXYGEN_CONSUMPTION_RATE = 0.003;
+const HULL_DAMAGE_RATE = 0.06;
+const OXYGEN_REFUEL_RATE = 0.06;
 const BIG_BUTTON_SCALE = 0.4;
 const RED = 0xff0000;
 const ORANGE = 0xffa500;
@@ -242,7 +242,7 @@ export default class UIGameObject {
 		scene.add.existing(this.maxDepthText);
 	}
 
-	update() {
+	update(delta: number) {
 		// If at the surface, show the selling buttons (if anything to sell)
 		const { isAtSurface } = this.gameManager.submarine;
 		const subHasFish = this.gameManager.submarine.cargo.fishWeight > 0;
@@ -273,10 +273,6 @@ export default class UIGameObject {
 
 		const { pressureWarning, oxygenLow } = this.gameManager.submarine;
 
-		// Show the pressure warning (overwrites hold full if necessary)
-		if (pressureWarning == 1)
-			this.warningMessage.setText("Hull Breach!").visible = true;
-
 		// If oxygen is low, show the warning (overwrites hull breach if necessary)
 		if (!oxygenLow)
 			this.oxygenBar.stopShake();
@@ -285,9 +281,13 @@ export default class UIGameObject {
 			this.oxygenBar.shake();
 		}
 
-		if (pressureWarning !== 2)
+		// Show the pressure warning (overwrites hold full if necessary)
+		if (pressureWarning === 0)
 			this.hullBar.stopShake();
-		else {
+		else if (pressureWarning == 1) {
+			this.warningMessage.setText("Hull Breach!").visible = true;
+			this.hullBar.shake();
+		} else {
 			this.warningMessage.setText("Hull Breach Critical!").visible = true;
 			this.hullBar.shake();
 		}
@@ -310,18 +310,18 @@ export default class UIGameObject {
 		);
 
 		// Update the three progress bars
-		this.updateOxygen();
-		this.updateHull();
+		this.updateOxygen(delta);
+		this.updateHull(delta);
 		this.updateCargo();
 	}
 
-	updateOxygen() {
+	updateOxygen(delta: number) {
 		const maxOxygen = this.gameManager.getUpgradeValue("tank");
 		if (this.gameManager.submarine.isAtSurface) {
-			this.gameManager.submarine.oxygen += OXYGEN_REFUEL_RATE;
+			this.gameManager.submarine.oxygen += OXYGEN_REFUEL_RATE * delta;
 			this.gameManager.submarine.oxygenLow = false;
 		} else
-			this.gameManager.submarine.oxygen -= OXYGEN_CONSUMPTION_RATE;
+			this.gameManager.submarine.oxygen -= OXYGEN_CONSUMPTION_RATE * delta;
 
 		this.gameManager.submarine.oxygen = Math.max(
 			0,
@@ -338,14 +338,14 @@ export default class UIGameObject {
 			this.gameManager.markSubmarineDestroyed();
 	}
 
-	updateHull() {
+	updateHull(delta: number) {
 		const maxHull = this.gameManager.getUpgradeValue("depthLimit");
 		// calculate how much past the maxHull we are
 		const depthExceeded = Math.max(
 			0,
 			this.gameManager.currentDepth / maxHull - 1
 		);
-		this.gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded;
+		this.gameManager.submarine.hull -= HULL_DAMAGE_RATE * depthExceeded * delta;
 		// clamp to 0-maxHull range
 		this.gameManager.submarine.hull = Phaser.Math.Clamp(
 			this.gameManager.submarine.hull,

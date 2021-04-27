@@ -102,7 +102,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	}
 
 	// Update loop - game physics based on acceleration
-	update(time) {
+	update() {
 		this.updateKeys();
 		this.updateArm();
 		this.updateDepth();

@@ -2,7 +2,6 @@ import FPSText from "../objects/FPSText";
 import { gameManager } from "../objects/GameManager";
 import UIGameObject from "../objects/UIGameObject";
 
-// TODO: this doesn't show up for some reason!
 export default class UIScene extends Phaser.Scene {
 	private fpsText: FPSText;
 	private uiGameObject: UIGameObject;
@@ -16,8 +15,8 @@ export default class UIScene extends Phaser.Scene {
 		this.uiGameObject = new UIGameObject(this, gameManager);
 	}
 
-	update() {
+	update(time: number, delta: number) {
 		this.fpsText.update();
-		this.uiGameObject.update();
+		this.uiGameObject.update(delta);
 	}
 }
