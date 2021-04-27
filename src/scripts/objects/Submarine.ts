@@ -6,41 +6,86 @@ type Key = "up" | "down" | "left" | "right";
 export const WATER_LEVEL = 220;
 // make it so we go up faster than down
 const BUOYANCY = 1.8;
+const SCALE = 0.25;
 
 export default class Submarine extends Phaser.Physics.Matter.Image {
+	private readonly collisionData: any;
 	keys: Record<Key, Phaser.Input.Keyboard.Key>;
 	hook: MechanicalArm;
-	scene: Phaser.Scene;
 	// TODO: yes this is hacky
 	wasDeadLastTimeIChecked: boolean;
 
 	// Constructor for submarine
 	constructor(scene: Phaser.Scene, x: number, y: number = WATER_LEVEL - 20) {
 		// Create submarine
-		super(scene.matter.world, x, y, "submarine", undefined, {
-			frictionAir: 0.05,
-			mass: 500
-		});
+		super(scene.matter.world, x, y, "submarine", undefined, Submarine.getMatterBodyConfig());
 
 		scene.add.existing(this);
 		this.setupKeys();
-		this.scene = scene;
-		this.setCollisionCategory(CollisionCategories.SUBMARINE);
-		this.setCollidesWith(
-			CollisionCategories.WALLS |
-			CollisionCategories.MECHANICAL_HOOK |
-			CollisionCategories.HAZARD
-		);
+
+		this.collisionData = scene.cache.json.get("collision-data");
+		this.displayWidth = this.width * SCALE;
+		this.displayHeight = this.height * SCALE;
+		this.setupPhysics();
 
 		this.hook = new MechanicalArm(
 			scene,
 			this,
 			gameManager.getUpgradeValue("chain")
 		);
+	}
 
-		this.displayWidth = this.width * 0.25;
-		this.displayHeight = this.height * 0.25;
+	private setupPhysics() {
+		const vertices = this.collisionData[`submarine-${this.flipX ? "right" : "left"}`].fixtures[0].vertices.map((x) =>
+			x.map((y) => ({ x: y.x || 0, y: y.y || 0 }))
+		);
+		const verticies1D = vertices.reduce((prev, next) =>
+			prev.concat(next)
+		);
+		this.scene.matter.vertices.scale(
+			verticies1D,
+			SCALE,
+			SCALE,
+			{ x: 0, y: 0 }
+		);
+
+		const x = this.x;
+		const y = this.y;
+		const config: Phaser.Types.Physics.Matter.MatterBodyConfig = Submarine.getMatterBodyConfig(vertices);
+		this.setBody((<any>config).shape, config);
 		this.setIgnoreGravity(true);
+		this.setCollisionCategory(CollisionCategories.SUBMARINE);
+		this.setCollidesWith(
+			CollisionCategories.WALLS |
+			CollisionCategories.MECHANICAL_HOOK |
+			CollisionCategories.HAZARD
+		);
+		this.x = x;
+		this.y = y;
+		if (this.hook)
+			this.hook.changeSub(this);
+	}
+
+	private static getMatterBodyConfig(
+		vertices?: Phaser.Types.Math.Vector2Like[][]
+	): Phaser.Types.Physics.Matter.MatterBodyConfig {
+		const config: Phaser.Types.Physics.Matter.MatterBodyConfig = {
+			frictionAir: 0.05,
+			mass: 500
+		};
+		if (vertices) {
+			config["shape"] = {
+				type: "fromPhysicsEditor",
+				isStatic: false,
+				fixtures: [
+					{
+						isSensor: true,
+						vertices: vertices
+					}
+				]
+			};
+		}
+		return config;
 	}
 
 	setupKeys() {
@@ -93,6 +138,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		}
 
 		// Force the sub not to rotate
+		if (flipX !== this.flipX)
+			this.setupPhysics();
 		this.setFlip(flipX, false);
 		this.setRotation(0);
 

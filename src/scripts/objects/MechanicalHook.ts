@@ -9,6 +9,7 @@ const SEGMENT_STIFFNESS = 1;
 export class MechanicalArm {
 	private readonly segments: MechanicalArmSegment[];
 	private readonly hook: MechanicalHook;
+	private readonly baseConstraint: MatterJS.ConstraintType;
 
 	constructor(scene: Phaser.Scene, sub: Submarine, links: number = 3) {
 		this.segments = [];
@@ -21,7 +22,7 @@ export class MechanicalArm {
 			prev = this.segments[i];
 		}
 
-		scene.matter.add.constraint(
+		this.baseConstraint = scene.matter.add.constraint(
 			sub as any,
 			this.segments[0] as any,
 			CONSTRAINT_LENGTH,
@@ -33,6 +34,10 @@ export class MechanicalArm {
 		);
 
 		this.hook = new MechanicalHook(scene, this.segments[links - 1], sub);
+	}
+
+	changeSub(sub: Submarine) {
+		this.baseConstraint.bodyA = <any>sub.body;
 	}
 
 	update() {
@@ -134,8 +139,8 @@ export class MechanicalHook extends Phaser.Physics.Matter.Image {
 		this.setCollidesWith(
 			// CollisionCategories.SUBMARINE |
 			CollisionCategories.WALLS |
-				CollisionCategories.FISH |
-				CollisionCategories.HAZARD
+			CollisionCategories.FISH |
+			CollisionCategories.HAZARD
 		);
 		this.sub = submarine;
 		this.prev = parent;
