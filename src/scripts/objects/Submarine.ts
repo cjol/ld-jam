@@ -26,7 +26,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		this.collisionData = scene.cache.json.get("collision-data");
 		this.displayWidth = this.width * SCALE;
 		this.displayHeight = this.height * SCALE;
-		this.setupPhysics();
+		this.setupPhysics(false);
 
 		this.hook = new MechanicalArm(
 			scene,
@@ -35,8 +35,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		);
 	}
 
-	private setupPhysics() {
-		const vertices = this.collisionData[`submarine-${this.flipX ? "right" : "left"}`].fixtures[0].vertices.map((x) =>
+	private setupPhysics(flipped: boolean) {
+		const vertices = this.collisionData[`submarine-${flipped ? "left" : "right"}`].fixtures[0].vertices.map((x) =>
 			x.map((y) => ({ x: y.x || 0, y: y.y || 0 }))
 		);
 		const verticies1D = vertices.reduce((prev, next) =>
@@ -53,13 +53,6 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 		const y = this.y;
 		const config: Phaser.Types.Physics.Matter.MatterBodyConfig = Submarine.getMatterBodyConfig(vertices);
 		this.setBody((<any>config).shape, config);
-		this.setIgnoreGravity(true);
-		this.setCollisionCategory(CollisionCategories.SUBMARINE);
-		this.setCollidesWith(
-			CollisionCategories.WALLS |
-			CollisionCategories.MECHANICAL_HOOK |
-			CollisionCategories.HAZARD
-		);
 		this.x = x;
 		this.y = y;
 		if (this.hook)
@@ -71,7 +64,13 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 	): Phaser.Types.Physics.Matter.MatterBodyConfig {
 		const config: Phaser.Types.Physics.Matter.MatterBodyConfig = {
 			frictionAir: 0.05,
-			mass: 500
+			mass: 500,
+			collisionFilter: {
+				category: CollisionCategories.SUBMARINE,
+				mask: CollisionCategories.WALLS |
+					CollisionCategories.HAZARD
+			},
+			ignoreGravity: true
 		};
 		if (vertices) {
 			config["shape"] = {
@@ -79,7 +78,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 				isStatic: false,
 				fixtures: [
 					{
-						isSensor: true,
+						isSensor: false,
 						vertices: vertices
 					}
 				]
@@ -139,7 +138,7 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		// Force the sub not to rotate
 		if (flipX !== this.flipX)
-			this.setupPhysics();
+			this.setupPhysics(flipX);
 		this.setFlip(flipX, false);
 		this.setRotation(0);
 
@@ -159,10 +158,8 @@ export default class Submarine extends Phaser.Physics.Matter.Image {
 
 		if (this.y < WATER_LEVEL + 20)
 			gameManager.submarine.isAtSurface = true;
-		else {
-			if (gameManager.submarine.isAtSurface)
-				gameManager.submarine.isAtSurface = false;
-		}
+		else if (gameManager.submarine.isAtSurface)
+			gameManager.submarine.isAtSurface = false;
 	}
 
 	// Function to run if you kill the submarine

@@ -40,33 +40,34 @@ export default class Background extends Phaser.GameObjects.GameObject {
 
 		const row: number[] = [1];
 		const topRow: number[] = [3];
+		const topPhatomRow: number[] = [4];
 		const penultimateRow: number[] = [5];
 		for (let i = 0; i < numberOfColumns - 2; i++) {
 			row.push(0);
 			topRow.push(0);
+			topPhatomRow.push(0);
 			penultimateRow.push(6);
 		}
 		row.push(1);
+		topPhatomRow.push(4);
 		topRow.push(3);
 		penultimateRow.push(5);
 
 		const air: number[] = [];
-		const phantoms: number[] = [];
 		const seaSurface: number[] = [];
 		for (let i = 0; i < numberOfColumns; i++) {
 			air.push(0);
-			phantoms.push(4);
 			seaSurface.push(2);
 		}
 
-		const level: number[][] = [air, air, seaSurface, phantoms, topRow];
+		const level: number[][] = [air, air, seaSurface, topPhatomRow, topRow];
 		const flipOffset: number = level.length - 1;
 		const numberOfRows =
 			Math.FloorTo(this.height / size) + 1 - level.length - 2;
 		for (let i = 0; i < numberOfRows; i++)
 			level.push(row.slice());
 		level.push(penultimateRow);
-		level.push(phantoms);
+		level.push(air);
 
 		this.tilemap = scene.make.tilemap({
 			data: level,
@@ -97,22 +98,17 @@ export default class Background extends Phaser.GameObjects.GameObject {
 			const matterBody: Phaser.Physics.Matter.TileBody = (<any>(
 				tile.physics
 			)).matterBody;
-			if (tile.index === 4) {
-				matterBody.setCollisionCategory(
-					CollisionCategories.PHANTOM_WALLS
-				);
-				matterBody.setCollidesWith(CollisionCategories.FISH);
-			} else {
+			if (tile.index === 1 || tile.index === 4) {
 				matterBody.setCollisionCategory(CollisionCategories.WALLS);
 				matterBody.setCollidesWith(
 					CollisionCategories.SUBMARINE |
-						CollisionCategories.MECHANICAL_HOOK
+					CollisionCategories.MECHANICAL_HOOK
 				);
 			}
 		}
 
 		this.SafeSpawnHeight = flipOffset * size;
-		const treasure = this.scene.add.text(this.width/2, 9900, "The real treasure was inside you all along!")
+		const treasure = this.scene.add.text(this.width / 2, 9900, "The real treasure was inside you all along!")
 		treasure.setOrigin(0.5);
 	}
 
