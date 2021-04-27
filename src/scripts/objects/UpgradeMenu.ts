@@ -105,7 +105,7 @@ export default class UpgradeMenu {
 			uiButton.setText(`${button.label} (${upgradeCost})`);
 
 			// If we can afford it and it exists, we can show the button
-			if (upgradeCost > this.gameManager.currentWealth)
+			if (upgradeCost > this.gameManager.CurrentWealth)
 				continue;
 
 			uiButton.enable();

@@ -246,7 +246,7 @@ export default class UIGameObject {
 		// If at the surface, show the selling buttons (if anything to sell)
 		const { isAtSurface } = this.gameManager.submarine;
 		const subHasFish = this.gameManager.submarine.cargo.fishWeight > 0;
-		const hasMoney = this.gameManager.currentWealth > 0;
+		const hasMoney = this.gameManager.CurrentWealth > 0;
 		const isDamaged =
 			this.gameManager.submarine.hull <
 			this.gameManager.getUpgradeValue("depthLimit");
@@ -300,7 +300,7 @@ export default class UIGameObject {
 
 		// Update the tracker texts
 		this.currentWealthText.setText(
-			`${this.gameManager.currentWealth}G`
+			`${this.gameManager.CurrentWealth}G`
 		);
 		this.currentDepthText.setText(
 			`${Math.floor(this.gameManager.currentDepth)}m / ${this.gameManager.getUpgradeValue("depthLimit")}m`

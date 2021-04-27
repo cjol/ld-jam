@@ -22,9 +22,12 @@ interface Upgrades {
 const priceScale = [...Array(10)].map((_, i) => 10 * (Math.pow(3, i) - 1))
 // const priceScale = [0, 20, 60, 80, 160, 320, 500]
 const LOCALSTORAGE_MAX_DEPTH_KEY = "hms-max-depth";
+const COST_OF_FIXING = 0.5;
 
 // Class to manage the game by keeping track of upgrades and money earned
 export default class GameManager {
+	private currentWealth: number;
+
 	public readonly upgrades: Upgrades = {
 		// Capacity (units are pseudo-kg)
 		capacity: {
@@ -106,7 +109,6 @@ export default class GameManager {
 		pressureWarning: number;
 	};
 	totalWealth: number;
-	currentWealth: number;
 	maxDepthReached: number = 0;
 	bestMaxDepthReached: number;
 	currentDepth: number;
@@ -120,7 +122,7 @@ export default class GameManager {
 	public initialise() {
 		// Initialise the trackers
 		this.totalWealth = 0;
-		this.currentWealth = 0;
+		this.CurrentWealth = 0;
 		this.maxDepthReached = 0;
 		this.currentDepth = 0;
 		this.upgradeMenuOpen = false;
@@ -172,10 +174,10 @@ export default class GameManager {
 			const upgradeCost =
 				upgradeData.price[upgradeData.upgradesBought + 1];
 			// If we can afford it, increment the upgrade, and take the money
-			if (upgradeCost <= this.currentWealth) {
+			if (upgradeCost <= this.CurrentWealth) {
 				console.log("Upgrading: " + upgradeType);
 				upgradeData.upgradesBought += 1;
-				this.currentWealth -= upgradeCost;
+				this.CurrentWealth -= upgradeCost;
 				return true;
 			} else {
 				console.log("Insufficient funds");
@@ -191,7 +193,7 @@ export default class GameManager {
 		// Get the current fish value in the sub and add it to the wealth scores
 		const cargoFishValue = this.submarine.cargo.fishValue;
 		this.totalWealth += cargoFishValue;
-		this.currentWealth += cargoFishValue;
+		this.CurrentWealth += cargoFishValue;
 
 		// Empty the hold (weight and value)
 		this.submarine.cargo.fishValue = 0;
@@ -205,7 +207,7 @@ export default class GameManager {
 		// Get the current fish value in the sub and add it to the wealth scores
 		const cargoOreValue = this.submarine.cargo.oreValue;
 		this.totalWealth += cargoOreValue;
-		this.currentWealth += cargoOreValue;
+		this.CurrentWealth += cargoOreValue;
 
 		// Empty the hold (weight and value)
 		this.submarine.cargo.oreValue = 0;
@@ -219,7 +221,7 @@ export default class GameManager {
 		// Get the current fish value in the sub and add it to the wealth scores
 		const cargoResearchValue = this.submarine.cargo.researchValue;
 		this.totalWealth += cargoResearchValue;
-		this.currentWealth += cargoResearchValue;
+		this.CurrentWealth += cargoResearchValue;
 
 		// Empty the hold (weight and value)
 		this.submarine.cargo.researchValue = 0;
@@ -287,18 +289,15 @@ export default class GameManager {
 		// How much is the sub damaged?
 		const damage = this.getUpgradeValue("depthLimit") - this.submarine.hull;
 
-		// Cost of fixing - units are 'pounds per point of damage'
-		const costOfFixing = 0.5;
-
 		// Max damage that could be fixed for current wealth
-		const costLimit = Math.floor(this.currentWealth / costOfFixing);
+		const costLimit = Math.floor(this.CurrentWealth / COST_OF_FIXING);
 
 		// We will fix up to the total damage, or until we run out of money
 		const damageToFix = Math.min(damage, costLimit);
 
 		// Update the hull score, and the currentWealth
 		this.submarine.hull += damageToFix;
-		this.currentWealth -= Math.floor(damageToFix * costOfFixing);
+		this.CurrentWealth -= Math.floor(damageToFix * COST_OF_FIXING);
 	}
 
 	markSubmarineDestroyed() {
@@ -328,6 +327,17 @@ export default class GameManager {
 
 	setBestMaxDepth(value: number): void {
 		localStorage.setItem(LOCALSTORAGE_MAX_DEPTH_KEY, value.toString());
+	}
+
+	public get CurrentWealth(): number {
+		return this.currentWealth;
+	}
+
+	public set CurrentWealth(value: number) {
+		if (isNaN(value))
+			return;
+
+		this.currentWealth = value;
 	}
 }
 
