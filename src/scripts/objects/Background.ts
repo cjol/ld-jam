@@ -90,7 +90,7 @@ export default class Background extends Phaser.GameObjects.GameObject {
 		for (let i = 0; i < flipRows; i++)
 			this.tilemap.getTileAt(0, i + flipOffset).setFlip(true, false);
 
-		const tiles = layer.getTilesWithin(0, 0, numberOfColumns, numberOfRows);
+		const tiles = layer.getTilesWithin();
 		for (const tile of tiles) {
 			if (!tile || !tile.physics || !(<any>tile.physics).matterBody)
 				continue;
@@ -98,13 +98,11 @@ export default class Background extends Phaser.GameObjects.GameObject {
 			const matterBody: Phaser.Physics.Matter.TileBody = (<any>(
 				tile.physics
 			)).matterBody;
-			if (tile.index === 1 || tile.index === 4) {
-				matterBody.setCollisionCategory(CollisionCategories.WALLS);
-				matterBody.setCollidesWith(
-					CollisionCategories.SUBMARINE |
-					CollisionCategories.MECHANICAL_HOOK
-				);
-			}
+			matterBody.setCollisionCategory(CollisionCategories.WALLS);
+			matterBody.setCollidesWith(
+				CollisionCategories.SUBMARINE |
+				CollisionCategories.MECHANICAL_HOOK
+			);
 		}
 
 		this.SafeSpawnHeight = flipOffset * size;
